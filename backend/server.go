@@ -1,13 +1,20 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net"
 	"net/http"
 	"os"
 
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
 	"google.golang.org/grpc"
+
+	"tracert/internal/config"
+	"tracert/internal/pkg/db/mysql"
+	"tracert/internal/pkg/log/logruslog"
+	"tracert/internal/route"
 )
 
 type RpcServer struct {
@@ -24,6 +31,11 @@ func NewServer() *RpcServer {
 }
 
 func main() {
+	_, ok := os.LookupEnv("APP_ENV")
+	if !ok {
+		config.Setup(".env")
+	}
+
 	if err := run(); err != nil {
 		log.Printf("error: shutting down: %s", err)
 		os.Exit(1)
@@ -33,18 +45,27 @@ func main() {
 func run() error {
 	port := map[string]string{"grpc": "9099", "web": "8099"}
 	rpcServer := NewServer()
-	//cities.RegisterCitiesServiceServer(rpcServer.Grpc, &citiesServer{})
 
-	err := make(chan error)
+	db, err := mysql.Open()
+	if err != nil {
+		return fmt.Errorf("connecting to db: %v", err)
+	}
+	defer db.Close()
+
+	log := logruslog.Init()
+
+	route.GrpcRoute(rpcServer.Grpc, db, log)
+
+	errChan := make(chan error)
 	go func() {
-		err <- runRpcServer(port["grpc"], rpcServer)
+		errChan <- runRpcServer(port["grpc"], rpcServer)
 	}()
 	go func() {
-		err <- runWebServer(port["web"], rpcServer)
+		errChan <- runWebServer(port["web"], rpcServer)
 	}()
 
 	select {
-	case e := <-err:
+	case e := <-errChan:
 		if e != nil {
 			return e
 		}
