@@ -17,3 +17,7 @@ message QuestionGroup {
 message QuestionGroupList {
   repeated QuestionGroup question_group = 1;
 }
+
+message QuestionGroupListInput {
+  repeated uint64 question_group_id = 1;
+}

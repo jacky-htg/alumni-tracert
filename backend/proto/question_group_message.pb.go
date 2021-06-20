@@ -159,6 +159,53 @@ func (x *QuestionGroupList) GetQuestionGroup() []*QuestionGroup {
 	return nil
 }
 
+type QuestionGroupListInput struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	QuestionGroupId []uint64 `protobuf:"varint,1,rep,packed,name=question_group_id,json=questionGroupId,proto3" json:"question_group_id,omitempty"`
+}
+
+func (x *QuestionGroupListInput) Reset() {
+	*x = QuestionGroupListInput{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_question_group_message_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *QuestionGroupListInput) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QuestionGroupListInput) ProtoMessage() {}
+
+func (x *QuestionGroupListInput) ProtoReflect() protoreflect.Message {
+	mi := &file_question_group_message_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use QuestionGroupListInput.ProtoReflect.Descriptor instead.
+func (*QuestionGroupListInput) Descriptor() ([]byte, []int) {
+	return file_question_group_message_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *QuestionGroupListInput) GetQuestionGroupId() []uint64 {
+	if x != nil {
+		return x.QuestionGroupId
+	}
+	return nil
+}
+
 var File_question_group_message_proto protoreflect.FileDescriptor
 
 var file_question_group_message_proto_rawDesc = []byte{
@@ -182,8 +229,13 @@ var file_question_group_message_proto_rawDesc = []byte{
 	0x0a, 0x0e, 0x71, 0x75, 0x65, 0x73, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x67, 0x72, 0x6f, 0x75, 0x70,
 	0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x14, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x51,
 	0x75, 0x65, 0x73, 0x74, 0x69, 0x6f, 0x6e, 0x47, 0x72, 0x6f, 0x75, 0x70, 0x52, 0x0d, 0x71, 0x75,
-	0x65, 0x73, 0x74, 0x69, 0x6f, 0x6e, 0x47, 0x72, 0x6f, 0x75, 0x70, 0x42, 0x09, 0x5a, 0x07, 0x2e,
-	0x3b, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x65, 0x73, 0x74, 0x69, 0x6f, 0x6e, 0x47, 0x72, 0x6f, 0x75, 0x70, 0x22, 0x44, 0x0a, 0x16, 0x51,
+	0x75, 0x65, 0x73, 0x74, 0x69, 0x6f, 0x6e, 0x47, 0x72, 0x6f, 0x75, 0x70, 0x4c, 0x69, 0x73, 0x74,
+	0x49, 0x6e, 0x70, 0x75, 0x74, 0x12, 0x2a, 0x0a, 0x11, 0x71, 0x75, 0x65, 0x73, 0x74, 0x69, 0x6f,
+	0x6e, 0x5f, 0x67, 0x72, 0x6f, 0x75, 0x70, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x03, 0x28, 0x04,
+	0x52, 0x0f, 0x71, 0x75, 0x65, 0x73, 0x74, 0x69, 0x6f, 0x6e, 0x47, 0x72, 0x6f, 0x75, 0x70, 0x49,
+	0x64, 0x42, 0x09, 0x5a, 0x07, 0x2e, 0x3b, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x06, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -198,14 +250,15 @@ func file_question_group_message_proto_rawDescGZIP() []byte {
 	return file_question_group_message_proto_rawDescData
 }
 
-var file_question_group_message_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_question_group_message_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_question_group_message_proto_goTypes = []interface{}{
-	(*QuestionGroup)(nil),     // 0: proto.QuestionGroup
-	(*QuestionGroupList)(nil), // 1: proto.QuestionGroupList
-	(*Question)(nil),          // 2: proto.Question
+	(*QuestionGroup)(nil),          // 0: proto.QuestionGroup
+	(*QuestionGroupList)(nil),      // 1: proto.QuestionGroupList
+	(*QuestionGroupListInput)(nil), // 2: proto.QuestionGroupListInput
+	(*Question)(nil),               // 3: proto.Question
 }
 var file_question_group_message_proto_depIdxs = []int32{
-	2, // 0: proto.QuestionGroup.question:type_name -> proto.Question
+	3, // 0: proto.QuestionGroup.question:type_name -> proto.Question
 	0, // 1: proto.QuestionGroupList.question_group:type_name -> proto.QuestionGroup
 	2, // [2:2] is the sub-list for method output_type
 	2, // [2:2] is the sub-list for method input_type
@@ -245,6 +298,18 @@ func file_question_group_message_proto_init() {
 				return nil
 			}
 		}
+		file_question_group_message_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*QuestionGroupListInput); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -252,7 +317,7 @@ func file_question_group_message_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_question_group_message_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

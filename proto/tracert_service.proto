@@ -18,7 +18,7 @@ service TracertService {
   /* rpc ForgotPassword(StringMessage) return (StringMessage) {}
   rpc ChangePassword(ChangePassword) return (StringMessage) {} */
  
-  rpc QuestionList(EmptyMessage) returns (QuestionGroupList) {}
+  rpc QuestionList(QuestionGroupListInput) returns (QuestionGroupList) {}
 
   /* rpc AlumniCreate(Alumni) returns (Alumni) {}
   rpc AlumniList(ListInput) returns (AlumniList) {} 
