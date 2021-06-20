@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package proto;
+option go_package = ".;proto";
+
+import "generic_message.proto";
+
+message Alumni {
+  uint64 id = 1;
+  uint64 user_id = 2;
+  string name = 3;
+  string nim = 4;
+  string nik = 5;
+  string place_od_birth = 6;
+  string date_of_birth = 7;
+  string major_study = 8;
+  uint32 graduation_year = 9;
+  string no_ijazah = 10;
+  string phone = 11;
+  string created = 12;
+  string updated = 13;
+}
+
+message AlumniList {
+  repeated Alumni alumni = 1;
+  ListInput list_input = 2;
+}

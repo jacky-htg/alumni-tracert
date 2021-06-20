@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package proto;
+option go_package = ".;proto";
+
+import "alumni_message.proto";
+import "generic_message.proto";
+
+message Legalize {
+  uint64 id = 1;
+  Alumni alumni = 2;
+  string ijazah = 3;
+  string transcript = 4;
+  string address = 5;
+  double shipping_cost = 6;
+  double total_cost = 7;
+  uint32 status = 8;
+  string created = 9;
+  string updated = 10;
+}
+
+message LegalizeList {
+  repeated Legalize Legalize = 1;
+  ListInput list_input = 2;
+}

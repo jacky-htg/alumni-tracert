@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package proto;
+option go_package = ".;proto";
+
+import "alumni_message.proto";
+import "alumni_appraiser_message.proto";
+import "user_answer_message.proto";
+import "generic_message.proto";
+
+message User {
+  uint64 id = 1;
+  string email = 2;
+  string name = 3;
+  bool is_actived = 4;
+  Alumni alumni = 5;
+  AlumniAppraiser alumni_appraiser = 6;
+  repeated UserAnswer user_answer = 7;
+  string created = 8;
+  string updated = 9;
+}
+
+message UserList {
+  repeated User user = 1;
+  ListInput list_input = 2;
+}
+
+message ChangePassword {
+  string new_password = 1;
+  string re_new_password = 2;
+}
+
+message LoginInput {
+  string email = 1;
+  string password = 2;
+}

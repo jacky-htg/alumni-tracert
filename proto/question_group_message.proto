@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package proto;
+option go_package = ".;proto";
+
+import "question_message.proto";
+
+message QuestionGroup {
+  uint64 id = 1;
+  string title = 2;
+  uint32 addressed_to = 3;
+  repeated Question question = 4;
+  string created = 5;
+  string updated = 6;
+}
+
+message QuestionGroupList {
+  repeated QuestionGroup question_group = 1;
+}

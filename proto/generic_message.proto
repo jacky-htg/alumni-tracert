@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package proto;
+option go_package = ".;proto";
+
+message EmptyMessage {}
+message StringMessage {
+  string data = 1;
+}
+
+message ListInput {
+  string search = 1;
+  uint32 limit = 2;
+  uint32 page = 3;
+  string order_by = 4;
+  string sort = 5;
+}

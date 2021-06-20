@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package proto;
+option go_package = ".;proto";
+
+import "alumni_appraiser_message.proto";
+import "alumni_message.proto";
+import "generic_message.proto";
+import "legalize_message.proto";
+import "question_group_message.proto";
+import "question_message.proto";
+import "question_option_message.proto";
+import "user_answer_message.proto";
+import "user_message.proto";
+
+service TracertService {
+  rpc Login(LoginInput) returns (StringMessage) {}
+  /* rpc ForgotPassword(StringMessage) return (StringMessage) {}
+  rpc ChangePassword(ChangePassword) return (StringMessage) {} */
+ 
+  rpc QuestionList(EmptyMessage) returns (QuestionGroupList) {}
+
+  /* rpc AlumniCreate(Alumni) returns (Alumni) {}
+  rpc AlumniList(ListInput) returns (AlumniList) {} 
+  rpc AlumniGet(Alumni) returns (Alumni) {}
+  rpc AlumniUpdate(Alumni) returns (Alumni) {}
+
+  rpc AlumniAppraiserCreate(AlumniAppraiser) returns (AlumniAppraiser) {}
+  rpc AlumniAppraiserList(ListInput) returns (AlumniAppraiserList) {}
+  rpc AlumniAppraiserGet(AlumniAppraiser) returns (AlumniAppraiser) {}
+  rpc AlumniAppraiserUpdate(AlumniAppraiser) returns (AlumniAppraiser) {}
+
+  rpc UserCreate(User) returns (User) {}
+  rpc UserList(ListInput) returns (UserList) {}
+  rpc UserGet(User) returns (User) {}
+  rpc UserUpdate(User) returns (User) {}
+
+  rpc LegalizeCreate(Legalize) returns (Legalize) {}
+  rpc LegalizeList(ListInput) returns (LegalizeList) {}
+  rpc LegalizeGet(Legalize) returns (Legalize) {}
+  rpc LegalizeUpdate(Legalize) returns (Legalize) {}
+
+  rpc UserAnswerCreate(UserAnswer) returns (UserAnswer) {}*/
+}

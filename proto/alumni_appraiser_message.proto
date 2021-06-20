@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package proto;
+option go_package = ".;proto";
+
+import "alumni_message.proto";
+import "generic_message.proto";
+
+message AlumniAppraiser {
+  uint64 id = 1;
+  uint64 user_id = 2;
+  Alumni alumni = 3;
+  string name = 4;
+  string instansi = 5;
+  string position = 6;
+  string alumni_position = 7;
+  string created = 8;
+  string updated = 9;
+}
+
+message AlumniAppraiserList {
+  repeated AlumniAppraiser alumni_appraiser = 1;
+  ListInput list_input = 2;
+}

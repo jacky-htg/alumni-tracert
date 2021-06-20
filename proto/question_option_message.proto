@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package proto;
+option go_package = ".;proto";
+
+message QuestionOption {
+  uint64 id = 1;
+  uint64 question_id = 2;
+  string title = 3;
+  bool is_need_essay = 4;
+  string created = 5;
+  string updated = 6;
+}
