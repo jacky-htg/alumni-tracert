@@ -1,5 +1,5 @@
 init:
-	cd backend && go mod init alumni-tracert
+	cd backend && go mod init tracert
 
 gen:
 	protoc --proto_path=proto proto/*.proto --go_out=plugins=grpc:./backend/proto
