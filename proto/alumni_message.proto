@@ -11,7 +11,7 @@ message Alumni {
   string name = 3;
   string nim = 4;
   string nik = 5;
-  string place_od_birth = 6;
+  string place_of_birth = 6;
   string date_of_birth = 7;
   string major_study = 8;
   uint32 graduation_year = 9;

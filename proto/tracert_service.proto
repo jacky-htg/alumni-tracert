@@ -14,14 +14,14 @@ import "user_answer_message.proto";
 import "user_message.proto";
 
 service TracertService {
-  rpc Login(LoginInput) returns (StringMessage) {}
+  rpc Login(LoginInput) returns (User) {}
   /* rpc ForgotPassword(StringMessage) return (StringMessage) {}
   rpc ChangePassword(ChangePassword) return (StringMessage) {} */
  
   rpc QuestionList(QuestionGroupListInput) returns (QuestionGroupList) {}
 
-  /* rpc AlumniCreate(Alumni) returns (Alumni) {}
-  rpc AlumniList(ListInput) returns (AlumniList) {} 
+  rpc AlumniCreate(Alumni) returns (Alumni) {}
+  /*rpc AlumniList(ListInput) returns (AlumniList) {} 
   rpc AlumniGet(Alumni) returns (Alumni) {}
   rpc AlumniUpdate(Alumni) returns (Alumni) {}
 
@@ -30,8 +30,9 @@ service TracertService {
   rpc AlumniAppraiserGet(AlumniAppraiser) returns (AlumniAppraiser) {}
   rpc AlumniAppraiserUpdate(AlumniAppraiser) returns (AlumniAppraiser) {}
 
+  */
   rpc UserCreate(User) returns (User) {}
-  rpc UserList(ListInput) returns (UserList) {}
+  /*rpc UserList(ListInput) returns (UserList) {}
   rpc UserGet(User) returns (User) {}
   rpc UserUpdate(User) returns (User) {}
 

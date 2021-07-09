@@ -13,11 +13,13 @@ message User {
   string email = 2;
   string name = 3;
   bool is_actived = 4;
-  Alumni alumni = 5;
-  AlumniAppraiser alumni_appraiser = 6;
-  repeated UserAnswer user_answer = 7;
-  string created = 8;
-  string updated = 9;
+  uint32 user_type = 5;
+  Alumni alumni = 6;
+  AlumniAppraiser alumni_appraiser = 7;
+  repeated UserAnswer user_answer = 8;
+  string created = 9;
+  string updated = 10;
+  string token = 11;
 }
 
 message UserList {
