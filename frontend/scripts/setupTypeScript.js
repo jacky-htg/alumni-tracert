@@ -1,304 +1,121 @@
-/**
- * Run this script to convert the project to TypeScript. This is only guaranteed to work
- * on the unmodified default template; if you have done code changes you are likely need
- * to touch up the generated project manually.
- */
-
 // @ts-check
-const fs = require('fs');
-const path = require('path');
-const { argv } = require('process');
 
-const projectRoot = argv[2] || path.join(__dirname, '..');
+/** This script modifies the project to support TS code in .svelte files like:
 
-const isRollup = fs.existsSync(path.join(projectRoot, "rollup.config.js"));
+  <script lang="ts">
+  	export let name: string;
+  </script>
+ 
+  As well as validating the code for CI.
+  */
 
-function warn(message) {
-	console.warn('Warning: ' + message);
-}
+/**  To work on this script:
+  rm -rf test-template template && git clone sveltejs/template test-template && node scripts/setupTypeScript.js test-template
+*/
 
-function replaceInFile(fileName, replacements) {
-	if (fs.existsSync(fileName)) {
-		let contents = fs.readFileSync(fileName, 'utf8');
-		let hadUpdates = false;
+const fs = require("fs")
+const path = require("path")
+const { argv } = require("process")
 
-		replacements.forEach(([from, to]) => {
-			const newContents = contents.replace(from, to);
+const projectRoot = argv[2] || path.join(__dirname, "..")
 
-			const isAlreadyApplied = typeof to !== 'string' || contents.includes(to);
+// Add deps to pkg.json
+const packageJSON = JSON.parse(fs.readFileSync(path.join(projectRoot, "package.json"), "utf8"))
+packageJSON.devDependencies = Object.assign(packageJSON.devDependencies, {
+  "svelte-check": "^2.0.0",
+  "svelte-preprocess": "^4.0.0",
+  "@rollup/plugin-typescript": "^8.0.0",
+  "typescript": "^4.0.0",
+  "tslib": "^2.0.0",
+  "@tsconfig/svelte": "^2.0.0"
+})
 
-			if (newContents !== contents) {
-				contents = newContents;
-				hadUpdates = true;
-			} else if (!isAlreadyApplied) {
-				warn(`Wanted to update "${from}" in ${fileName}, but did not find it.`);
-			}
-		});
+// Add script for checking
+packageJSON.scripts = Object.assign(packageJSON.scripts, {
+  "check": "svelte-check --tsconfig ./tsconfig.json"
+})
 
-		if (hadUpdates) {
-			fs.writeFileSync(fileName, contents);
-		} else {
-			console.log(`${fileName} had already been updated.`);
-		}
-	} else {
-		warn(`Wanted to update ${fileName} but the file did not exist.`);
-	}
-}
+// Write the package JSON
+fs.writeFileSync(path.join(projectRoot, "package.json"), JSON.stringify(packageJSON, null, "  "))
 
-function createFile(fileName, contents) {
-	if (fs.existsSync(fileName)) {
-		warn(`Wanted to create ${fileName}, but it already existed. Leaving existing file.`);
-	} else {
-		fs.writeFileSync(fileName, contents);
-	}
-}
+// mv src/main.js to main.ts - note, we need to edit rollup.config.js for this too
+const beforeMainJSPath = path.join(projectRoot, "src", "main.js")
+const afterMainTSPath = path.join(projectRoot, "src", "main.ts")
+fs.renameSync(beforeMainJSPath, afterMainTSPath)
 
-function addDepsToPackageJson() {
-	const pkgJSONPath = path.join(projectRoot, 'package.json');
-	const packageJSON = JSON.parse(fs.readFileSync(pkgJSONPath, 'utf8'));
-	packageJSON.devDependencies = Object.assign(packageJSON.devDependencies, {
-		...(isRollup ? { '@rollup/plugin-typescript': '^6.0.0' } : { 'ts-loader': '^8.0.4' }),
-		'@tsconfig/svelte': '^1.0.10',
-		'@types/compression': '^1.7.0',
-		'@types/node': '^14.11.1',
-		'@types/polka': '^0.5.1',
-		'svelte-check': '^1.0.46',
-		'svelte-preprocess': '^4.3.0',
-		tslib: '^2.0.1',
-		typescript: '^4.0.3'
-	});
+// Switch the app.svelte file to use TS
+const appSveltePath = path.join(projectRoot, "src", "App.svelte")
+let appFile = fs.readFileSync(appSveltePath, "utf8")
+appFile = appFile.replace("<script>", '<script lang="ts">')
+appFile = appFile.replace("export let name;", 'export let name: string;')
+fs.writeFileSync(appSveltePath, appFile)
 
-	// Add script for checking
-	packageJSON.scripts = Object.assign(packageJSON.scripts, {
-		validate: 'svelte-check --ignore src/node_modules/@sapper'
-	});
+// Edit rollup config
+const rollupConfigPath = path.join(projectRoot, "rollup.config.js")
+let rollupConfig = fs.readFileSync(rollupConfigPath, "utf8")
 
-	// Write the package JSON
-	fs.writeFileSync(pkgJSONPath, JSON.stringify(packageJSON, null, '  '));
-}
-
-function changeJsExtensionToTs(dir) {
-	const elements = fs.readdirSync(dir, { withFileTypes: true });
-
-	for (let i = 0; i < elements.length; i++) {
-		if (elements[i].isDirectory()) {
-			changeJsExtensionToTs(path.join(dir, elements[i].name));
-		} else if (elements[i].name.match(/^[^_]((?!json).)*js$/)) {
-			fs.renameSync(path.join(dir, elements[i].name), path.join(dir, elements[i].name).replace('.js', '.ts'));
-		}
-	}
-}
-
-function updateSingleSvelteFile({ view, vars, contextModule }) {
-	replaceInFile(path.join(projectRoot, 'src', `${view}.svelte`), [
-		[/(?:<script)(( .*?)*?)>/gm, (m, attrs) => `<script${attrs}${!attrs.includes('lang="ts"') ? ' lang="ts"' : ''}>`],
-		...(vars ? vars.map(({ name, type }) => [`export let ${name};`, `export let ${name}: ${type};`]) : []),
-		...(contextModule ? contextModule.map(({ js, ts }) => [js, ts]) : [])
-	]);
-}
-
-// Switch the *.svelte file to use TS
-function updateSvelteFiles() {
-	[
-		{
-			view: 'components/Nav',
-			vars: [{ name: 'segment', type: 'string' }]
-		},
-		{
-			view: 'routes/_layout',
-			vars: [{ name: 'segment', type: 'string' }]
-		},
-		{
-			view: 'routes/_error',
-			vars: [
-				{ name: 'status', type: 'number' },
-				{ name: 'error', type: 'Error' }
-			]
-		},
-		{
-			view: 'routes/blog/index',
-			vars: [{ name: 'posts', type: '{ slug: string; title: string, html: any }[]' }],
-			contextModule: [
-				{
-					js: '.then(r => r.json())',
-					ts: '.then((r: { json: () => any; }) => r.json())'
-				},
-				{
-					js: '.then(posts => {',
-					ts: '.then((posts: { slug: string; title: string, html: any }[]) => {'
-				}
-			]
-		},
-		{
-			view: 'routes/blog/[slug]',
-			vars: [{ name: 'post', type: '{ slug: string; title: string, html: any }' }]
-		}
-	].forEach(updateSingleSvelteFile);
-}
-
-function updateRollupConfig() {
-	// Edit rollup config
-	replaceInFile(path.join(projectRoot, 'rollup.config.js'), [
-		// Edit imports
-		[
-			/'rollup-plugin-terser';\n(?!import sveltePreprocess)/,
-			`'rollup-plugin-terser';
+// Edit imports
+rollupConfig = rollupConfig.replace(`'rollup-plugin-terser';`, `'rollup-plugin-terser';
 import sveltePreprocess from 'svelte-preprocess';
-import typescript from '@rollup/plugin-typescript';
-`
-		],
-		// Edit inputs
-		[
-			/(?<!THIS_IS_UNDEFINED[^\n]*\n\s*)onwarn\(warning\);/,
-			`(warning.code === 'THIS_IS_UNDEFINED') ||\n\tonwarn(warning);`
-		],
-		[/input: config.client.input\(\)(?!\.replace)/, `input: config.client.input().replace(/\\.js$/, '.ts')`],
-		[
-			/input: config.server.input\(\)(?!\.replace)/,
-			`input: { server: config.server.input().server.replace(/\\.js$/, ".ts") }`
-		],
-		[
-			/input: config.serviceworker.input\(\)(?!\.replace)/,
-			`input: config.serviceworker.input().replace(/\\.js$/, '.ts')`
-		],
-		// Add preprocess
-		[/compilerOptions/g, 'preprocess: sveltePreprocess({ sourceMap: dev }),\n\t\t\t\tcompilerOptions'],
-		// Add TypeScript
-		[/commonjs\(\)(?!,\n\s*typescript)/g, 'commonjs(),\n\t\t\ttypescript({ sourceMap: dev })']
-	]);
-}
+import typescript from '@rollup/plugin-typescript';`)
 
-function updateWebpackConfig() {
-	// Edit webpack config
-	replaceInFile(path.join(projectRoot, 'webpack.config.js'), [
-		// Edit imports
-		[
-			/require\('webpack-modules'\);\n(?!const sveltePreprocess)/,
-			`require('webpack-modules');\nconst sveltePreprocess = require('svelte-preprocess');\n`
-		],
-		// Edit extensions
-		[
-			/\['\.mjs', '\.js', '\.json', '\.svelte', '\.html'\]/,
-			`['.mjs', '.js', '.ts', '.json', '.svelte', '.html']`
-		],
-		// Edit entries
-		[
-			/entry: config\.client\.entry\(\)/,
-			`entry: { main: config.client.entry().main.replace(/\\.js$/, '.ts') }`
-		],
-		[
-			/entry: config\.server\.entry\(\)/,
-			`entry: { server: config.server.entry().server.replace(/\\.js$/, '.ts') }`
-		],
-		[
-			/entry: config\.serviceworker\.entry\(\)/,
-			`entry: { 'service-worker': config.serviceworker.entry()['service-worker'].replace(/\\.js$/, '.ts') }`
-		],
-		[
-      /loader: 'svelte-loader',\n\t\t\t\t\t\toptions: {/g,
-      'loader: \'svelte-loader\',\n\t\t\t\t\t\toptions: {\n\t\t\t\t\t\t\tpreprocess: sveltePreprocess({ sourceMap: dev }),'
-    ],
-		// Add TypeScript rules for client and server
-		[
-			/module: {\n\s*rules: \[\n\s*(?!{\n\s*test: \/\\\.ts\$\/)/g,
-			`module: {\n\t\t\trules: [\n\t\t\t\t{\n\t\t\t\t\ttest: /\\.ts$/,\n\t\t\t\t\tloader: 'ts-loader'\n\t\t\t\t},\n\t\t\t\t`
-		],
-		// Add TypeScript rules for serviceworker
-		[
-			/output: config\.serviceworker\.output\(\),\n\s*(?!module)/,
-			`output: config.serviceworker.output(),\n\t\tmodule: {\n\t\t\trules: [\n\t\t\t\t{\n\t\t\t\t\ttest: /\\.ts$/,\n\t\t\t\t\tloader: 'ts-loader'\n\t\t\t\t}\n\t\t\t]\n\t\t},\n\t\t`
-		],
-		// Edit outputs
-		[
-			/output: config\.serviceworker\.output\(\),\n\s*(?!resolve)/,
-			`output: config.serviceworker.output(),\n\t\tresolve: { extensions: ['.mjs', '.js', '.ts', '.json'] },\n\t\t`
-		]
-	]);
-}
+// Replace name of entry point
+rollupConfig = rollupConfig.replace(`'src/main.js'`, `'src/main.ts'`)
 
-function updateServiceWorker() {
-	replaceInFile(path.join(projectRoot, 'src', 'service-worker.ts'), [
-		[`shell.concat(files);`, `(shell as string[]).concat(files as string[]);`],
-		[`self.skipWaiting();`, `((self as any) as ServiceWorkerGlobalScope).skipWaiting();`],
-		[`self.clients.claim();`, `((self as any) as ServiceWorkerGlobalScope).clients.claim();`],
-		[`fetchAndCache(request)`, `fetchAndCache(request: Request)`],
-		[`self.addEventListener('activate', event =>`, `self.addEventListener('activate', (event: ExtendableEvent) =>`],
-		[`self.addEventListener('install', event =>`, `self.addEventListener('install', (event: ExtendableEvent) =>`],
-		[`addEventListener('fetch', event =>`, `addEventListener('fetch', (event: FetchEvent) =>`],
-	]);
-}
+// Add preprocessor
+rollupConfig = rollupConfig.replace(
+  'compilerOptions:',
+  'preprocess: sveltePreprocess({ sourceMap: !production }),\n\t\t\tcompilerOptions:'
+);
 
-function createTsConfig() {
-	const tsconfig = `{
-		"extends": "@tsconfig/svelte/tsconfig.json",
-		"compilerOptions": {
-			"lib": ["DOM", "ES2017", "WebWorker"]
-		},
-		"include": ["src/**/*", "src/node_modules/**/*"],
-		"exclude": ["node_modules/*", "__sapper__/*", "static/*"]
-	}`;
+// Add TypeScript
+rollupConfig = rollupConfig.replace(
+  'commonjs(),',
+  'commonjs(),\n\t\ttypescript({\n\t\t\tsourceMap: !production,\n\t\t\tinlineSources: !production\n\t\t}),'
+);
+fs.writeFileSync(rollupConfigPath, rollupConfig)
 
-	createFile(path.join(projectRoot, 'tsconfig.json'), tsconfig);
-}
+// Add TSConfig
+const tsconfig = `{
+  "extends": "@tsconfig/svelte/tsconfig.json",
 
-// Adds the extension recommendation
-function configureVsCode() {
-	const dir = path.join(projectRoot, '.vscode');
+  "include": ["src/**/*"],
+  "exclude": ["node_modules/*", "__sapper__/*", "public/*"]
+}`
+const tsconfigPath =  path.join(projectRoot, "tsconfig.json")
+fs.writeFileSync(tsconfigPath, tsconfig)
 
-	if (!fs.existsSync(dir)) {
-		fs.mkdirSync(dir);
-	}
-
-	createFile(path.join(projectRoot, '.vscode', 'extensions.json'), `{"recommendations": ["svelte.svelte-vscode"]}`);
-}
-
-function deleteThisScript() {
-	fs.unlinkSync(path.join(__filename));
-
-	// Check for Mac's DS_store file, and if it's the only one left remove it
-	const remainingFiles = fs.readdirSync(path.join(__dirname));
-	if (remainingFiles.length === 1 && remainingFiles[0] === '.DS_store') {
-		fs.unlinkSync(path.join(__dirname, '.DS_store'));
-	}
-
-	// Check if the scripts folder is empty
-	if (fs.readdirSync(path.join(__dirname)).length === 0) {
-		// Remove the scripts folder
-		fs.rmdirSync(path.join(__dirname));
-	}
-}
-
-console.log(`Adding TypeScript with ${isRollup ? "Rollup" : "webpack" }...`);
-
-addDepsToPackageJson();
-
-changeJsExtensionToTs(path.join(projectRoot, 'src'));
-
-updateSvelteFiles();
-
-if (isRollup) {
-	updateRollupConfig();
-} else {
-	updateWebpackConfig();
-}
-
-updateServiceWorker();
-
-createTsConfig();
-
-configureVsCode();
+// Add global.d.ts
+const dtsPath =  path.join(projectRoot, "src", "global.d.ts")
+fs.writeFileSync(dtsPath, `/// <reference types="svelte" />`)
 
 // Delete this script, but not during testing
 if (!argv[2]) {
-	deleteThisScript();
+  // Remove the script
+  fs.unlinkSync(path.join(__filename))
+
+  // Check for Mac's DS_store file, and if it's the only one left remove it
+  const remainingFiles = fs.readdirSync(path.join(__dirname))
+  if (remainingFiles.length === 1 && remainingFiles[0] === '.DS_store') {
+    fs.unlinkSync(path.join(__dirname, '.DS_store'))
+  }
+
+  // Check if the scripts folder is empty
+  if (fs.readdirSync(path.join(__dirname)).length === 0) {
+    // Remove the scripts folder
+    fs.rmdirSync(path.join(__dirname))
+  }
 }
 
-console.log('Converted to TypeScript.');
+// Adds the extension recommendation
+fs.mkdirSync(path.join(projectRoot, ".vscode"), { recursive: true })
+fs.writeFileSync(path.join(projectRoot, ".vscode", "extensions.json"), `{
+  "recommendations": ["svelte.svelte-vscode"]
+}
+`)
 
-if (fs.existsSync(path.join(projectRoot, 'node_modules'))) {
-	console.log(`
-Next:
-1. run 'npm install' again to install TypeScript dependencies
-2. run 'npm run build' for the @sapper imports in your project to work
-`);
+console.log("Converted to TypeScript.")
+
+if (fs.existsSync(path.join(projectRoot, "node_modules"))) {
+  console.log("\nYou will need to re-run your dependency manager to get started.")
 }
