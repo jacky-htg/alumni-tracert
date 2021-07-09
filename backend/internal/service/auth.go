@@ -11,7 +11,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (u *AlumniTracertServer) Login(ctx context.Context, in *proto.LoginInput) (*proto.StringMessage, error) {
+func (u *AlumniTracertServer) Login(ctx context.Context, in *proto.LoginInput) (*proto.User, error) {
 	if len(in.Email) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "Please supply valid email")
 	}
@@ -33,5 +33,7 @@ func (u *AlumniTracertServer) Login(ctx context.Context, in *proto.LoginInput) (
 		return nil, status.Errorf(codes.Internal, "claim token: %v", err)
 	}
 
-	return &proto.StringMessage{Data: token}, nil
+	userModel.Pb.Token = token
+
+	return &userModel.Pb, nil
 }

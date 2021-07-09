@@ -47,3 +47,30 @@ func (u *User) Login(ctx context.Context, db *sql.DB) error {
 
 	return nil
 }
+
+func (u *User) Create(ctx context.Context, db *sql.DB) error {
+	query := `INSERT INTO users (email, password, name, user_type) VALUES (?, ?, ?, ?)`
+
+	pass, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return status.Errorf(codes.Internal, "hash password: %v", err)
+	}
+
+	stmt, err := db.PrepareContext(ctx, query)
+	if err != nil {
+		return status.Errorf(codes.Internal, "Prepare insert: %v", err)
+	}
+	defer stmt.Close()
+
+	_, err = stmt.ExecContext(ctx,
+		u.Pb.Email,
+		string(pass),
+		u.Pb.Name,
+		u.Pb.UserType,
+	)
+	if err != nil {
+		return status.Errorf(codes.Internal, "Exec insert: %v", err)
+	}
+
+	return nil
+}
