@@ -1,10 +1,10 @@
 <script>
-  import { Link } from 'svelte-routing';
-  import { token } from '../stores/token.js';
+  import { Link } from 'svelte-routing'
+  import { token } from '../stores/token.js'
 
   const logout = () => {
-      localStorage.clear();
-      token.set(localStorage.getItem('token'));
+      localStorage.clear()
+      token.set(localStorage.getItem('token'))
   }
 </script>
 

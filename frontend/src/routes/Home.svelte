@@ -1,5 +1,5 @@
-<script>
-  import { Link } from 'svelte-routing';
+﻿<script>
+  import { Link } from 'svelte-routing'
 </script>
 
 <h1>👋 Welcome to the home page</h1>
