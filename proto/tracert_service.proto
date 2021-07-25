@@ -39,7 +39,7 @@ service TracertService {
   rpc LegalizeCreate(Legalize) returns (Legalize) {}
   rpc LegalizeList(ListInput) returns (LegalizeList) {}
   rpc LegalizeGet(Legalize) returns (Legalize) {}
-  rpc LegalizeUpdate(Legalize) returns (Legalize) {}
+  rpc LegalizeUpdate(Legalize) returns (Legalize) {} */
 
-  rpc UserAnswerCreate(UserAnswer) returns (UserAnswer) {}*/
+  rpc UserAnswerCreate(UserAnswer) returns (UserAnswer) {}
 }

@@ -488,5 +488,85 @@ proto.proto.TracertServicePromiseClient.prototype.userCreate =
 };
 
 
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.proto.UserAnswer,
+ *   !proto.proto.UserAnswer>}
+ */
+const methodDescriptor_TracertService_UserAnswerCreate = new grpc.web.MethodDescriptor(
+  '/proto.TracertService/UserAnswerCreate',
+  grpc.web.MethodType.UNARY,
+  user_answer_message_pb.UserAnswer,
+  user_answer_message_pb.UserAnswer,
+  /**
+   * @param {!proto.proto.UserAnswer} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  user_answer_message_pb.UserAnswer.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.proto.UserAnswer,
+ *   !proto.proto.UserAnswer>}
+ */
+const methodInfo_TracertService_UserAnswerCreate = new grpc.web.AbstractClientBase.MethodInfo(
+  user_answer_message_pb.UserAnswer,
+  /**
+   * @param {!proto.proto.UserAnswer} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  user_answer_message_pb.UserAnswer.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.proto.UserAnswer} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.proto.UserAnswer)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.UserAnswer>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.TracertServiceClient.prototype.userAnswerCreate =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/proto.TracertService/UserAnswerCreate',
+      request,
+      metadata || {},
+      methodDescriptor_TracertService_UserAnswerCreate,
+      callback);
+};
+
+
+/**
+ * @param {!proto.proto.UserAnswer} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.proto.UserAnswer>}
+ *     Promise that resolves to the response
+ */
+proto.proto.TracertServicePromiseClient.prototype.userAnswerCreate =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/proto.TracertService/UserAnswerCreate',
+      request,
+      metadata || {},
+      methodDescriptor_TracertService_UserAnswerCreate);
+};
+
+
 module.exports = proto.proto;
 

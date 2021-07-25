@@ -47,7 +47,7 @@ var file_tracert_service_proto_rawDesc = []byte{
 	0x67, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x19, 0x75, 0x73, 0x65, 0x72, 0x5f, 0x61,
 	0x6e, 0x73, 0x77, 0x65, 0x72, 0x5f, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x2e, 0x70, 0x72,
 	0x6f, 0x74, 0x6f, 0x1a, 0x12, 0x75, 0x73, 0x65, 0x72, 0x5f, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67,
-	0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x32, 0xab, 0x02, 0x0a, 0x0e, 0x54, 0x72, 0x61, 0x63,
+	0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x32, 0xe7, 0x02, 0x0a, 0x0e, 0x54, 0x72, 0x61, 0x63,
 	0x65, 0x72, 0x74, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x29, 0x0a, 0x05, 0x4c, 0x6f,
 	0x67, 0x69, 0x6e, 0x12, 0x11, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x4c, 0x6f, 0x67, 0x69,
 	0x6e, 0x49, 0x6e, 0x70, 0x75, 0x74, 0x1a, 0x0b, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x55,
@@ -66,8 +66,12 @@ var file_tracert_service_proto_rawDesc = []byte{
 	0x41, 0x70, 0x70, 0x72, 0x61, 0x69, 0x73, 0x65, 0x72, 0x22, 0x00, 0x12, 0x28, 0x0a, 0x0a, 0x55,
 	0x73, 0x65, 0x72, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x12, 0x0b, 0x2e, 0x70, 0x72, 0x6f, 0x74,
 	0x6f, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x1a, 0x0b, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x55,
-	0x73, 0x65, 0x72, 0x22, 0x00, 0x42, 0x09, 0x5a, 0x07, 0x2e, 0x3b, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x73, 0x65, 0x72, 0x22, 0x00, 0x12, 0x3a, 0x0a, 0x10, 0x55, 0x73, 0x65, 0x72, 0x41, 0x6e, 0x73,
+	0x77, 0x65, 0x72, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x12, 0x11, 0x2e, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x41, 0x6e, 0x73, 0x77, 0x65, 0x72, 0x1a, 0x11, 0x2e, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x41, 0x6e, 0x73, 0x77, 0x65, 0x72, 0x22,
+	0x00, 0x42, 0x09, 0x5a, 0x07, 0x2e, 0x3b, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x06, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x33,
 }
 
 var file_tracert_service_proto_goTypes = []interface{}{
@@ -76,7 +80,8 @@ var file_tracert_service_proto_goTypes = []interface{}{
 	(*Alumni)(nil),                 // 2: proto.Alumni
 	(*AlumniAppraiser)(nil),        // 3: proto.AlumniAppraiser
 	(*User)(nil),                   // 4: proto.User
-	(*QuestionGroupList)(nil),      // 5: proto.QuestionGroupList
+	(*UserAnswer)(nil),             // 5: proto.UserAnswer
+	(*QuestionGroupList)(nil),      // 6: proto.QuestionGroupList
 }
 var file_tracert_service_proto_depIdxs = []int32{
 	0, // 0: proto.TracertService.Login:input_type -> proto.LoginInput
@@ -84,13 +89,15 @@ var file_tracert_service_proto_depIdxs = []int32{
 	2, // 2: proto.TracertService.AlumniCreate:input_type -> proto.Alumni
 	3, // 3: proto.TracertService.AlumniAppraiserCreate:input_type -> proto.AlumniAppraiser
 	4, // 4: proto.TracertService.UserCreate:input_type -> proto.User
-	4, // 5: proto.TracertService.Login:output_type -> proto.User
-	5, // 6: proto.TracertService.QuestionList:output_type -> proto.QuestionGroupList
-	2, // 7: proto.TracertService.AlumniCreate:output_type -> proto.Alumni
-	3, // 8: proto.TracertService.AlumniAppraiserCreate:output_type -> proto.AlumniAppraiser
-	4, // 9: proto.TracertService.UserCreate:output_type -> proto.User
-	5, // [5:10] is the sub-list for method output_type
-	0, // [0:5] is the sub-list for method input_type
+	5, // 5: proto.TracertService.UserAnswerCreate:input_type -> proto.UserAnswer
+	4, // 6: proto.TracertService.Login:output_type -> proto.User
+	6, // 7: proto.TracertService.QuestionList:output_type -> proto.QuestionGroupList
+	2, // 8: proto.TracertService.AlumniCreate:output_type -> proto.Alumni
+	3, // 9: proto.TracertService.AlumniAppraiserCreate:output_type -> proto.AlumniAppraiser
+	4, // 10: proto.TracertService.UserCreate:output_type -> proto.User
+	5, // 11: proto.TracertService.UserAnswerCreate:output_type -> proto.UserAnswer
+	6, // [6:12] is the sub-list for method output_type
+	0, // [0:6] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -150,6 +157,7 @@ type TracertServiceClient interface {
 	//rpc AlumniAppraiserUpdate(AlumniAppraiser) returns (AlumniAppraiser) {}
 	//
 	UserCreate(ctx context.Context, in *User, opts ...grpc.CallOption) (*User, error)
+	UserAnswerCreate(ctx context.Context, in *UserAnswer, opts ...grpc.CallOption) (*UserAnswer, error)
 }
 
 type tracertServiceClient struct {
@@ -205,6 +213,15 @@ func (c *tracertServiceClient) UserCreate(ctx context.Context, in *User, opts ..
 	return out, nil
 }
 
+func (c *tracertServiceClient) UserAnswerCreate(ctx context.Context, in *UserAnswer, opts ...grpc.CallOption) (*UserAnswer, error) {
+	out := new(UserAnswer)
+	err := c.cc.Invoke(ctx, "/proto.TracertService/UserAnswerCreate", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TracertServiceServer is the server API for TracertService service.
 type TracertServiceServer interface {
 	Login(context.Context, *LoginInput) (*User, error)
@@ -216,6 +233,7 @@ type TracertServiceServer interface {
 	//rpc AlumniAppraiserUpdate(AlumniAppraiser) returns (AlumniAppraiser) {}
 	//
 	UserCreate(context.Context, *User) (*User, error)
+	UserAnswerCreate(context.Context, *UserAnswer) (*UserAnswer, error)
 }
 
 // UnimplementedTracertServiceServer can be embedded to have forward compatible implementations.
@@ -236,6 +254,9 @@ func (*UnimplementedTracertServiceServer) AlumniAppraiserCreate(context.Context,
 }
 func (*UnimplementedTracertServiceServer) UserCreate(context.Context, *User) (*User, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UserCreate not implemented")
+}
+func (*UnimplementedTracertServiceServer) UserAnswerCreate(context.Context, *UserAnswer) (*UserAnswer, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UserAnswerCreate not implemented")
 }
 
 func RegisterTracertServiceServer(s *grpc.Server, srv TracertServiceServer) {
@@ -332,6 +353,24 @@ func _TracertService_UserCreate_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TracertService_UserAnswerCreate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserAnswer)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TracertServiceServer).UserAnswerCreate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.TracertService/UserAnswerCreate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TracertServiceServer).UserAnswerCreate(ctx, req.(*UserAnswer))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _TracertService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "proto.TracertService",
 	HandlerType: (*TracertServiceServer)(nil),
@@ -355,6 +394,10 @@ var _TracertService_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UserCreate",
 			Handler:    _TracertService_UserCreate_Handler,
+		},
+		{
+			MethodName: "UserAnswerCreate",
+			Handler:    _TracertService_UserAnswerCreate_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
