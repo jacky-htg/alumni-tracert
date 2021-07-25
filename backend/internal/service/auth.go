@@ -5,6 +5,8 @@ import (
 
 	"tracert/internal/model"
 	"tracert/internal/pkg/token"
+	"tracert/internal/pkg/util"
+	"tracert/internal/validation"
 	"tracert/proto"
 
 	"google.golang.org/grpc/codes"
@@ -12,12 +14,15 @@ import (
 )
 
 func (u *AlumniTracertServer) Login(ctx context.Context, in *proto.LoginInput) (*proto.User, error) {
-	if len(in.Email) == 0 {
-		return nil, status.Error(codes.InvalidArgument, "Please supply valid email")
+	select {
+	case <-ctx.Done():
+		return nil, util.ContextError(ctx)
+	default:
 	}
 
-	if len(in.Password) == 0 {
-		return nil, status.Error(codes.InvalidArgument, "Please supply valid password")
+	if err := new(validation.User).Login(ctx, in); err != nil {
+		util.LogError(u.Log, "validation on login", err)
+		return nil, err
 	}
 
 	var userModel model.User

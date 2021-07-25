@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"strings"
+	"tracert/internal/pkg/util"
 	"tracert/proto"
 
 	"google.golang.org/grpc/codes"
@@ -17,6 +18,12 @@ type QuestionGroup struct {
 }
 
 func (u *QuestionGroup) List(ctx context.Context, db *sql.DB) error {
+	select {
+	case <-ctx.Done():
+		return util.ContextError(ctx)
+	default:
+	}
+
 	query := ` 
 	SELECT qg.id, qg.title, qg.addressed_to, 
 		q.id, q.title, q.question_type, q.minimum_value, q.maximum_value, q.is_required,

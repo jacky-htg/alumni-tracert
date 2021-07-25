@@ -1,15 +1,32 @@
-package service
+package util
 
 import (
+	"context"
+	"errors"
 	"math/rand"
 	"regexp"
 	"time"
+	"tracert/internal/pkg/app"
 
+	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
-func generateRandomPassword() string {
+// ContextError func
+func ContextError(ctx context.Context) error {
+	switch ctx.Err() {
+	case context.Canceled:
+		return status.Error(codes.Canceled, "request is canceled")
+	case context.DeadlineExceeded:
+		return status.Error(codes.DeadlineExceeded, "deadline is exceeded")
+	default:
+		return nil
+	}
+}
+
+func GenerateRandomPassword() string {
 	rand.Seed(time.Now().UnixNano())
 	digits := "0123456789"
 	specials := "~=+%^*/()[]{}/!@#$?|"
@@ -31,7 +48,7 @@ func generateRandomPassword() string {
 	return str
 }
 
-func checkStrongPassword(password string) error {
+func CheckStrongPassword(password string) error {
 	if len(password) < 10 {
 		return status.Error(codes.InvalidArgument, "password min 10 character")
 	}
@@ -55,4 +72,33 @@ func checkStrongPassword(password string) error {
 	}
 
 	return nil
+}
+
+func GetMetadata(ctx context.Context) (context.Context, error) {
+	select {
+	case <-ctx.Done():
+		return ctx, ContextError(ctx)
+	default:
+	}
+
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return ctx, status.Errorf(codes.Unauthenticated, "metadata is not provided")
+	}
+
+	token := md["token"]
+	if len(token) == 0 {
+		return ctx, status.Errorf(codes.Unauthenticated, "authorization token is not provided")
+	}
+
+	ctx = context.WithValue(ctx, app.Ctx("token"), token[0])
+
+	return ctx, nil
+}
+
+func LogError(log *logrus.Entry, message string, err error) {
+	if st, ok := status.FromError(err); ok {
+		err = errors.New(st.Message())
+	}
+	log.Errorf(message+" %s", err)
 }

@@ -7,6 +7,8 @@ import (
 	"tracert/internal/model"
 	"tracert/internal/pkg/email"
 	"tracert/internal/pkg/token"
+	"tracert/internal/pkg/util"
+	"tracert/internal/validation"
 	"tracert/proto"
 
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
@@ -15,14 +17,15 @@ import (
 )
 
 func (u *AlumniTracertServer) UserCreate(ctx context.Context, in *proto.User) (*proto.User, error) {
-	if len(in.Email) == 0 {
-		return nil, status.Error(codes.InvalidArgument, "Please supply valid email")
+	select {
+	case <-ctx.Done():
+		return nil, util.ContextError(ctx)
+	default:
 	}
-	if len(in.Name) == 0 {
-		return nil, status.Error(codes.InvalidArgument, "Please supply valid name")
-	}
-	if in.UserType < 1 || in.UserType > 2 {
-		return nil, status.Error(codes.InvalidArgument, "Please supply valid user type")
+
+	if err := new(validation.User).Create(ctx, in); err != nil {
+		util.LogError(u.Log, "validation on create user", err)
+		return nil, err
 	}
 
 	var userModel model.User
@@ -30,7 +33,7 @@ func (u *AlumniTracertServer) UserCreate(ctx context.Context, in *proto.User) (*
 	userModel.Pb.Name = in.Name
 	userModel.Pb.UserType = in.UserType
 
-	userModel.Password = generateRandomPassword()
+	userModel.Password = util.GenerateRandomPassword()
 	err := userModel.Create(ctx, u.Db)
 	if err != nil {
 		return nil, err
@@ -60,8 +63,7 @@ func (u *AlumniTracertServer) UserCreate(ctx context.Context, in *proto.User) (*
 
 	err = email.SendMailV3(from, p, os.Getenv("SENDGRID_TEMPLATE_NEW_USER"))
 	if err != nil {
-		// return nil, status.Errorf(codes.Internal, "send new account email: %v", err)
-		println(err)
+		return nil, status.Errorf(codes.Internal, "send new account email: %v", err)
 	}
 	return &userModel.Pb, nil
 }
