@@ -18,7 +18,7 @@ message AlumniAppraiser {
   string updated = 9;
 }
 
-message AlumniAppraiserList {
-  repeated AlumniAppraiser alumni_appraiser = 1;
+message AlumniAppraiserListResponse {
+  AlumniAppraiser alumni_appraiser = 1;
   ListInput list_input = 2;
 }

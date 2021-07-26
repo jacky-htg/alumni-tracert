@@ -8,6 +8,10 @@ message StringMessage {
   string data = 1;
 }
 
+message UintMessage {
+  uint64 data = 1;
+}
+
 message ListInput {
   string search = 1;
   uint32 limit = 2;

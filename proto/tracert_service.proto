@@ -26,8 +26,8 @@ service TracertService {
   rpc AlumniUpdate(Alumni) returns (Alumni) {} */
 
   rpc AlumniAppraiserCreate(AlumniAppraiser) returns (AlumniAppraiser) {}
-  /* rpc AlumniAppraiserList(ListInput) returns (AlumniAppraiserList) {}
-  rpc AlumniAppraiserGet(AlumniAppraiser) returns (AlumniAppraiser) {}
+  /* rpc AlumniAppraiserList(ListInput) returns (stream AlumniAppraiserListResponse) {}
+  /*rpc AlumniAppraiserGet(AlumniAppraiser) returns (AlumniAppraiser) {}
   rpc AlumniAppraiserUpdate(AlumniAppraiser) returns (AlumniAppraiser) {}
 
   */
@@ -39,7 +39,10 @@ service TracertService {
   rpc LegalizeCreate(Legalize) returns (Legalize) {}
   rpc LegalizeList(ListInput) returns (LegalizeList) {}
   rpc LegalizeGet(Legalize) returns (Legalize) {}
-  rpc LegalizeUpdate(Legalize) returns (Legalize) {} */
+  rpc LegalizeVerified(UintMessage) returns (Legalize) {} 
+  rpc LegalizeApproved(UintMessage) return (Legalize) {}
+  rpc LegalizeUpdateStatus(Legalize) return (Legalize) {}
+  */
 
   rpc UserAnswerCreate(UserAnswer) returns (UserAnswer) {}
 }
