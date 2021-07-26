@@ -486,6 +486,81 @@ proto.proto.TracertServicePromiseClient.prototype.alumniAppraiserCreate =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
+ *   !proto.proto.ListInput,
+ *   !proto.proto.AlumniAppraiserListResponse>}
+ */
+const methodDescriptor_TracertService_AlumniAppraiserList = new grpc.web.MethodDescriptor(
+  '/proto.TracertService/AlumniAppraiserList',
+  grpc.web.MethodType.SERVER_STREAMING,
+  generic_message_pb.ListInput,
+  alumni_appraiser_message_pb.AlumniAppraiserListResponse,
+  /**
+   * @param {!proto.proto.ListInput} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  alumni_appraiser_message_pb.AlumniAppraiserListResponse.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.proto.ListInput,
+ *   !proto.proto.AlumniAppraiserListResponse>}
+ */
+const methodInfo_TracertService_AlumniAppraiserList = new grpc.web.AbstractClientBase.MethodInfo(
+  alumni_appraiser_message_pb.AlumniAppraiserListResponse,
+  /**
+   * @param {!proto.proto.ListInput} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  alumni_appraiser_message_pb.AlumniAppraiserListResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.proto.ListInput} request The request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.AlumniAppraiserListResponse>}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.TracertServiceClient.prototype.alumniAppraiserList =
+    function(request, metadata) {
+  return this.client_.serverStreaming(this.hostname_ +
+      '/proto.TracertService/AlumniAppraiserList',
+      request,
+      metadata || {},
+      methodDescriptor_TracertService_AlumniAppraiserList);
+};
+
+
+/**
+ * @param {!proto.proto.ListInput} request The request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.AlumniAppraiserListResponse>}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.TracertServicePromiseClient.prototype.alumniAppraiserList =
+    function(request, metadata) {
+  return this.client_.serverStreaming(this.hostname_ +
+      '/proto.TracertService/AlumniAppraiserList',
+      request,
+      metadata || {},
+      methodDescriptor_TracertService_AlumniAppraiserList);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
  *   !proto.proto.User,
  *   !proto.proto.User>}
  */
