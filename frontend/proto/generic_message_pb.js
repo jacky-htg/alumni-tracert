@@ -345,7 +345,8 @@ proto.proto.ListInput.toObject = function(includeInstance, msg) {
     limit: jspb.Message.getFieldWithDefault(msg, 2, 0),
     page: jspb.Message.getFieldWithDefault(msg, 3, 0),
     orderBy: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    sort: jspb.Message.getFieldWithDefault(msg, 5, "")
+    sort: jspb.Message.getFieldWithDefault(msg, 5, ""),
+    count: jspb.Message.getFieldWithDefault(msg, 6, 0)
   };
 
   if (includeInstance) {
@@ -401,6 +402,10 @@ proto.proto.ListInput.deserializeBinaryFromReader = function(msg, reader) {
     case 5:
       var value = /** @type {string} */ (reader.readString());
       msg.setSort(value);
+      break;
+    case 6:
+      var value = /** @type {number} */ (reader.readUint32());
+      msg.setCount(value);
       break;
     default:
       reader.skipField();
@@ -463,6 +468,13 @@ proto.proto.ListInput.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeString(
       5,
+      f
+    );
+  }
+  f = message.getCount();
+  if (f !== 0) {
+    writer.writeUint32(
+      6,
       f
     );
   }
@@ -556,6 +568,24 @@ proto.proto.ListInput.prototype.getSort = function() {
  */
 proto.proto.ListInput.prototype.setSort = function(value) {
   return jspb.Message.setProto3StringField(this, 5, value);
+};
+
+
+/**
+ * optional uint32 count = 6;
+ * @return {number}
+ */
+proto.proto.ListInput.prototype.getCount = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.ListInput} returns this
+ */
+proto.proto.ListInput.prototype.setCount = function(value) {
+  return jspb.Message.setProto3IntField(this, 6, value);
 };
 
 

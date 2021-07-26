@@ -331,6 +331,81 @@ proto.proto.TracertServicePromiseClient.prototype.alumniCreate =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
+ *   !proto.proto.ListInput,
+ *   !proto.proto.AlumniListResponse>}
+ */
+const methodDescriptor_TracertService_AlumniList = new grpc.web.MethodDescriptor(
+  '/proto.TracertService/AlumniList',
+  grpc.web.MethodType.SERVER_STREAMING,
+  generic_message_pb.ListInput,
+  alumni_message_pb.AlumniListResponse,
+  /**
+   * @param {!proto.proto.ListInput} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  alumni_message_pb.AlumniListResponse.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.proto.ListInput,
+ *   !proto.proto.AlumniListResponse>}
+ */
+const methodInfo_TracertService_AlumniList = new grpc.web.AbstractClientBase.MethodInfo(
+  alumni_message_pb.AlumniListResponse,
+  /**
+   * @param {!proto.proto.ListInput} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  alumni_message_pb.AlumniListResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.proto.ListInput} request The request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.AlumniListResponse>}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.TracertServiceClient.prototype.alumniList =
+    function(request, metadata) {
+  return this.client_.serverStreaming(this.hostname_ +
+      '/proto.TracertService/AlumniList',
+      request,
+      metadata || {},
+      methodDescriptor_TracertService_AlumniList);
+};
+
+
+/**
+ * @param {!proto.proto.ListInput} request The request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.AlumniListResponse>}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.TracertServicePromiseClient.prototype.alumniList =
+    function(request, metadata) {
+  return this.client_.serverStreaming(this.hostname_ +
+      '/proto.TracertService/AlumniList',
+      request,
+      metadata || {},
+      methodDescriptor_TracertService_AlumniList);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
  *   !proto.proto.AlumniAppraiser,
  *   !proto.proto.AlumniAppraiser>}
  */

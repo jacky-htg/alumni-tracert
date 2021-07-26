@@ -21,7 +21,7 @@ message Alumni {
   string updated = 13;
 }
 
-message AlumniList {
-  repeated Alumni alumni = 1;
+message AlumniListResponse {
+  Alumni alumni = 1;
   ListInput list_input = 2;
 }

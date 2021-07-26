@@ -14,4 +14,5 @@ message ListInput {
   uint32 page = 3;
   string order_by = 4;
   string sort = 5;
+  uint32 count = 6;
 }
