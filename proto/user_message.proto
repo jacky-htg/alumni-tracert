@@ -22,8 +22,8 @@ message User {
   string token = 11;
 }
 
-message UserList {
-  repeated User user = 1;
+message UserListResponse {
+  User user = 1;
   ListInput list_input = 2;
 }
 

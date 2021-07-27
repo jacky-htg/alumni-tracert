@@ -641,6 +641,81 @@ proto.proto.TracertServicePromiseClient.prototype.userCreate =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
+ *   !proto.proto.ListInput,
+ *   !proto.proto.UserListResponse>}
+ */
+const methodDescriptor_TracertService_UserList = new grpc.web.MethodDescriptor(
+  '/proto.TracertService/UserList',
+  grpc.web.MethodType.SERVER_STREAMING,
+  generic_message_pb.ListInput,
+  user_message_pb.UserListResponse,
+  /**
+   * @param {!proto.proto.ListInput} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  user_message_pb.UserListResponse.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.proto.ListInput,
+ *   !proto.proto.UserListResponse>}
+ */
+const methodInfo_TracertService_UserList = new grpc.web.AbstractClientBase.MethodInfo(
+  user_message_pb.UserListResponse,
+  /**
+   * @param {!proto.proto.ListInput} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  user_message_pb.UserListResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.proto.ListInput} request The request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.UserListResponse>}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.TracertServiceClient.prototype.userList =
+    function(request, metadata) {
+  return this.client_.serverStreaming(this.hostname_ +
+      '/proto.TracertService/UserList',
+      request,
+      metadata || {},
+      methodDescriptor_TracertService_UserList);
+};
+
+
+/**
+ * @param {!proto.proto.ListInput} request The request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.UserListResponse>}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.TracertServicePromiseClient.prototype.userList =
+    function(request, metadata) {
+  return this.client_.serverStreaming(this.hostname_ +
+      '/proto.TracertService/UserList',
+      request,
+      metadata || {},
+      methodDescriptor_TracertService_UserList);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
  *   !proto.proto.UserAnswer,
  *   !proto.proto.UserAnswer>}
  */

@@ -51,9 +51,9 @@ func (u *AlumniAppraiser) ListQuery(ctx context.Context, db *sql.DB, in *proto.L
 	paramQueries := []interface{}{}
 
 	if len(in.Search) > 0 {
-		paramQueries = append(paramQueries, in.Search)
-		paramQueries = append(paramQueries, in.Search)
-		paramQueries = append(paramQueries, in.Search)
+		paramQueries = append(paramQueries, "%"+in.Search+"%")
+		paramQueries = append(paramQueries, "%"+in.Search+"%")
+		paramQueries = append(paramQueries, "%"+in.Search+"%")
 		where = append(where, `(name LIKE ? OR instansi LIKE ? OR position LIKE ?)`)
 	}
 

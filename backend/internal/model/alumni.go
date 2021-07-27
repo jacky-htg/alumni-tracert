@@ -55,12 +55,12 @@ func (u *Alumni) ListQuery(ctx context.Context, db *sql.DB, in *proto.ListInput)
 	paramQueries := []interface{}{}
 
 	if len(in.Search) > 0 {
-		paramQueries = append(paramQueries, in.Search)
-		paramQueries = append(paramQueries, in.Search)
-		paramQueries = append(paramQueries, in.Search)
-		paramQueries = append(paramQueries, in.Search)
-		paramQueries = append(paramQueries, in.Search)
-		paramQueries = append(paramQueries, in.Search)
+		paramQueries = append(paramQueries, "%"+in.Search+"%")
+		paramQueries = append(paramQueries, "%"+in.Search+"%")
+		paramQueries = append(paramQueries, "%"+in.Search+"%")
+		paramQueries = append(paramQueries, "%"+in.Search+"%")
+		paramQueries = append(paramQueries, "%"+in.Search+"%")
+		paramQueries = append(paramQueries, "%"+in.Search+"%")
 		where = append(where, `(name LIKE ? OR nim LIKE ? OR nik LIKE ? OR place_of_birth LIKE ? OR no_ijazah LIKE ? OR phone LIKE ?)`)
 	}
 

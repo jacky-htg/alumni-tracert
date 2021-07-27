@@ -32,8 +32,8 @@ service TracertService {
 
   */
   rpc UserCreate(User) returns (User) {}
-  /*rpc UserList(ListInput) returns (UserList) {}
-  rpc UserGet(User) returns (User) {}
+  rpc UserList(ListInput) returns (stream UserListResponse) {}
+  /*rpc UserGet(User) returns (User) {}
   rpc UserUpdate(User) returns (User) {}
 
   rpc LegalizeCreate(Legalize) returns (Legalize) {}
