@@ -120,3 +120,27 @@ func (u *AlumniTracertServer) AlumniAppraiserList(in *proto.ListInput, stream pr
 
 	return nil
 }
+
+func (u *AlumniTracertServer) AlumniAppraiserGet(ctx context.Context, in *proto.AlumniAppraiser) (*proto.AlumniAppraiser, error) {
+	select {
+	case <-ctx.Done():
+		return nil, util.ContextError(ctx)
+	default:
+	}
+
+	ctx, err := util.GetMetadata(ctx)
+	if err != nil {
+		util.LogError(u.Log, "Get metadata on get alumni appraiser", err)
+		return nil, err
+	}
+
+	var appraiserModel model.AlumniAppraiser
+	appraiserModel.Pb.Id = in.Id
+
+	if err := appraiserModel.Get(ctx, u.Db); err != nil {
+		util.LogError(u.Log, "get alumni appraiser", err)
+		return nil, err
+	}
+
+	return &appraiserModel.Pb, nil
+}

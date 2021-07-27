@@ -641,6 +641,86 @@ proto.proto.TracertServicePromiseClient.prototype.alumniAppraiserList =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
+ *   !proto.proto.AlumniAppraiser,
+ *   !proto.proto.AlumniAppraiser>}
+ */
+const methodDescriptor_TracertService_AlumniAppraiserGet = new grpc.web.MethodDescriptor(
+  '/proto.TracertService/AlumniAppraiserGet',
+  grpc.web.MethodType.UNARY,
+  alumni_appraiser_message_pb.AlumniAppraiser,
+  alumni_appraiser_message_pb.AlumniAppraiser,
+  /**
+   * @param {!proto.proto.AlumniAppraiser} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  alumni_appraiser_message_pb.AlumniAppraiser.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.proto.AlumniAppraiser,
+ *   !proto.proto.AlumniAppraiser>}
+ */
+const methodInfo_TracertService_AlumniAppraiserGet = new grpc.web.AbstractClientBase.MethodInfo(
+  alumni_appraiser_message_pb.AlumniAppraiser,
+  /**
+   * @param {!proto.proto.AlumniAppraiser} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  alumni_appraiser_message_pb.AlumniAppraiser.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.proto.AlumniAppraiser} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.proto.AlumniAppraiser)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.AlumniAppraiser>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.TracertServiceClient.prototype.alumniAppraiserGet =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/proto.TracertService/AlumniAppraiserGet',
+      request,
+      metadata || {},
+      methodDescriptor_TracertService_AlumniAppraiserGet,
+      callback);
+};
+
+
+/**
+ * @param {!proto.proto.AlumniAppraiser} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.proto.AlumniAppraiser>}
+ *     Promise that resolves to the response
+ */
+proto.proto.TracertServicePromiseClient.prototype.alumniAppraiserGet =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/proto.TracertService/AlumniAppraiserGet',
+      request,
+      metadata || {},
+      methodDescriptor_TracertService_AlumniAppraiserGet);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
  *   !proto.proto.User,
  *   !proto.proto.User>}
  */
