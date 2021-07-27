@@ -22,8 +22,8 @@ service TracertService {
 
   rpc AlumniCreate(Alumni) returns (Alumni) {}
   rpc AlumniList(ListInput) returns (stream AlumniListResponse) {} 
-  /* rpc AlumniGet(Alumni) returns (Alumni) {}
-  rpc AlumniUpdate(Alumni) returns (Alumni) {} */
+  rpc AlumniGet(Alumni) returns (Alumni) {}
+  /* rpc AlumniUpdate(Alumni) returns (Alumni) {} */
 
   rpc AlumniAppraiserCreate(AlumniAppraiser) returns (AlumniAppraiser) {}
   rpc AlumniAppraiserList(ListInput) returns (stream AlumniAppraiserListResponse) {}

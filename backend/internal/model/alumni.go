@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"strings"
+	"time"
 	"tracert/internal/pkg/util"
 	"tracert/proto"
 
@@ -112,4 +113,31 @@ func (u *Alumni) ListQuery(ctx context.Context, db *sql.DB, in *proto.ListInput)
 	}
 
 	return query, paramQueries, in, nil
+}
+
+func (u *Alumni) Get(ctx context.Context, db *sql.DB) error {
+	query := `
+		SELECT id, user_id, name, nim, nik, place_of_birth, date_of_birth, major_study, graduation_year, no_ijazah, phone, created, updated 
+		FROM alumni
+		WHERE id = ?
+	`
+
+	row := db.QueryRowContext(ctx, query, u.Pb.Id)
+	var createdAt, updatedAt time.Time
+	err := row.Scan(
+		&u.Pb.Id, &u.Pb.UserId, &u.Pb.Name, &u.Pb.Nim, &u.Pb.Nik, &u.Pb.PlaceOfBirth, &u.Pb.DateOfBirth,
+		&u.Pb.MajorStudy, &u.Pb.GraduationYear, &u.Pb.NoIjazah, &u.Pb.Phone, &createdAt, &updatedAt,
+	)
+	if err == sql.ErrNoRows {
+		return status.Errorf(codes.NotFound, "not found: %v", err)
+	}
+
+	if err != nil {
+		return status.Errorf(codes.Internal, "scan data: %v", err)
+	}
+
+	u.Pb.Created = createdAt.String()
+	u.Pb.Updated = updatedAt.String()
+
+	return nil
 }

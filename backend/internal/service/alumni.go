@@ -121,3 +121,27 @@ func (u *AlumniTracertServer) AlumniList(in *proto.ListInput, stream proto.Trace
 
 	return nil
 }
+
+func (u *AlumniTracertServer) AlumniGet(ctx context.Context, in *proto.Alumni) (*proto.Alumni, error) {
+	select {
+	case <-ctx.Done():
+		return nil, util.ContextError(ctx)
+	default:
+	}
+
+	ctx, err := util.GetMetadata(ctx)
+	if err != nil {
+		util.LogError(u.Log, "Get metadata on get alumni", err)
+		return nil, err
+	}
+
+	var alumniModel model.Alumni
+	alumniModel.Pb.Id = in.Id
+
+	if err := alumniModel.Get(ctx, u.Db); err != nil {
+		util.LogError(u.Log, "get alumni", err)
+		return nil, err
+	}
+
+	return &alumniModel.Pb, nil
+}

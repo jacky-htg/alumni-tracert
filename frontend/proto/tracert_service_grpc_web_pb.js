@@ -406,6 +406,86 @@ proto.proto.TracertServicePromiseClient.prototype.alumniList =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
+ *   !proto.proto.Alumni,
+ *   !proto.proto.Alumni>}
+ */
+const methodDescriptor_TracertService_AlumniGet = new grpc.web.MethodDescriptor(
+  '/proto.TracertService/AlumniGet',
+  grpc.web.MethodType.UNARY,
+  alumni_message_pb.Alumni,
+  alumni_message_pb.Alumni,
+  /**
+   * @param {!proto.proto.Alumni} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  alumni_message_pb.Alumni.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.proto.Alumni,
+ *   !proto.proto.Alumni>}
+ */
+const methodInfo_TracertService_AlumniGet = new grpc.web.AbstractClientBase.MethodInfo(
+  alumni_message_pb.Alumni,
+  /**
+   * @param {!proto.proto.Alumni} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  alumni_message_pb.Alumni.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.proto.Alumni} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.proto.Alumni)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.Alumni>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.TracertServiceClient.prototype.alumniGet =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/proto.TracertService/AlumniGet',
+      request,
+      metadata || {},
+      methodDescriptor_TracertService_AlumniGet,
+      callback);
+};
+
+
+/**
+ * @param {!proto.proto.Alumni} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.proto.Alumni>}
+ *     Promise that resolves to the response
+ */
+proto.proto.TracertServicePromiseClient.prototype.alumniGet =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/proto.TracertService/AlumniGet',
+      request,
+      metadata || {},
+      methodDescriptor_TracertService_AlumniGet);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
  *   !proto.proto.AlumniAppraiser,
  *   !proto.proto.AlumniAppraiser>}
  */
