@@ -20,6 +20,7 @@
     "svelte": "^3.0.0"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.15.3",
     "@smui/textfield": "^4.2.0",
     "autoprefixer": "^9.8.6",
     "postcss": "^7.0.36",

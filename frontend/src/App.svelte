@@ -15,15 +15,14 @@
   @tailwind base;
   @tailwind components;
   @tailwind utilities;
+	@import url('https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
 </style>
 
-<div class="container flex flex-col justify-center items-center w-screen h-screen mx-auto">
-	<Router>
-		<Route path={PATH_URL.BASE} component={Home} />
-		<Route path={PATH_URL.LOGIN} component={Login} />
-		<Route path={PATH_URL.KUISIONER} component={Kuisioner} />
-		<ProtectedRoute path={PATH_URL.UPLOAD_IJAZAH} component={Upload} />
-		<ProtectedRoute path={PATH_URL.DOWNLOAD_IJAZAH} component={Download} />
-		<ProtectedRoute path={PATH_URL.DASHBOARD} component={Dashboard} />
-	</Router>
-</div>
+<Router>
+	<Route path={PATH_URL.BASE} component={Home} />
+	<Route path={PATH_URL.LOGIN} component={Login} />
+	<Route path={PATH_URL.KUISIONER} component={Kuisioner} />
+	<ProtectedRoute path={PATH_URL.UPLOAD_IJAZAH} component={Upload} />
+	<ProtectedRoute path={PATH_URL.DOWNLOAD_IJAZAH} component={Download} />
+	<ProtectedRoute path={PATH_URL.DASHBOARD} component={Dashboard} />
+</Router>

@@ -1,14 +1,17 @@
 <script>
   import { Link } from 'svelte-routing'
   import { token } from '../stores/token.js'
+  import Sidebar from "../components/Sidebar.svelte";
 
   const logout = () => {
       localStorage.clear()
       token.set(localStorage.getItem('token'))
   }
+
+  export let location;
 </script>
 
-<h1>👋 Welcome {'{'}user{'}'}</h1>
-<h2>
-  <Link to="/" on:click={logout}>Logout</Link>
-</h2>
+<div>
+  <Sidebar location={location}/>
+  
+</div>
