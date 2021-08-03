@@ -30,7 +30,7 @@
     localStorage.setItem('token', user.token)
     token.set(localStorage.getItem('token'))
 
-    navigate('/dashboard', { replace: true })
+    navigate('/kuisioner', { replace: true })
   };
 </script>
 
