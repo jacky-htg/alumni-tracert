@@ -129,3 +129,27 @@ func (u *AlumniTracertServer) UserList(in *proto.ListInput, stream proto.Tracert
 
 	return nil
 }
+
+func (u *AlumniTracertServer) UserGet(ctx context.Context, in *proto.User) (*proto.User, error) {
+	select {
+	case <-ctx.Done():
+		return nil, util.ContextError(ctx)
+	default:
+	}
+
+	ctx, err := util.GetMetadata(ctx)
+	if err != nil {
+		util.LogError(u.Log, "Get metadata on get user", err)
+		return nil, err
+	}
+
+	var userModel model.User
+	userModel.Pb.Id = in.Id
+
+	if err := userModel.Get(ctx, u.Db); err != nil {
+		util.LogError(u.Log, "get user", err)
+		return nil, err
+	}
+
+	return &userModel.Pb, nil
+}

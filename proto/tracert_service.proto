@@ -33,10 +33,10 @@ service TracertService {
   */
   rpc UserCreate(User) returns (User) {}
   rpc UserList(ListInput) returns (stream UserListResponse) {}
-  /*rpc UserGet(User) returns (User) {}
-  rpc UserUpdate(User) returns (User) {}
+  rpc UserGet(User) returns (User) {}
+  /* rpc UserUpdate(User) returns (User) {} */
 
-  rpc LegalizeCreate(Legalize) returns (Legalize) {}
+  /* rpc LegalizeCreate(Legalize) returns (Legalize) {}
   rpc LegalizeList(ListInput) returns (LegalizeList) {}
   rpc LegalizeGet(Legalize) returns (Legalize) {}
   rpc LegalizeVerified(UintMessage) returns (Legalize) {} 

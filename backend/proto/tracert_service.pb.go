@@ -47,7 +47,7 @@ var file_tracert_service_proto_rawDesc = []byte{
 	0x67, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x19, 0x75, 0x73, 0x65, 0x72, 0x5f, 0x61,
 	0x6e, 0x73, 0x77, 0x65, 0x72, 0x5f, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x2e, 0x70, 0x72,
 	0x6f, 0x74, 0x6f, 0x1a, 0x12, 0x75, 0x73, 0x65, 0x72, 0x5f, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67,
-	0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x32, 0xa7, 0x05, 0x0a, 0x0e, 0x54, 0x72, 0x61, 0x63,
+	0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x32, 0xce, 0x05, 0x0a, 0x0e, 0x54, 0x72, 0x61, 0x63,
 	0x65, 0x72, 0x74, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x29, 0x0a, 0x05, 0x4c, 0x6f,
 	0x67, 0x69, 0x6e, 0x12, 0x11, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x4c, 0x6f, 0x67, 0x69,
 	0x6e, 0x49, 0x6e, 0x70, 0x75, 0x74, 0x1a, 0x0b, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x55,
@@ -86,12 +86,14 @@ var file_tracert_service_proto_rawDesc = []byte{
 	0x65, 0x72, 0x4c, 0x69, 0x73, 0x74, 0x12, 0x10, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x4c,
 	0x69, 0x73, 0x74, 0x49, 0x6e, 0x70, 0x75, 0x74, 0x1a, 0x17, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
 	0x2e, 0x55, 0x73, 0x65, 0x72, 0x4c, 0x69, 0x73, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x22, 0x00, 0x30, 0x01, 0x12, 0x3a, 0x0a, 0x10, 0x55, 0x73, 0x65, 0x72, 0x41, 0x6e, 0x73,
-	0x77, 0x65, 0x72, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x12, 0x11, 0x2e, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x41, 0x6e, 0x73, 0x77, 0x65, 0x72, 0x1a, 0x11, 0x2e, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x41, 0x6e, 0x73, 0x77, 0x65, 0x72, 0x22,
-	0x00, 0x42, 0x09, 0x5a, 0x07, 0x2e, 0x3b, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x06, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x33,
+	0x65, 0x22, 0x00, 0x30, 0x01, 0x12, 0x25, 0x0a, 0x07, 0x55, 0x73, 0x65, 0x72, 0x47, 0x65, 0x74,
+	0x12, 0x0b, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x1a, 0x0b, 0x2e,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x22, 0x00, 0x12, 0x3a, 0x0a, 0x10,
+	0x55, 0x73, 0x65, 0x72, 0x41, 0x6e, 0x73, 0x77, 0x65, 0x72, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65,
+	0x12, 0x11, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x41, 0x6e, 0x73,
+	0x77, 0x65, 0x72, 0x1a, 0x11, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x55, 0x73, 0x65, 0x72,
+	0x41, 0x6e, 0x73, 0x77, 0x65, 0x72, 0x22, 0x00, 0x42, 0x09, 0x5a, 0x07, 0x2e, 0x3b, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var file_tracert_service_proto_goTypes = []interface{}{
@@ -118,20 +120,22 @@ var file_tracert_service_proto_depIdxs = []int32{
 	4,  // 7: proto.TracertService.AlumniAppraiserGet:input_type -> proto.AlumniAppraiser
 	5,  // 8: proto.TracertService.UserCreate:input_type -> proto.User
 	3,  // 9: proto.TracertService.UserList:input_type -> proto.ListInput
-	6,  // 10: proto.TracertService.UserAnswerCreate:input_type -> proto.UserAnswer
-	5,  // 11: proto.TracertService.Login:output_type -> proto.User
-	7,  // 12: proto.TracertService.QuestionList:output_type -> proto.QuestionGroupList
-	2,  // 13: proto.TracertService.AlumniCreate:output_type -> proto.Alumni
-	8,  // 14: proto.TracertService.AlumniList:output_type -> proto.AlumniListResponse
-	2,  // 15: proto.TracertService.AlumniGet:output_type -> proto.Alumni
-	4,  // 16: proto.TracertService.AlumniAppraiserCreate:output_type -> proto.AlumniAppraiser
-	9,  // 17: proto.TracertService.AlumniAppraiserList:output_type -> proto.AlumniAppraiserListResponse
-	4,  // 18: proto.TracertService.AlumniAppraiserGet:output_type -> proto.AlumniAppraiser
-	5,  // 19: proto.TracertService.UserCreate:output_type -> proto.User
-	10, // 20: proto.TracertService.UserList:output_type -> proto.UserListResponse
-	6,  // 21: proto.TracertService.UserAnswerCreate:output_type -> proto.UserAnswer
-	11, // [11:22] is the sub-list for method output_type
-	0,  // [0:11] is the sub-list for method input_type
+	5,  // 10: proto.TracertService.UserGet:input_type -> proto.User
+	6,  // 11: proto.TracertService.UserAnswerCreate:input_type -> proto.UserAnswer
+	5,  // 12: proto.TracertService.Login:output_type -> proto.User
+	7,  // 13: proto.TracertService.QuestionList:output_type -> proto.QuestionGroupList
+	2,  // 14: proto.TracertService.AlumniCreate:output_type -> proto.Alumni
+	8,  // 15: proto.TracertService.AlumniList:output_type -> proto.AlumniListResponse
+	2,  // 16: proto.TracertService.AlumniGet:output_type -> proto.Alumni
+	4,  // 17: proto.TracertService.AlumniAppraiserCreate:output_type -> proto.AlumniAppraiser
+	9,  // 18: proto.TracertService.AlumniAppraiserList:output_type -> proto.AlumniAppraiserListResponse
+	4,  // 19: proto.TracertService.AlumniAppraiserGet:output_type -> proto.AlumniAppraiser
+	5,  // 20: proto.TracertService.UserCreate:output_type -> proto.User
+	10, // 21: proto.TracertService.UserList:output_type -> proto.UserListResponse
+	5,  // 22: proto.TracertService.UserGet:output_type -> proto.User
+	6,  // 23: proto.TracertService.UserAnswerCreate:output_type -> proto.UserAnswer
+	12, // [12:24] is the sub-list for method output_type
+	0,  // [0:12] is the sub-list for method input_type
 	0,  // [0:0] is the sub-list for extension type_name
 	0,  // [0:0] is the sub-list for extension extendee
 	0,  // [0:0] is the sub-list for field type_name
@@ -194,6 +198,7 @@ type TracertServiceClient interface {
 	//
 	UserCreate(ctx context.Context, in *User, opts ...grpc.CallOption) (*User, error)
 	UserList(ctx context.Context, in *ListInput, opts ...grpc.CallOption) (TracertService_UserListClient, error)
+	UserGet(ctx context.Context, in *User, opts ...grpc.CallOption) (*User, error)
 	UserAnswerCreate(ctx context.Context, in *UserAnswer, opts ...grpc.CallOption) (*UserAnswer, error)
 }
 
@@ -364,6 +369,15 @@ func (x *tracertServiceUserListClient) Recv() (*UserListResponse, error) {
 	return m, nil
 }
 
+func (c *tracertServiceClient) UserGet(ctx context.Context, in *User, opts ...grpc.CallOption) (*User, error) {
+	out := new(User)
+	err := c.cc.Invoke(ctx, "/proto.TracertService/UserGet", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *tracertServiceClient) UserAnswerCreate(ctx context.Context, in *UserAnswer, opts ...grpc.CallOption) (*UserAnswer, error) {
 	out := new(UserAnswer)
 	err := c.cc.Invoke(ctx, "/proto.TracertService/UserAnswerCreate", in, out, opts...)
@@ -387,6 +401,7 @@ type TracertServiceServer interface {
 	//
 	UserCreate(context.Context, *User) (*User, error)
 	UserList(*ListInput, TracertService_UserListServer) error
+	UserGet(context.Context, *User) (*User, error)
 	UserAnswerCreate(context.Context, *UserAnswer) (*UserAnswer, error)
 }
 
@@ -423,6 +438,9 @@ func (*UnimplementedTracertServiceServer) UserCreate(context.Context, *User) (*U
 }
 func (*UnimplementedTracertServiceServer) UserList(*ListInput, TracertService_UserListServer) error {
 	return status.Errorf(codes.Unimplemented, "method UserList not implemented")
+}
+func (*UnimplementedTracertServiceServer) UserGet(context.Context, *User) (*User, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UserGet not implemented")
 }
 func (*UnimplementedTracertServiceServer) UserAnswerCreate(context.Context, *UserAnswer) (*UserAnswer, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UserAnswerCreate not implemented")
@@ -621,6 +639,24 @@ func (x *tracertServiceUserListServer) Send(m *UserListResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
+func _TracertService_UserGet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(User)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TracertServiceServer).UserGet(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.TracertService/UserGet",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TracertServiceServer).UserGet(ctx, req.(*User))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _TracertService_UserAnswerCreate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UserAnswer)
 	if err := dec(in); err != nil {
@@ -670,6 +706,10 @@ var _TracertService_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UserCreate",
 			Handler:    _TracertService_UserCreate_Handler,
+		},
+		{
+			MethodName: "UserGet",
+			Handler:    _TracertService_UserGet_Handler,
 		},
 		{
 			MethodName: "UserAnswerCreate",

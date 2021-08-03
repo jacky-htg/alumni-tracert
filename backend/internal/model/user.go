@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"strings"
+	"time"
 	"tracert/internal/pkg/token"
 	"tracert/internal/pkg/util"
 	"tracert/proto"
@@ -183,4 +184,30 @@ func (u *User) ListQuery(ctx context.Context, db *sql.DB, in *proto.ListInput) (
 	}
 
 	return query, paramQueries, in, nil
+}
+
+func (u *User) Get(ctx context.Context, db *sql.DB) error {
+	query := `
+		SELECT id, email, name, is_actived, user_type, created, updated 
+		FROM users
+		WHERE id = ?
+	`
+
+	row := db.QueryRowContext(ctx, query, u.Pb.Id)
+	var createdAt, updatedAt time.Time
+	err := row.Scan(
+		&u.Pb.Id, &u.Pb.Email, &u.Pb.Name, &u.Pb.IsActived, &u.Pb.UserType, &createdAt, &updatedAt,
+	)
+	if err == sql.ErrNoRows {
+		return status.Errorf(codes.NotFound, "not found: %v", err)
+	}
+
+	if err != nil {
+		return status.Errorf(codes.Internal, "scan data: %v", err)
+	}
+
+	u.Pb.Created = createdAt.String()
+	u.Pb.Updated = updatedAt.String()
+
+	return nil
 }

@@ -876,6 +876,86 @@ proto.proto.TracertServicePromiseClient.prototype.userList =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
+ *   !proto.proto.User,
+ *   !proto.proto.User>}
+ */
+const methodDescriptor_TracertService_UserGet = new grpc.web.MethodDescriptor(
+  '/proto.TracertService/UserGet',
+  grpc.web.MethodType.UNARY,
+  user_message_pb.User,
+  user_message_pb.User,
+  /**
+   * @param {!proto.proto.User} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  user_message_pb.User.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.proto.User,
+ *   !proto.proto.User>}
+ */
+const methodInfo_TracertService_UserGet = new grpc.web.AbstractClientBase.MethodInfo(
+  user_message_pb.User,
+  /**
+   * @param {!proto.proto.User} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  user_message_pb.User.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.proto.User} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.proto.User)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.User>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.TracertServiceClient.prototype.userGet =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/proto.TracertService/UserGet',
+      request,
+      metadata || {},
+      methodDescriptor_TracertService_UserGet,
+      callback);
+};
+
+
+/**
+ * @param {!proto.proto.User} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.proto.User>}
+ *     Promise that resolves to the response
+ */
+proto.proto.TracertServicePromiseClient.prototype.userGet =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/proto.TracertService/UserGet',
+      request,
+      metadata || {},
+      methodDescriptor_TracertService_UserGet);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
  *   !proto.proto.UserAnswer,
  *   !proto.proto.UserAnswer>}
  */
