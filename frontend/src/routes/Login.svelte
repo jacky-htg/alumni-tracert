@@ -4,6 +4,9 @@
   import { LoginInput } from "../../proto/user_message_pb"
 	import { TracertServicePromiseClient } from '../../proto/tracert_service_grpc_web_pb' 
   import Login from '../services/login'
+  import Button from '../components/Button.svelte'
+  import Input from '../components/Input.svelte'
+  import { PATH_URL } from '../helper/path'
 
   async function loginCall(username, password){
     var deps = {
@@ -28,17 +31,13 @@
     localStorage.setItem('token', user.token)
     token.set(localStorage.getItem('token'))
 
-    navigate('/dashboard', { replace: true })
+    navigate(PATH_URL.DASHBOARD, { replace: true })
   };
 </script>
-
-<h1>👋 Login</h1>
-<div>
-  <input bind:value={username} placeholder="username"/>
-</div>
-<div>
-  <input type="password" bind:value={password} placeholder="password"/>
-</div>
-<div>
-  <button on:click={login}>Login</button>
+<div class="container flex flex-col justify-center items-center w-screen h-screen mx-auto">
+  <form on:submit|preventDefault={login} class="lg:w-2/6 md:w-1/2 bg-gray-100 rounded-lg p-8 flex flex-col w-full mt-10 md:mt-0">
+      <Input label="Username" bind:value={username} placeholder="username" type="text" required/>
+      <Input label="Password" bind:value={password} placeholder="password" type="password" required/>
+      <Button>Login</Button>
+  </form>
 </div>
