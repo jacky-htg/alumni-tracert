@@ -47,7 +47,7 @@ var file_tracert_service_proto_rawDesc = []byte{
 	0x67, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x19, 0x75, 0x73, 0x65, 0x72, 0x5f, 0x61,
 	0x6e, 0x73, 0x77, 0x65, 0x72, 0x5f, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x2e, 0x70, 0x72,
 	0x6f, 0x74, 0x6f, 0x1a, 0x12, 0x75, 0x73, 0x65, 0x72, 0x5f, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67,
-	0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x32, 0xce, 0x05, 0x0a, 0x0e, 0x54, 0x72, 0x61, 0x63,
+	0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x32, 0xf0, 0x07, 0x0a, 0x0e, 0x54, 0x72, 0x61, 0x63,
 	0x65, 0x72, 0x74, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x29, 0x0a, 0x05, 0x4c, 0x6f,
 	0x67, 0x69, 0x6e, 0x12, 0x11, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x4c, 0x6f, 0x67, 0x69,
 	0x6e, 0x49, 0x6e, 0x70, 0x75, 0x74, 0x1a, 0x0b, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x55,
@@ -88,12 +88,30 @@ var file_tracert_service_proto_rawDesc = []byte{
 	0x2e, 0x55, 0x73, 0x65, 0x72, 0x4c, 0x69, 0x73, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
 	0x65, 0x22, 0x00, 0x30, 0x01, 0x12, 0x25, 0x0a, 0x07, 0x55, 0x73, 0x65, 0x72, 0x47, 0x65, 0x74,
 	0x12, 0x0b, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x1a, 0x0b, 0x2e,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x22, 0x00, 0x12, 0x3a, 0x0a, 0x10,
-	0x55, 0x73, 0x65, 0x72, 0x41, 0x6e, 0x73, 0x77, 0x65, 0x72, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65,
-	0x12, 0x11, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x41, 0x6e, 0x73,
-	0x77, 0x65, 0x72, 0x1a, 0x11, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x55, 0x73, 0x65, 0x72,
-	0x41, 0x6e, 0x73, 0x77, 0x65, 0x72, 0x22, 0x00, 0x42, 0x09, 0x5a, 0x07, 0x2e, 0x3b, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x22, 0x00, 0x12, 0x34, 0x0a, 0x0e,
+	0x4c, 0x65, 0x67, 0x61, 0x6c, 0x69, 0x7a, 0x65, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x12, 0x0f,
+	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x4c, 0x65, 0x67, 0x61, 0x6c, 0x69, 0x7a, 0x65, 0x1a,
+	0x0f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x4c, 0x65, 0x67, 0x61, 0x6c, 0x69, 0x7a, 0x65,
+	0x22, 0x00, 0x12, 0x41, 0x0a, 0x0c, 0x4c, 0x65, 0x67, 0x61, 0x6c, 0x69, 0x7a, 0x65, 0x4c, 0x69,
+	0x73, 0x74, 0x12, 0x10, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x49,
+	0x6e, 0x70, 0x75, 0x74, 0x1a, 0x1b, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x4c, 0x65, 0x67,
+	0x61, 0x6c, 0x69, 0x7a, 0x65, 0x4c, 0x69, 0x73, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x22, 0x00, 0x30, 0x01, 0x12, 0x31, 0x0a, 0x0b, 0x4c, 0x65, 0x67, 0x61, 0x6c, 0x69, 0x7a,
+	0x65, 0x47, 0x65, 0x74, 0x12, 0x0f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x4c, 0x65, 0x67,
+	0x61, 0x6c, 0x69, 0x7a, 0x65, 0x1a, 0x0f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x4c, 0x65,
+	0x67, 0x61, 0x6c, 0x69, 0x7a, 0x65, 0x22, 0x00, 0x12, 0x39, 0x0a, 0x10, 0x4c, 0x65, 0x67, 0x61,
+	0x6c, 0x69, 0x7a, 0x65, 0x56, 0x65, 0x72, 0x69, 0x66, 0x69, 0x65, 0x64, 0x12, 0x12, 0x2e, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x55, 0x69, 0x6e, 0x74, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65,
+	0x1a, 0x0f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x4c, 0x65, 0x67, 0x61, 0x6c, 0x69, 0x7a,
+	0x65, 0x22, 0x00, 0x12, 0x39, 0x0a, 0x10, 0x4c, 0x65, 0x67, 0x61, 0x6c, 0x69, 0x7a, 0x65, 0x41,
+	0x70, 0x70, 0x72, 0x6f, 0x76, 0x65, 0x64, 0x12, 0x12, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e,
+	0x55, 0x69, 0x6e, 0x74, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x1a, 0x0f, 0x2e, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x2e, 0x4c, 0x65, 0x67, 0x61, 0x6c, 0x69, 0x7a, 0x65, 0x22, 0x00, 0x12, 0x3a,
+	0x0a, 0x10, 0x55, 0x73, 0x65, 0x72, 0x41, 0x6e, 0x73, 0x77, 0x65, 0x72, 0x43, 0x72, 0x65, 0x61,
+	0x74, 0x65, 0x12, 0x11, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x41,
+	0x6e, 0x73, 0x77, 0x65, 0x72, 0x1a, 0x11, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x55, 0x73,
+	0x65, 0x72, 0x41, 0x6e, 0x73, 0x77, 0x65, 0x72, 0x22, 0x00, 0x42, 0x09, 0x5a, 0x07, 0x2e, 0x3b,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var file_tracert_service_proto_goTypes = []interface{}{
@@ -103,11 +121,14 @@ var file_tracert_service_proto_goTypes = []interface{}{
 	(*ListInput)(nil),                   // 3: proto.ListInput
 	(*AlumniAppraiser)(nil),             // 4: proto.AlumniAppraiser
 	(*User)(nil),                        // 5: proto.User
-	(*UserAnswer)(nil),                  // 6: proto.UserAnswer
-	(*QuestionGroupList)(nil),           // 7: proto.QuestionGroupList
-	(*AlumniListResponse)(nil),          // 8: proto.AlumniListResponse
-	(*AlumniAppraiserListResponse)(nil), // 9: proto.AlumniAppraiserListResponse
-	(*UserListResponse)(nil),            // 10: proto.UserListResponse
+	(*Legalize)(nil),                    // 6: proto.Legalize
+	(*UintMessage)(nil),                 // 7: proto.UintMessage
+	(*UserAnswer)(nil),                  // 8: proto.UserAnswer
+	(*QuestionGroupList)(nil),           // 9: proto.QuestionGroupList
+	(*AlumniListResponse)(nil),          // 10: proto.AlumniListResponse
+	(*AlumniAppraiserListResponse)(nil), // 11: proto.AlumniAppraiserListResponse
+	(*UserListResponse)(nil),            // 12: proto.UserListResponse
+	(*LegalizeListResponse)(nil),        // 13: proto.LegalizeListResponse
 }
 var file_tracert_service_proto_depIdxs = []int32{
 	0,  // 0: proto.TracertService.Login:input_type -> proto.LoginInput
@@ -121,21 +142,31 @@ var file_tracert_service_proto_depIdxs = []int32{
 	5,  // 8: proto.TracertService.UserCreate:input_type -> proto.User
 	3,  // 9: proto.TracertService.UserList:input_type -> proto.ListInput
 	5,  // 10: proto.TracertService.UserGet:input_type -> proto.User
-	6,  // 11: proto.TracertService.UserAnswerCreate:input_type -> proto.UserAnswer
-	5,  // 12: proto.TracertService.Login:output_type -> proto.User
-	7,  // 13: proto.TracertService.QuestionList:output_type -> proto.QuestionGroupList
-	2,  // 14: proto.TracertService.AlumniCreate:output_type -> proto.Alumni
-	8,  // 15: proto.TracertService.AlumniList:output_type -> proto.AlumniListResponse
-	2,  // 16: proto.TracertService.AlumniGet:output_type -> proto.Alumni
-	4,  // 17: proto.TracertService.AlumniAppraiserCreate:output_type -> proto.AlumniAppraiser
-	9,  // 18: proto.TracertService.AlumniAppraiserList:output_type -> proto.AlumniAppraiserListResponse
-	4,  // 19: proto.TracertService.AlumniAppraiserGet:output_type -> proto.AlumniAppraiser
-	5,  // 20: proto.TracertService.UserCreate:output_type -> proto.User
-	10, // 21: proto.TracertService.UserList:output_type -> proto.UserListResponse
-	5,  // 22: proto.TracertService.UserGet:output_type -> proto.User
-	6,  // 23: proto.TracertService.UserAnswerCreate:output_type -> proto.UserAnswer
-	12, // [12:24] is the sub-list for method output_type
-	0,  // [0:12] is the sub-list for method input_type
+	6,  // 11: proto.TracertService.LegalizeCreate:input_type -> proto.Legalize
+	3,  // 12: proto.TracertService.LegalizeList:input_type -> proto.ListInput
+	6,  // 13: proto.TracertService.LegalizeGet:input_type -> proto.Legalize
+	7,  // 14: proto.TracertService.LegalizeVerified:input_type -> proto.UintMessage
+	7,  // 15: proto.TracertService.LegalizeApproved:input_type -> proto.UintMessage
+	8,  // 16: proto.TracertService.UserAnswerCreate:input_type -> proto.UserAnswer
+	5,  // 17: proto.TracertService.Login:output_type -> proto.User
+	9,  // 18: proto.TracertService.QuestionList:output_type -> proto.QuestionGroupList
+	2,  // 19: proto.TracertService.AlumniCreate:output_type -> proto.Alumni
+	10, // 20: proto.TracertService.AlumniList:output_type -> proto.AlumniListResponse
+	2,  // 21: proto.TracertService.AlumniGet:output_type -> proto.Alumni
+	4,  // 22: proto.TracertService.AlumniAppraiserCreate:output_type -> proto.AlumniAppraiser
+	11, // 23: proto.TracertService.AlumniAppraiserList:output_type -> proto.AlumniAppraiserListResponse
+	4,  // 24: proto.TracertService.AlumniAppraiserGet:output_type -> proto.AlumniAppraiser
+	5,  // 25: proto.TracertService.UserCreate:output_type -> proto.User
+	12, // 26: proto.TracertService.UserList:output_type -> proto.UserListResponse
+	5,  // 27: proto.TracertService.UserGet:output_type -> proto.User
+	6,  // 28: proto.TracertService.LegalizeCreate:output_type -> proto.Legalize
+	13, // 29: proto.TracertService.LegalizeList:output_type -> proto.LegalizeListResponse
+	6,  // 30: proto.TracertService.LegalizeGet:output_type -> proto.Legalize
+	6,  // 31: proto.TracertService.LegalizeVerified:output_type -> proto.Legalize
+	6,  // 32: proto.TracertService.LegalizeApproved:output_type -> proto.Legalize
+	8,  // 33: proto.TracertService.UserAnswerCreate:output_type -> proto.UserAnswer
+	17, // [17:34] is the sub-list for method output_type
+	0,  // [0:17] is the sub-list for method input_type
 	0,  // [0:0] is the sub-list for extension type_name
 	0,  // [0:0] is the sub-list for extension extendee
 	0,  // [0:0] is the sub-list for field type_name
@@ -199,6 +230,11 @@ type TracertServiceClient interface {
 	UserCreate(ctx context.Context, in *User, opts ...grpc.CallOption) (*User, error)
 	UserList(ctx context.Context, in *ListInput, opts ...grpc.CallOption) (TracertService_UserListClient, error)
 	UserGet(ctx context.Context, in *User, opts ...grpc.CallOption) (*User, error)
+	LegalizeCreate(ctx context.Context, in *Legalize, opts ...grpc.CallOption) (*Legalize, error)
+	LegalizeList(ctx context.Context, in *ListInput, opts ...grpc.CallOption) (TracertService_LegalizeListClient, error)
+	LegalizeGet(ctx context.Context, in *Legalize, opts ...grpc.CallOption) (*Legalize, error)
+	LegalizeVerified(ctx context.Context, in *UintMessage, opts ...grpc.CallOption) (*Legalize, error)
+	LegalizeApproved(ctx context.Context, in *UintMessage, opts ...grpc.CallOption) (*Legalize, error)
 	UserAnswerCreate(ctx context.Context, in *UserAnswer, opts ...grpc.CallOption) (*UserAnswer, error)
 }
 
@@ -378,6 +414,74 @@ func (c *tracertServiceClient) UserGet(ctx context.Context, in *User, opts ...gr
 	return out, nil
 }
 
+func (c *tracertServiceClient) LegalizeCreate(ctx context.Context, in *Legalize, opts ...grpc.CallOption) (*Legalize, error) {
+	out := new(Legalize)
+	err := c.cc.Invoke(ctx, "/proto.TracertService/LegalizeCreate", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *tracertServiceClient) LegalizeList(ctx context.Context, in *ListInput, opts ...grpc.CallOption) (TracertService_LegalizeListClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_TracertService_serviceDesc.Streams[3], "/proto.TracertService/LegalizeList", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &tracertServiceLegalizeListClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type TracertService_LegalizeListClient interface {
+	Recv() (*LegalizeListResponse, error)
+	grpc.ClientStream
+}
+
+type tracertServiceLegalizeListClient struct {
+	grpc.ClientStream
+}
+
+func (x *tracertServiceLegalizeListClient) Recv() (*LegalizeListResponse, error) {
+	m := new(LegalizeListResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *tracertServiceClient) LegalizeGet(ctx context.Context, in *Legalize, opts ...grpc.CallOption) (*Legalize, error) {
+	out := new(Legalize)
+	err := c.cc.Invoke(ctx, "/proto.TracertService/LegalizeGet", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *tracertServiceClient) LegalizeVerified(ctx context.Context, in *UintMessage, opts ...grpc.CallOption) (*Legalize, error) {
+	out := new(Legalize)
+	err := c.cc.Invoke(ctx, "/proto.TracertService/LegalizeVerified", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *tracertServiceClient) LegalizeApproved(ctx context.Context, in *UintMessage, opts ...grpc.CallOption) (*Legalize, error) {
+	out := new(Legalize)
+	err := c.cc.Invoke(ctx, "/proto.TracertService/LegalizeApproved", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *tracertServiceClient) UserAnswerCreate(ctx context.Context, in *UserAnswer, opts ...grpc.CallOption) (*UserAnswer, error) {
 	out := new(UserAnswer)
 	err := c.cc.Invoke(ctx, "/proto.TracertService/UserAnswerCreate", in, out, opts...)
@@ -402,6 +506,11 @@ type TracertServiceServer interface {
 	UserCreate(context.Context, *User) (*User, error)
 	UserList(*ListInput, TracertService_UserListServer) error
 	UserGet(context.Context, *User) (*User, error)
+	LegalizeCreate(context.Context, *Legalize) (*Legalize, error)
+	LegalizeList(*ListInput, TracertService_LegalizeListServer) error
+	LegalizeGet(context.Context, *Legalize) (*Legalize, error)
+	LegalizeVerified(context.Context, *UintMessage) (*Legalize, error)
+	LegalizeApproved(context.Context, *UintMessage) (*Legalize, error)
 	UserAnswerCreate(context.Context, *UserAnswer) (*UserAnswer, error)
 }
 
@@ -441,6 +550,21 @@ func (*UnimplementedTracertServiceServer) UserList(*ListInput, TracertService_Us
 }
 func (*UnimplementedTracertServiceServer) UserGet(context.Context, *User) (*User, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UserGet not implemented")
+}
+func (*UnimplementedTracertServiceServer) LegalizeCreate(context.Context, *Legalize) (*Legalize, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LegalizeCreate not implemented")
+}
+func (*UnimplementedTracertServiceServer) LegalizeList(*ListInput, TracertService_LegalizeListServer) error {
+	return status.Errorf(codes.Unimplemented, "method LegalizeList not implemented")
+}
+func (*UnimplementedTracertServiceServer) LegalizeGet(context.Context, *Legalize) (*Legalize, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LegalizeGet not implemented")
+}
+func (*UnimplementedTracertServiceServer) LegalizeVerified(context.Context, *UintMessage) (*Legalize, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LegalizeVerified not implemented")
+}
+func (*UnimplementedTracertServiceServer) LegalizeApproved(context.Context, *UintMessage) (*Legalize, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LegalizeApproved not implemented")
 }
 func (*UnimplementedTracertServiceServer) UserAnswerCreate(context.Context, *UserAnswer) (*UserAnswer, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UserAnswerCreate not implemented")
@@ -657,6 +781,99 @@ func _TracertService_UserGet_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TracertService_LegalizeCreate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Legalize)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TracertServiceServer).LegalizeCreate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.TracertService/LegalizeCreate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TracertServiceServer).LegalizeCreate(ctx, req.(*Legalize))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TracertService_LegalizeList_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(ListInput)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(TracertServiceServer).LegalizeList(m, &tracertServiceLegalizeListServer{stream})
+}
+
+type TracertService_LegalizeListServer interface {
+	Send(*LegalizeListResponse) error
+	grpc.ServerStream
+}
+
+type tracertServiceLegalizeListServer struct {
+	grpc.ServerStream
+}
+
+func (x *tracertServiceLegalizeListServer) Send(m *LegalizeListResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func _TracertService_LegalizeGet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Legalize)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TracertServiceServer).LegalizeGet(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.TracertService/LegalizeGet",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TracertServiceServer).LegalizeGet(ctx, req.(*Legalize))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TracertService_LegalizeVerified_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UintMessage)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TracertServiceServer).LegalizeVerified(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.TracertService/LegalizeVerified",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TracertServiceServer).LegalizeVerified(ctx, req.(*UintMessage))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TracertService_LegalizeApproved_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UintMessage)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TracertServiceServer).LegalizeApproved(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.TracertService/LegalizeApproved",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TracertServiceServer).LegalizeApproved(ctx, req.(*UintMessage))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _TracertService_UserAnswerCreate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UserAnswer)
 	if err := dec(in); err != nil {
@@ -712,6 +929,22 @@ var _TracertService_serviceDesc = grpc.ServiceDesc{
 			Handler:    _TracertService_UserGet_Handler,
 		},
 		{
+			MethodName: "LegalizeCreate",
+			Handler:    _TracertService_LegalizeCreate_Handler,
+		},
+		{
+			MethodName: "LegalizeGet",
+			Handler:    _TracertService_LegalizeGet_Handler,
+		},
+		{
+			MethodName: "LegalizeVerified",
+			Handler:    _TracertService_LegalizeVerified_Handler,
+		},
+		{
+			MethodName: "LegalizeApproved",
+			Handler:    _TracertService_LegalizeApproved_Handler,
+		},
+		{
 			MethodName: "UserAnswerCreate",
 			Handler:    _TracertService_UserAnswerCreate_Handler,
 		},
@@ -730,6 +963,11 @@ var _TracertService_serviceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "UserList",
 			Handler:       _TracertService_UserList_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "LegalizeList",
+			Handler:       _TracertService_LegalizeList_Handler,
 			ServerStreams: true,
 		},
 	},

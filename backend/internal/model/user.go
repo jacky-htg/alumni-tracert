@@ -104,7 +104,11 @@ func (u *User) GetUserLogin(ctx context.Context, db *sql.DB) error {
 	}
 	u.Pb.Email = email
 
-	query := ` SELECT id, name FROM users WHERE email = ?`
+	query := ` 
+		SELECT users.id, users.name, users.user_type, alumni.id 
+		FROM users  
+		LEFT JOIN alumni ON users.id = alumni.user_id
+		WHERE users.email = ?`
 
 	stmt, err := db.PrepareContext(ctx, query)
 	if err != nil {
@@ -112,7 +116,9 @@ func (u *User) GetUserLogin(ctx context.Context, db *sql.DB) error {
 	}
 	defer stmt.Close()
 
-	err = stmt.QueryRowContext(ctx, u.Pb.Email).Scan(&u.Pb.Id, &u.Pb.Name)
+	var alumni Alumni
+	err = stmt.QueryRowContext(ctx, u.Pb.Email).Scan(&u.Pb.Id, &u.Pb.Name, &u.Pb.UserType, &alumni.Pb.Id)
+	u.Pb.Alumni = &alumni.Pb
 
 	if err == sql.ErrNoRows {
 		return status.Errorf(codes.NotFound, "Query Raw: %v", err)
