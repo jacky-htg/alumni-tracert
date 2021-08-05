@@ -1,12 +1,49 @@
 ﻿<script>
   import { Link } from 'svelte-routing'
+  import { Images } from '../helper/images'
+  
+  // let src = 'images/poltekkes-medan.jpeg'
 </script>
 
-<h1>👋 Welcome to the home page</h1>
+<div class="flex flex-wrap w-full h-full">
+  <div class="flex w-full p-4 md:w-2/3 align-center">
+    <main class="max-w-full px-4 mx-auto mt-24 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 lg:px-8 xl:mt-40">
+      <div class="sm:text-center lg:text-left">
+        <img class="object-cover w-64 h-full mb-4" src={Images.logo_poltekkes} alt="">
+        <h1 class="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl md:text-4xl">
+          <span class="block xl:inline">Aplikasi ANTER Poltekkes Medan</span>
+        </h1>
+        <p class="mt-3 mb-4 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
+          Anda sudah mempunyai akun? silahkan login untuk bisa menikmati fasilitas aplikasi ANTER Poltekkes Medan
+        </p>
+        <a use:link href="/login" class="flex items-center justify-center w-48 px-6 py-2 text-base font-medium bg-indigo-600 border border-transparent rounded-md hover:bg-indigo-700 md:text-lg" style="color:white">
+          Login
+        </a>
+        
+        <hr class="my-8 md:min-w-full" />
+
+        <p class="mt-3 mb-4 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
+          Bagi alumni Poltekkes Medan yang belum mengisi kuesioner Tracer Study Poltekkes Medan, silahkan tekan tombol dibawah ini.
+        </p>
+        <a href="#" class="flex items-center justify-center px-6 py-2 text-base font-medium text-indigo-700 bg-indigo-100 border border-transparent rounded-md w-max md:text-lg">
+          Kuisioner alumni tracer
+        </a>
+        
+      </div>
+    </main>
+  </div>
+  <div class="flex w-full mt-4 md:mt-0 md:w-1/3 lg:inset-y-0 lg:right-0">
+    <img class="object-cover w-full h-56 sm:h-72 md:h-96 lg:w-full lg:h-full" src={Images.img_poltekkes} alt="">
+  </div>
+</div>
+
+
+
+<!-- <h1>👋 Welcome to the home page</h1>
 <h2>
   <Link to="dashboard">Go to Dashboard</Link>
 </h2>
 <span>or</span>
 <h2>
   <Link to="login">Login</Link>
-</h2>
+</h2> -->
