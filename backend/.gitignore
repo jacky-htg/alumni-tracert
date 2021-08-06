@@ -17,6 +17,6 @@
 .env
 go.mod
 go.sum
-log/
+#log/
 
 .DS_Store
