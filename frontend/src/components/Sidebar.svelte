@@ -17,13 +17,13 @@
 </script>
 
 <nav
-  class="md:left-0 md:block md:fixed md:top-0 md:bottom-0 md:overflow-y-auto md:flex-row md:flex-nowrap md:overflow-hidden shadow-xl bg-white flex flex-wrap items-center justify-between relative md:w-64 z-10 py-4 px-6"
+  class="relative z-10 flex flex-wrap items-center justify-between px-6 py-4 bg-white shadow-xl md:left-0 md:block md:fixed md:top-0 md:bottom-0 md:overflow-y-auto md:flex-row md:flex-nowrap md:overflow-hidden md:w-64"
 >
   <div
-    class="md:flex-col md:items-stretch md:min-h-full md:flex-nowrap px-0 flex flex-wrap items-center justify-between w-full mx-auto"
+    class="flex flex-wrap items-center justify-between w-full px-0 mx-auto md:flex-col md:items-stretch md:min-h-full md:flex-nowrap"
   >
     <button
-      class="cursor-pointer text-black opacity-50 md:hidden px-3 py-1 text-xl leading-none bg-transparent rounded border border-solid border-transparent"
+      class="px-3 py-1 text-xl leading-none text-black bg-transparent border border-transparent border-solid rounded opacity-50 cursor-pointer md:hidden"
       type="button"
       on:click={() => toggleCollapseShow('bg-white m-2 py-3 px-6')}
     >
@@ -31,7 +31,7 @@
     </button>
     <a
       use:link
-      class="md:block text-left md:pb-2 text-blueGray-600 mr-0 inline-block whitespace-nowrap text-sm uppercase font-bold p-4 px-0"
+      class="inline-block p-4 px-0 mr-0 text-sm font-bold text-left uppercase md:block md:pb-2 text-blueGray-600 whitespace-nowrap"
       href={PATH_URL.DASHBOARD}
     >
       Dashboard
@@ -42,22 +42,22 @@
     >
       <!-- Collapse header -->
       <div
-        class="md:min-w-full md:hidden block pb-4 mb-4 border-b border-solid border-blueGray-200"
+        class="block pb-4 mb-4 border-b border-solid md:min-w-full md:hidden border-blueGray-200"
       >
         <div class="flex flex-wrap">
           <div class="w-6/12">
             <a
               use:link
-              class="md:block text-left md:pb-2 text-blueGray-600 mr-0 inline-block whitespace-nowrap text-sm uppercase font-bold p-4 px-0"
+              class="inline-block p-4 px-0 mr-0 text-sm font-bold text-left uppercase md:block md:pb-2 text-blueGray-600 whitespace-nowrap"
               href={PATH_URL.DASHBOARD}
             >
               Dashboard
             </a>
           </div>
-          <div class="w-6/12 flex justify-end">
+          <div class="flex justify-end w-6/12">
             <button
               type="button"
-              class="cursor-pointer text-black opacity-50 md:hidden px-3 py-1 text-xl leading-none bg-transparent rounded border border-solid border-transparent"
+              class="px-3 py-1 text-xl leading-none text-black bg-transparent border border-transparent border-solid rounded opacity-50 cursor-pointer md:hidden"
               on:click={() => toggleCollapseShow('hidden')}
             >
               <i class="fas fa-times"></i>
@@ -69,7 +69,7 @@
       <!-- Divider -->
       <hr class="my-4 md:min-w-full" />
 
-      <ul class="md:flex-col md:min-w-full flex flex-col list-none">
+      <ul class="flex flex-col list-none md:flex-col md:min-w-full">
         <li class="items-center">
           <a
             use:link
@@ -101,7 +101,7 @@
       <hr class="my-4 md:min-w-full" />
       
       <h6
-        class="md:min-w-full text-red-500 text-xs uppercase font-bold block pt-1 pb-4 no-underline cursor-pointer"
+        class="block pt-1 pb-4 text-xs font-bold text-red-500 no-underline uppercase cursor-pointer md:min-w-full"
       >
         <div on:click={logout}>
           Logout
