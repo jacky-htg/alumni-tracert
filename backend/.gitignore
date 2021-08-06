@@ -18,3 +18,5 @@
 go.mod
 go.sum
 log/
+
+.DS_Store
