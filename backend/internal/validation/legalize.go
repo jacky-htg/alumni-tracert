@@ -34,6 +34,35 @@ func (u *Legalize) Create(ctx context.Context, in *proto.Legalize, db *sql.DB) e
 	return nil
 }
 
+func (u *Legalize) Rejected(ctx context.Context, in *proto.UintMessage, db *sql.DB) error {
+	if in.Data <= 0 {
+		return status.Error(codes.InvalidArgument, "Please supply valid ID")
+	}
+
+	if ctx.Value(app.Ctx("user_type")).(uint32) != constant.USERTYPE_ADMIN {
+		return status.Error(codes.PermissionDenied, "You can not verified this document")
+	}
+
+	u.Model.Pb.Id = in.Data
+	if err := u.Model.Get(ctx, db); err != nil {
+		return err
+	}
+
+	if u.Model.Pb.Status == uint32(constant.LEGALIZE_STATUS_REJECTED) {
+		return status.Error(codes.InvalidArgument, "Legalize has been rejected")
+	}
+
+	if u.Model.Pb.IsVerified {
+		return status.Error(codes.InvalidArgument, "Legalize has been verified")
+	}
+
+	if u.Model.Pb.IsApproved {
+		return status.Error(codes.InvalidArgument, "Legalize has been approved")
+	}
+
+	return nil
+}
+
 func (u *Legalize) Verified(ctx context.Context, in *proto.UintMessage, db *sql.DB) error {
 	if in.Data <= 0 {
 		return status.Error(codes.InvalidArgument, "Please supply valid ID")
@@ -46,6 +75,10 @@ func (u *Legalize) Verified(ctx context.Context, in *proto.UintMessage, db *sql.
 	u.Model.Pb.Id = in.Data
 	if err := u.Model.Get(ctx, db); err != nil {
 		return err
+	}
+
+	if u.Model.Pb.Status == uint32(constant.LEGALIZE_STATUS_REJECTED) {
+		return status.Error(codes.InvalidArgument, "Legalize has been rejected")
 	}
 
 	if u.Model.Pb.IsVerified {
@@ -71,6 +104,10 @@ func (u *Legalize) Approved(ctx context.Context, in *proto.UintMessage, db *sql.
 	u.Model.Pb.Id = in.Data
 	if err := u.Model.Get(ctx, db); err != nil {
 		return err
+	}
+
+	if u.Model.Pb.Status == uint32(constant.LEGALIZE_STATUS_REJECTED) {
+		return status.Error(codes.InvalidArgument, "Legalize has been rejected")
 	}
 
 	if !u.Model.Pb.IsVerified {

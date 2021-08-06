@@ -3,15 +3,22 @@ package service
 import (
 	"context"
 	"database/sql"
+	"fmt"
+	"io"
+	"net/http"
+	"os"
+	"strconv"
 	"time"
 
 	"tracert/internal/constant"
 	"tracert/internal/model"
 	"tracert/internal/pkg/app"
+	"tracert/internal/pkg/oss"
 	"tracert/internal/pkg/util"
 	"tracert/internal/validation"
 	"tracert/proto"
 
+	"github.com/signintech/gopdf"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -163,12 +170,12 @@ func (u *AlumniTracertServer) LegalizeVerified(ctx context.Context, in *proto.Ui
 
 	ctx, err := GetUserLogin(ctx, u.Db)
 	if err != nil {
-		util.LogError(u.Log, "Get user login on approved legalize", err)
+		util.LogError(u.Log, "Get user login on verified legalize", err)
 		return nil, err
 	}
 
 	if err := new(validation.Legalize).Verified(ctx, in, u.Db); err != nil {
-		util.LogError(u.Log, "validation on approved legalize", err)
+		util.LogError(u.Log, "validation on verified legalize", err)
 		return nil, err
 	}
 
@@ -177,6 +184,35 @@ func (u *AlumniTracertServer) LegalizeVerified(ctx context.Context, in *proto.Ui
 	legalizeModel.Pb.Id = in.Data
 	if err := legalizeModel.Verified(ctx, u.Db); err != nil {
 		util.LogError(u.Log, "verified Legalize", err)
+		return nil, err
+	}
+
+	return &legalizeModel.Pb, nil
+}
+
+func (u *AlumniTracertServer) LegalizeRejected(ctx context.Context, in *proto.UintMessage) (*proto.Legalize, error) {
+	select {
+	case <-ctx.Done():
+		return nil, util.ContextError(ctx)
+	default:
+	}
+
+	ctx, err := GetUserLogin(ctx, u.Db)
+	if err != nil {
+		util.LogError(u.Log, "Get user login on rejected legalize", err)
+		return nil, err
+	}
+
+	if err := new(validation.Legalize).Rejected(ctx, in, u.Db); err != nil {
+		util.LogError(u.Log, "validation on rejected legalize", err)
+		return nil, err
+	}
+
+	var legalizeModel model.Legalize
+	legalizeModel.Pb.VerifiedBy = ctx.Value(app.Ctx("user_id")).(uint64)
+	legalizeModel.Pb.Id = in.Data
+	if err := legalizeModel.Rejected(ctx, u.Db); err != nil {
+		util.LogError(u.Log, "rejected Legalize", err)
 		return nil, err
 	}
 
@@ -196,18 +232,80 @@ func (u *AlumniTracertServer) LegalizeApproved(ctx context.Context, in *proto.Ui
 		return nil, err
 	}
 
-	if err := new(validation.Legalize).Approved(ctx, in, u.Db); err != nil {
+	var legalizeValidate validation.Legalize
+	err = legalizeValidate.Approved(ctx, in, u.Db)
+	if err != nil {
 		util.LogError(u.Log, "validation on approved legalize", err)
 		return nil, err
 	}
 
+	tUnix := time.Now().Unix()
+	legalizeStringId := strconv.Itoa(int(legalizeValidate.Model.Pb.Id)) + ".pdf"
+
+	ijazahLocalFileName := fmt.Sprintf("%d-", tUnix) + "ijazah-" + legalizeStringId
+	ijazahSignedUrl := "ijazah/" + fmt.Sprintf("%d-", tUnix) + legalizeStringId
+
+	transcriptLocalFileName := fmt.Sprintf("%d-", tUnix) + "transcript-" + legalizeStringId
+	transcriptSignedUrl := "transcript/" + fmt.Sprintf("%d-", tUnix) + legalizeStringId
+
+	signPdf(legalizeValidate.Model.Pb.Ijazah, ijazahLocalFileName)
+	signPdf(legalizeValidate.Model.Pb.Transcript, transcriptLocalFileName)
+
+	oss.UploadLocalFile(os.Getenv("OSS_BUCKET_DOCUMENT"), ijazahSignedUrl, ijazahLocalFileName)
+	oss.UploadLocalFile(os.Getenv("OSS_BUCKET_DOCUMENT"), transcriptSignedUrl, transcriptLocalFileName)
+
 	var legalizeModel model.Legalize
 	legalizeModel.Pb.ApprovedBy = ctx.Value(app.Ctx("user_id")).(uint64)
 	legalizeModel.Pb.Id = in.Data
+	legalizeModel.Pb.IjazahSigned = ijazahSignedUrl
+	legalizeModel.Pb.TranscriptSigned = transcriptSignedUrl
 	if err := legalizeModel.Approved(ctx, u.Db); err != nil {
 		util.LogError(u.Log, "Approved Legalize", err)
 		return nil, err
 	}
 
+	os.Remove(ijazahLocalFileName)
+	os.Remove(transcriptLocalFileName)
 	return &legalizeModel.Pb, nil
+}
+
+func signPdf(url string, name string) {
+
+	pdf := gopdf.GoPdf{}
+	pdf.Start(gopdf.Config{PageSize: *gopdf.PageSizeA4})
+	pdf.AddPage()
+
+	fileUrl := "https://bpodt-staging.oss-ap-southeast-5.aliyuncs.com/" + url
+	downloadFile(name, fileUrl)
+
+	// Import page 1
+	tpl1 := pdf.ImportPage(name, 1, "/MediaBox")
+
+	// Draw pdf onto page
+	pdf.UseImportedTemplate(tpl1, 0, 0, 595, 0)
+
+	pdf.Image("./stempel-sign.png", 75, 75, nil) //print image
+
+	pdf.WritePdf(name)
+}
+
+func downloadFile(filepath string, url string) error {
+
+	// Get the data
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	// Create the file
+	out, err := os.Create(filepath)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+
+	// Write the body to file
+	_, err = io.Copy(out, resp.Body)
+	return err
 }
