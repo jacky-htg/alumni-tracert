@@ -158,6 +158,42 @@ func (u *Legalize) Get(ctx context.Context, db *sql.DB) error {
 	return nil
 }
 
+func (u *Legalize) Rejected(ctx context.Context, db *sql.DB) error {
+	select {
+	case <-ctx.Done():
+		return util.ContextError(ctx)
+	default:
+	}
+
+	query := `
+		UPDATE legalizes 
+		SET 
+			is_verified = false, 
+			verified_by = ?, 
+			verified_at = ?,
+			status = 0
+		WHERE id = ? 
+	`
+
+	stmt, err := db.PrepareContext(ctx, query)
+	if err != nil {
+		return status.Errorf(codes.Internal, "Prepare rejected: %v", err)
+	}
+	defer stmt.Close()
+
+	_, err = stmt.ExecContext(ctx,
+		ctx.Value(app.Ctx("user_id")).(uint64),
+		time.Now().UTC(),
+		u.Pb.Id,
+	)
+
+	if err != nil {
+		return status.Errorf(codes.Internal, "Exec update: %v", err)
+	}
+
+	return nil
+}
+
 func (u *Legalize) Verified(ctx context.Context, db *sql.DB) error {
 	select {
 	case <-ctx.Done():
@@ -207,6 +243,8 @@ func (u *Legalize) Approved(ctx context.Context, db *sql.DB) error {
 			is_approved = true, 
 			approved_by = ?, 
 			approved_at = ?,
+			ijazah_signed = ?,
+			transcript_signed = ?,
 			status = 3 
 		WHERE id = ? 
 	`
@@ -220,6 +258,8 @@ func (u *Legalize) Approved(ctx context.Context, db *sql.DB) error {
 	_, err = stmt.ExecContext(ctx,
 		ctx.Value(app.Ctx("user_id")).(uint64),
 		time.Now().UTC(),
+		u.Pb.IjazahSigned,
+		u.Pb.TranscriptSigned,
 		u.Pb.Id,
 	)
 	if err != nil {

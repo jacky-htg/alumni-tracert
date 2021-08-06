@@ -1274,6 +1274,86 @@ proto.proto.TracertServicePromiseClient.prototype.legalizeVerified =
  *   !proto.proto.UintMessage,
  *   !proto.proto.Legalize>}
  */
+const methodDescriptor_TracertService_LegalizeRejected = new grpc.web.MethodDescriptor(
+  '/proto.TracertService/LegalizeRejected',
+  grpc.web.MethodType.UNARY,
+  generic_message_pb.UintMessage,
+  legalize_message_pb.Legalize,
+  /**
+   * @param {!proto.proto.UintMessage} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  legalize_message_pb.Legalize.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.proto.UintMessage,
+ *   !proto.proto.Legalize>}
+ */
+const methodInfo_TracertService_LegalizeRejected = new grpc.web.AbstractClientBase.MethodInfo(
+  legalize_message_pb.Legalize,
+  /**
+   * @param {!proto.proto.UintMessage} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  legalize_message_pb.Legalize.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.proto.UintMessage} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.proto.Legalize)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.Legalize>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.TracertServiceClient.prototype.legalizeRejected =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/proto.TracertService/LegalizeRejected',
+      request,
+      metadata || {},
+      methodDescriptor_TracertService_LegalizeRejected,
+      callback);
+};
+
+
+/**
+ * @param {!proto.proto.UintMessage} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.proto.Legalize>}
+ *     Promise that resolves to the response
+ */
+proto.proto.TracertServicePromiseClient.prototype.legalizeRejected =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/proto.TracertService/LegalizeRejected',
+      request,
+      metadata || {},
+      methodDescriptor_TracertService_LegalizeRejected);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.proto.UintMessage,
+ *   !proto.proto.Legalize>}
+ */
 const methodDescriptor_TracertService_LegalizeApproved = new grpc.web.MethodDescriptor(
   '/proto.TracertService/LegalizeApproved',
   grpc.web.MethodType.UNARY,

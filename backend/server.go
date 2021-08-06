@@ -15,6 +15,7 @@ import (
 	"tracert/internal/pkg/db/mysql"
 	"tracert/internal/pkg/log/logruslog"
 	"tracert/internal/route"
+	"tracert/internal/service"
 )
 
 type RpcServer struct {
@@ -56,12 +57,16 @@ func run() error {
 
 	route.GrpcRoute(rpcServer.Grpc, db, log)
 
+	var uploadService service.Upload
+	uploadService.Db = db
+
 	errChan := make(chan error)
 	go func() {
 		errChan <- runRpcServer(port["grpc"], rpcServer)
 	}()
+
 	go func() {
-		errChan <- runWebServer(port["web"], rpcServer)
+		errChan <- runWebServer(port["web"], rpcServer, uploadService)
 	}()
 
 	select {
@@ -86,13 +91,23 @@ func runRpcServer(port string, rpcServer *RpcServer) error {
 	return nil
 }
 
-func runWebServer(httpPort string, rpcServer *RpcServer) error {
+func runWebServer(httpPort string, rpcServer *RpcServer, uploadService service.Upload) error {
 	grpc := rpcServer.WrappedGrpc
 
 	http.HandleFunc("/", func(resp http.ResponseWriter, req *http.Request) {
 		allowCors(resp, req)
 		if grpc.IsGrpcWebRequest(req) || grpc.IsAcceptableGrpcCorsRequest(req) {
 			grpc.ServeHTTP(resp, req)
+		}
+	})
+
+	http.HandleFunc("/upload", func(resp http.ResponseWriter, req *http.Request) {
+		allowCors(resp, req)
+		switch req.Method {
+		case http.MethodPost:
+			uploadService.UploadHandler(resp, req)
+		default:
+			http.NotFound(resp, req)
 		}
 	})
 

@@ -17,9 +17,11 @@ message Legalize {
   uint64 approved_by = 8;
   string verified_at = 9;
   string approved_at = 10;
-  uint32 status = 11;
-  string created = 12;
-  string updated = 13;
+  string ijazah_signed = 11;
+  string transcript_signed = 12; 
+  uint32 status = 13;
+  string created = 14;
+  string updated = 15;
 }
 
 message LegalizeListResponse {

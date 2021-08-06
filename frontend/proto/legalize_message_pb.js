@@ -102,9 +102,11 @@ proto.proto.Legalize.toObject = function(includeInstance, msg) {
     approvedBy: jspb.Message.getFieldWithDefault(msg, 8, 0),
     verifiedAt: jspb.Message.getFieldWithDefault(msg, 9, ""),
     approvedAt: jspb.Message.getFieldWithDefault(msg, 10, ""),
-    status: jspb.Message.getFieldWithDefault(msg, 11, 0),
-    created: jspb.Message.getFieldWithDefault(msg, 12, ""),
-    updated: jspb.Message.getFieldWithDefault(msg, 13, "")
+    ijazahSigned: jspb.Message.getFieldWithDefault(msg, 11, ""),
+    transcriptSigned: jspb.Message.getFieldWithDefault(msg, 12, ""),
+    status: jspb.Message.getFieldWithDefault(msg, 13, 0),
+    created: jspb.Message.getFieldWithDefault(msg, 14, ""),
+    updated: jspb.Message.getFieldWithDefault(msg, 15, "")
   };
 
   if (includeInstance) {
@@ -183,14 +185,22 @@ proto.proto.Legalize.deserializeBinaryFromReader = function(msg, reader) {
       msg.setApprovedAt(value);
       break;
     case 11:
-      var value = /** @type {number} */ (reader.readUint32());
-      msg.setStatus(value);
+      var value = /** @type {string} */ (reader.readString());
+      msg.setIjazahSigned(value);
       break;
     case 12:
       var value = /** @type {string} */ (reader.readString());
-      msg.setCreated(value);
+      msg.setTranscriptSigned(value);
       break;
     case 13:
+      var value = /** @type {number} */ (reader.readUint32());
+      msg.setStatus(value);
+      break;
+    case 14:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setCreated(value);
+      break;
+    case 15:
       var value = /** @type {string} */ (reader.readString());
       msg.setUpdated(value);
       break;
@@ -294,24 +304,38 @@ proto.proto.Legalize.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getStatus();
-  if (f !== 0) {
-    writer.writeUint32(
+  f = message.getIjazahSigned();
+  if (f.length > 0) {
+    writer.writeString(
       11,
       f
     );
   }
-  f = message.getCreated();
+  f = message.getTranscriptSigned();
   if (f.length > 0) {
     writer.writeString(
       12,
       f
     );
   }
+  f = message.getStatus();
+  if (f !== 0) {
+    writer.writeUint32(
+      13,
+      f
+    );
+  }
+  f = message.getCreated();
+  if (f.length > 0) {
+    writer.writeString(
+      14,
+      f
+    );
+  }
   f = message.getUpdated();
   if (f.length > 0) {
     writer.writeString(
-      13,
+      15,
       f
     );
   }
@@ -518,28 +542,28 @@ proto.proto.Legalize.prototype.setApprovedAt = function(value) {
 
 
 /**
- * optional uint32 status = 11;
- * @return {number}
- */
-proto.proto.Legalize.prototype.getStatus = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 11, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.proto.Legalize} returns this
- */
-proto.proto.Legalize.prototype.setStatus = function(value) {
-  return jspb.Message.setProto3IntField(this, 11, value);
-};
-
-
-/**
- * optional string created = 12;
+ * optional string ijazah_signed = 11;
  * @return {string}
  */
-proto.proto.Legalize.prototype.getCreated = function() {
+proto.proto.Legalize.prototype.getIjazahSigned = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 11, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.Legalize} returns this
+ */
+proto.proto.Legalize.prototype.setIjazahSigned = function(value) {
+  return jspb.Message.setProto3StringField(this, 11, value);
+};
+
+
+/**
+ * optional string transcript_signed = 12;
+ * @return {string}
+ */
+proto.proto.Legalize.prototype.getTranscriptSigned = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 12, ""));
 };
 
@@ -548,17 +572,53 @@ proto.proto.Legalize.prototype.getCreated = function() {
  * @param {string} value
  * @return {!proto.proto.Legalize} returns this
  */
-proto.proto.Legalize.prototype.setCreated = function(value) {
+proto.proto.Legalize.prototype.setTranscriptSigned = function(value) {
   return jspb.Message.setProto3StringField(this, 12, value);
 };
 
 
 /**
- * optional string updated = 13;
+ * optional uint32 status = 13;
+ * @return {number}
+ */
+proto.proto.Legalize.prototype.getStatus = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 13, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.Legalize} returns this
+ */
+proto.proto.Legalize.prototype.setStatus = function(value) {
+  return jspb.Message.setProto3IntField(this, 13, value);
+};
+
+
+/**
+ * optional string created = 14;
+ * @return {string}
+ */
+proto.proto.Legalize.prototype.getCreated = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 14, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.Legalize} returns this
+ */
+proto.proto.Legalize.prototype.setCreated = function(value) {
+  return jspb.Message.setProto3StringField(this, 14, value);
+};
+
+
+/**
+ * optional string updated = 15;
  * @return {string}
  */
 proto.proto.Legalize.prototype.getUpdated = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 13, ""));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 15, ""));
 };
 
 
@@ -567,7 +627,7 @@ proto.proto.Legalize.prototype.getUpdated = function() {
  * @return {!proto.proto.Legalize} returns this
  */
 proto.proto.Legalize.prototype.setUpdated = function(value) {
-  return jspb.Message.setProto3StringField(this, 13, value);
+  return jspb.Message.setProto3StringField(this, 15, value);
 };
 
 
