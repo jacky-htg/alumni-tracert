@@ -1,20 +1,11 @@
 <script>
-  import { Link, navigate } from 'svelte-routing'
+  import { Link } from 'svelte-routing'
+  import { token } from '../stores/token.js'
   import { Images } from '../helper/images'
-  import { PATH_URL } from '../helper/path'
 
-  let next = null
-
-  const lanjutkan = () => {
-      if (next === "appraiser") {
-        navigate(PATH_URL.APPRAISER_REGISTRATION, { replace: true })
-      } else if (next === "alumni") {
-        navigate(PATH_URL.ALUMNI_REGISTRATION, { replace: true })
-      }
-  }
-
-  const onChange = (event) => {
-    next = event.currentTarget.value;
+  const logout = () => {
+      localStorage.clear()
+      token.set(localStorage.getItem('token'))
   }
 </script>
 
@@ -42,23 +33,42 @@
         
         <form action="#" method="POST">
           <div class="overflow-hidden">
-            
             <fieldset class="mt-16 mb-8">
 
+              <legend class="mb-4 text-base font-medium text-gray-900">TRACER STUDY</legend>
+              
               <!-- question sets -->
               <div>
-                <p class="text-xl font-semibold text-black">STATUS PENGISI</p>
+                <p class="text-xl font-semibold text-black">Bagaimana anda menggambarkan situasi sekarang?</p>
                 <div class="mt-4 space-y-4">
                   <div class="flex items-center">
-                    <input checked={next==="appraiser"} on:change="{onChange}" value="appraiser" id="status-alumni-as-appraiser" name="status-alumni" type="radio" class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
+                    <input id="push-everything" name="push-notifications" type="radio" class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
                     <label for="push-everything" class="block ml-3 text-sm font-medium text-gray-700">
-                      Pengguna Alumni
+                      Saya sudah bekerja 
                     </label>
                   </div>
                   <div class="flex items-center">
-                    <input checked={next==="alumni"} on:change="{onChange}" value="alumni" id="status-alumni-as-alumni" name="status-alumni" type="radio" class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
+                    <input id="push-email" name="push-notifications" type="radio" class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
                     <label for="push-email" class="block ml-3 text-sm font-medium text-gray-700">
-                      Alumni
+                      Saya masih melanjutkan kuliah
+                    </label>
+                  </div>
+                  <div class="flex items-center">
+                    <input id="push-nothing" name="push-notifications" type="radio" class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
+                    <label for="push-nothing" class="block ml-3 text-sm font-medium text-gray-700">
+                      Saya belum bekerja
+                    </label>
+                  </div>
+                  <div class="flex items-center">
+                    <input id="push-nothing" name="push-notifications" type="radio" class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
+                    <label for="push-nothing" class="block ml-3 text-sm font-medium text-gray-700">
+                      Saya seddang mencari pekerjaan
+                    </label>
+                  </div>
+                  <div class="flex items-center">
+                    <input id="push-nothing" name="push-notifications" type="radio" class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
+                    <label for="push-nothing" class="block ml-3 text-sm font-medium text-gray-700">
+                      Saya sudah menikah dan fokus mengurus keluarga
                     </label>
                   </div>
                 </div>
@@ -66,7 +76,7 @@
             </fieldset>
 
             <div class="px-4 py-3 text-right bg-gray-50 sm:px-6">
-              <button on:click="{lanjutkan}" type="submit" class="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+              <button type="submit" class="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                 Lanjutkan
               </button>
             </div>
