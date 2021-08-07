@@ -3,6 +3,7 @@
   import { navigate } from 'svelte-routing'
   import { PATH_URL } from '../helper/path'
   import { token } from '../stores/token.js'
+  import { username } from '../stores';
   // core components
   let collapseShow = 'hidden'
   function toggleCollapseShow(classes) {
@@ -35,7 +36,7 @@
       class="inline-block p-4 px-0 mr-0 text-sm font-bold text-left uppercase md:block md:pb-2 text-blueGray-600 whitespace-nowrap"
       href={PATH_URL.DASHBOARD}
     >
-      Dashboard
+      Halo {$username}
     </a>
     <!-- Collapse -->
     <div
@@ -52,7 +53,7 @@
               class="inline-block p-4 px-0 mr-0 text-sm font-bold text-left uppercase md:block md:pb-2 text-blueGray-600 whitespace-nowrap"
               href={PATH_URL.DASHBOARD}
             >
-              Dashboard
+              Halo {$username}
             </a>
           </div>
           <div class="flex justify-end w-6/12">
@@ -74,8 +75,8 @@
         <li class="items-center">
           <a
             use:link
-            href="/admin/list-alumni"
             class="text-xs uppercase py-3 font-bold block {location.href.indexOf('/admin/list-alumni') !== -1 ? 'text-red-500 hover:text-red-600':'text-blueGray-700 hover:text-blueGray-500'}"
+            href={PATH_URL.LIST_ALUMNI}
           >
             <i
               class="fas fa-user-circle mr-2 text-sm {location.href.indexOf('/admin/list-alumni') !== -1 ? 'opacity-75' : 'text-blueGray-300'}"
@@ -87,8 +88,8 @@
         <li class="items-center">
           <a
             use:link
-            href="/admin/e-legalisir"
             class="text-xs uppercase py-3 font-bold block {location.href.indexOf('/admin/e-legalisir') !== -1 ? 'text-red-500 hover:text-red-600':'text-blueGray-700 hover:text-blueGray-500'}"
+            href={PATH_URL.E_LEGALISIR}
           >
             <i
               class="fas fa-address-card mr-2 text-sm {location.href.indexOf('/admin/e-legalisir') !== -1 ? 'opacity-75' : 'text-blueGray-300'}"

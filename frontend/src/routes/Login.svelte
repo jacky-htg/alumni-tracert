@@ -2,6 +2,7 @@
   import { navigate } from 'svelte-routing'
   import { token } from '../stores/token'
   import { userStore } from '../stores/user'
+  import { username, usertype } from '../stores'; 
   import { LoginInput } from "../../proto/user_message_pb"
 	import { TracertServicePromiseClient } from '../../proto/tracert_service_grpc_web_pb' 
   import Login from '../services/login'
@@ -52,7 +53,11 @@
       
       await token.set(localStorage.getItem('token'))
       const userType = user.getUserType();
-      console.log('USERTYPE = ', userType);
+      const alumni = user.getAlumni();
+      localStorage.setItem('username', name)
+      localStorage.setItem('usertype', userType)
+      username.set(name)
+      usertype.set(userType)
       switch(userType) {
         case 0:
         case 3:
