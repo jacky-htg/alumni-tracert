@@ -12,7 +12,7 @@ export const PATH_URL = {
   DOWNLOAD_IJAZAH: '/download',
   ALUMNI_REGISTRATION: '/alumni-registration',
   APPRAISER_REGISTRATION: '/appraiser-registration',
-  KUISIONER_ALUMNI: '/kuisioner-alumni',
+  KUISIONER_FORM: '/kuisioner-form',
   LIST_ALUMNI: '/admin/list-alumni',
   E_LEGALISIR: '/admin/e-legalisir',
 }

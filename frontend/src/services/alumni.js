@@ -1,12 +1,12 @@
 import Tracert from './tracert';
 
 export default class extends Tracert{
-  constructor(proto, alumni) {
+  constructor(proto, alumniregistrationInput) {
     super(proto)
-    this.req = alumni 
+    this.req = alumniregistrationInput 
   }
-  create (){
-      return this.client.alumniCreate(this.req, {}).then(alumni=>{
+  registration (){
+      return this.client.alumniRegistration(this.req, {}).then(alumni=>{
           return alumni
       })
   }

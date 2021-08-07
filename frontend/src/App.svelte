@@ -9,7 +9,7 @@
 	import KuisionerSudahBekerja from './routes/KuisionerSudahBekerja.svelte';
 	import KuisionerLanjutKuliah from './routes/KuisionerLanjutKuliah.svelte';
 	import KuisionerBelumBekerja from './routes/KuisionerBelumBekerja.svelte';
-	import KuisionerAlumni from './routes/KuisionerAlumni.svelte'
+	import KuisionerForm from './routes/KuisionerForm.svelte'
 	import AlumniRegistration from './routes/AlumniRegistration.svelte'
 	import AppraiserRegistration from './routes/AppraiserRegistration.svelte'
 	import Upload from './routes/Upload.svelte';
@@ -33,7 +33,7 @@
 	<Route path={PATH_URL.KUISIONER} component={Kuisioner} />
 	<Route path={PATH_URL.ALUMNI_REGISTRATION} component={AlumniRegistration} />
 	<Route path={PATH_URL.APPRAISER_REGISTRATION} component={AppraiserRegistration} />
-	<ProtectedRoute path={PATH_URL.KUISIONER_ALUMNI} component={KuisionerAlumni} />
+	<ProtectedRoute path={PATH_URL.KUISIONER_FORM} component={KuisionerForm} />
 	<ProtectedRoute path={PATH_URL.KUISIONER_SUDAH_BEKERJA} component={KuisionerSudahBekerja} />
 	<ProtectedRoute path={PATH_URL.KUISIONER_LANJUT_KULIAH} component={KuisionerLanjutKuliah} />
 	<ProtectedRoute path={PATH_URL.KUISIONER_BELUM_BEKERJA} component={KuisionerBelumBekerja} />

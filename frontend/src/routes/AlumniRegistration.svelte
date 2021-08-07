@@ -1,14 +1,18 @@
 <script>
   import KuisionerOpening from '../components/KuisionerOpening.svelte'
   import { Alumni } from "../../proto/alumni_message_pb"
-	import { User } from "../../proto/user_message_pb"
+	import { User, AlumniRegistrationInput } from "../../proto/user_message_pb"
 	import { TracertServicePromiseClient } from '../../proto/tracert_service_grpc_web_pb'
-  import userService from '../services/user'
   import alumniService from '../services/alumni'
   import { notifications } from '../helper/toast'
+  import { token } from '../stores/token'
+  import { PATH_URL } from '../helper/path'
+  import { navigate } from 'svelte-routing'
+  
 
   const userProto = new User()
   const alumniProto = new Alumni()
+  const alumniRegistrationProto = new AlumniRegistrationInput()
     
   const changeName = (event) => {
     alumniProto.setName(event.currentTarget.value)
@@ -51,37 +55,30 @@
     userProto.setEmail(event.currentTarget.value)
   }
 
-  async function alumniCreateCall(){
+  async function alumniRegistrationCall(){
     var deps = {
 			proto: {
 				TracertClient: TracertServicePromiseClient
 			}
 		}
 
-    
-		const alumni = new alumniService(deps, alumniProto)
-    return await alumni.create()
-	}
-
-  async function userCreateCall(){
-    var deps = {
-			proto: {
-				TracertClient: TracertServicePromiseClient
-			}
-		}
     userProto.setUserType(1) // 1 = alumni
-		const user = new userService(deps, userProto)
-    return await user.create()
+    alumniRegistrationProto.setUser(userProto)
+    alumniRegistrationProto.setAlumni(alumniProto)
+    
+		const alumni = new alumniService(deps, alumniRegistrationProto)
+    return await alumni.registration()
 	}
 
   const lanjutkan = async () => {
     try {
-      const user = await userCreateCall()
-      console.log(user)
-      if (user) {
-        //const alumni = await alumniCreateCall()
-        //console.log(alumni)
-      }
+      const registration = await alumniRegistrationCall()
+      console.log(registration)
+      localStorage.setItem('token', registration.getUser().token)
+      token.set(localStorage.getItem('token'))
+
+      navigate(PATH_URL.KUISIONER_FORM, { replace: true, questionGroup: 1 })
+      
     } catch(e) {
       notifications.danger(e.message)
     }
