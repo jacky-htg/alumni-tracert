@@ -8,7 +8,7 @@
   }
 </script>
 
-<h1>Soal Ke {'{'}user{'}'}</h1>
+<h1>upload</h1>
 <h2>
   <Link to="/login" on:click={logout}>Logout</Link>
 </h2>
