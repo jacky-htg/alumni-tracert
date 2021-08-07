@@ -36,8 +36,8 @@
 	<ProtectedRoute path={PATH_URL.KUISIONER_LANJUT_KULIAH} component={KuisionerLanjutKuliah} />
 	<ProtectedRoute path={PATH_URL.KUISIONER_BELUM_BEKERJA} component={KuisionerBelumBekerja} />
 	<ProtectedRoute path={PATH_URL.KESEUAIANPEKERJAAN} component={KesesuaianPekerjaan} />
-	<ProtectedRoute path={PATH_URL.UPLOAD_IJAZAH} component={Upload} />
-	<ProtectedRoute path={PATH_URL.DOWNLOAD_IJAZAH} component={Download} />
+	<Route path={PATH_URL.UPLOAD_IJAZAH} component={Upload} />
+	<Route path={PATH_URL.DOWNLOAD_IJAZAH} component={Download} />
 	<ProtectedRoute path={PATH_URL.DASHBOARD} component={Dashboard} />
 </Router>
 <Toast />
