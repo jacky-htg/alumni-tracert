@@ -60,6 +60,9 @@ func (u *Legalize) ListQuery(ctx context.Context, db *sql.DB, in *proto.ListInpu
 		where = append(where, "l.status = 1 AND l.is_verified = FALSE AND l.is_approved = FALSE")
 	} else if ctx.Value(app.Ctx("user_type")).(uint32) == constant.USERTYPE_PEJABAT {
 		where = append(where, "l.status = 2 AND l.is_verified = TRUE AND l.is_approved = FALSE")
+	} else if ctx.Value(app.Ctx("user_type")).(uint32) == constant.USERTYPE_ALUMNI {
+		where = append(where, "l.alumni_id = ?")
+		paramQueries = append(paramQueries, ctx.Value(app.Ctx("alumni_id")).(uint64))
 	}
 
 	if len(in.Search) > 0 {

@@ -46,7 +46,18 @@
       localStorage.setItem('user', JSON.stringify(user))
       userStore.set(localStorage.getItem('user'))
       
-      navigate(PATH_URL.DASHBOARD, { replace: true })
+      await token.set(localStorage.getItem('token'))
+      const userType = user.getUserType();
+      console.log('USERTYPE = ', userType);
+      switch(userType) {
+        case 0:
+        case 3:
+        case 4:
+          navigate(PATH_URL.DASHBOARD, { replace: true })
+          break;
+        default:
+          navigate(PATH_URL.UPLOAD_IJAZAH, { replace: true })
+      }
     } catch(e) {
       notifications.danger(e.message)
     }
