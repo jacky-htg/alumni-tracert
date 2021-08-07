@@ -111,7 +111,19 @@ func runWebServer(httpPort string, rpcServer *RpcServer, uploadService service.U
 		}
 	})
 
-	handler := cors.Default().Handler(mux)
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowedHeaders:   []string{"*"},
+		ExposedHeaders:   []string{"*"},
+		AllowCredentials: true,
+		// Enable Debugging for testing, consider disabling in production
+		Debug: false,
+	})
+
+	// Insert the middleware
+	handler := c.Handler(mux)
+
+	//handler := cors.Default().Handler(mux)
 
 	err := http.ListenAndServe(":"+httpPort, handler)
 	if err != nil {
@@ -127,10 +139,6 @@ func allowCors(resp http.ResponseWriter, req *http.Request) {
 	//resp.Header().Set("Access-Control-Expose-Headers", "grpc-status, grpc-message")
 	//resp.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, XMLHttpRequest, x-user-agent, x-grpc-web, grpc-status, grpc-message, token")
 
-	resp.Header().Set("Access-Control-Allow-Origin", "*")
-	resp.Header().Set("Access-Control-Allow-Methods", "*")
-	resp.Header().Set("Access-Control-Allow-Headers", "*")
-	resp.Header().Set("Access-Control-Expose-Headers", "*")
 	if (*req).Method == "OPTIONS" {
 		return
 	}
