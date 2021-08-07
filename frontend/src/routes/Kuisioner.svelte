@@ -26,7 +26,7 @@
         <KuisionerOpening/>
         
         <form action="#" method="POST">
-          <div class="overflow-hidden">
+          <div class="">
             
             <fieldset class="mt-16 mb-8">
 
@@ -35,14 +35,14 @@
                 <p class="text-xl font-semibold text-black">STATUS PENGISI</p>
                 <div class="mt-4 space-y-4">
                   <div class="flex items-center">
-                    <input checked={statusALumni==="appraiser"} on:change="{onChange}" value="appraiser" id="status-alumni-as-appraiser" name="status-alumni" type="radio" class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
-                    <label for="push-everything" class="block ml-3 text-sm font-medium text-gray-700">
+                    <input checked={statusALumni==="appraiser"} on:change="{onChange}" value="appraiser" id="status-alumni-as-appraiser" name="status-alumni-as-appraiser" type="radio" class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
+                    <label for="status-alumni-as-appraiser" class="cursor-pointer block ml-3 text-sm font-medium text-gray-700">
                       Pengguna Alumni
                     </label>
                   </div>
                   <div class="flex items-center">
-                    <input checked={statusALumni==="alumni"} on:change="{onChange}" value="alumni" id="status-alumni-as-alumni" name="status-alumni" type="radio" class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
-                    <label for="push-email" class="block ml-3 text-sm font-medium text-gray-700">
+                    <input checked={statusALumni==="alumni"} on:change="{onChange}" value="alumni" id="status-alumni-as-alumni" name="status-alumni-as-alumni" type="radio" class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
+                    <label for="status-alumni-as-alumni" class="cursor-pointer block ml-3 text-sm font-medium text-gray-700">
                       Alumni
                     </label>
                   </div>

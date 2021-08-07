@@ -80,12 +80,13 @@
       localStorage.setItem('user', JSON.stringify(registration.getUser()))
       userStore.set(localStorage.getItem('user'))
 
-      Cookies.set('token', user.getToken())
-      Cookies.set('user', JSON.stringify(user))
+      Cookies.set('token', registration.getUser().getToken())
+      Cookies.set('user', JSON.stringify(localStorage.getItem('user')))
 
       navigate(PATH_URL.KUISIONER_FORM, { replace: true })
       
     } catch(e) {
+      console.log('masuk sini')
       notifications.danger(e.message)
     }
   };
@@ -154,6 +155,7 @@
               <div class="col-span-2">
                 <label for="graduation-year" class="block text-sm font-medium text-gray-700">Tahun lulus</label>
                 <select on:blur="{changeGraduationYear}" id="graduation-year" name="graduation-year" autocomplete="graduation-year" class="block w-full px-4 py-2 mt-1 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-m">
+                  <option value="" disabled selected>Pilih Tahun Lulus</option>
                   <option>2018</option>
                   <option>2019</option>
                   <option>2020</option>
