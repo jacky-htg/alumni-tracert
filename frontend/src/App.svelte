@@ -15,6 +15,8 @@
 	import Upload from './routes/Upload.svelte';
 	import Download from './routes/Download.svelte';
 	import Login from './routes/Login.svelte';
+	import ListAlumni from './routes/list-alumni.svelte';
+	import ELegalisir from './routes/e-legalisir.svelte';
 	import { PATH_URL } from './helper/path';
 </script>
 
@@ -35,9 +37,11 @@
 	<ProtectedRoute path={PATH_URL.KUISIONER_SUDAH_BEKERJA} component={KuisionerSudahBekerja} />
 	<ProtectedRoute path={PATH_URL.KUISIONER_LANJUT_KULIAH} component={KuisionerLanjutKuliah} />
 	<ProtectedRoute path={PATH_URL.KUISIONER_BELUM_BEKERJA} component={KuisionerBelumBekerja} />
-	<ProtectedRoute path={PATH_URL.KESEUAIANPEKERJAAN} component={KesesuaianPekerjaan} />
-	<Route path={PATH_URL.UPLOAD_IJAZAH} component={Upload} />
-	<Route path={PATH_URL.DOWNLOAD_IJAZAH} component={Download} />
+	<ProtectedRoute path={PATH_URL.KESESUAIAN_PEKERJAAN} component={KesesuaianPekerjaan} />
+	<ProtectedRoute path={PATH_URL.UPLOAD_IJAZAH} component={Upload} />
+	<ProtectedRoute path={PATH_URL.DOWNLOAD_IJAZAH} component={Download} />
 	<ProtectedRoute path={PATH_URL.DASHBOARD} component={Dashboard} />
+	<ProtectedRoute path={PATH_URL.LIST_ALUMNI} component={ListAlumni} />
+	<ProtectedRoute path={PATH_URL.E_LEGALISIR} component={ELegalisir} />
 </Router>
 <Toast />

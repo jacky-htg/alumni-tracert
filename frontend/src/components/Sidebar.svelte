@@ -16,9 +16,10 @@
   export let location
 </script>
 
-<nav
-  class="relative z-10 flex flex-wrap items-center justify-between px-6 py-4 bg-white shadow-xl md:left-0 md:block md:fixed md:top-0 md:bottom-0 md:overflow-y-auto md:flex-row md:flex-nowrap md:overflow-hidden md:w-64"
->
+<!-- <nav
+  class="relative z-10 flex flex-wrap items-center justify-between flex-initial px-6 py-4 bg-white shadow-xl md:left-0 md:block md:fixed md:top-0 md:bottom-0 md:overflow-y-auto md:flex-row md:flex-nowrap md:overflow-hidden md:w-64"
+> -->
+<nav class="relative inset-0 z-10 flex-none w-full px-6 py-4 bg-white shadow-xl lg:min-h-screen lg:static lg:overflow-y-visible lg:pt-0 lg:w-60 xl:w-72 lg:block">
   <div
     class="flex flex-wrap items-center justify-between w-full px-0 mx-auto md:flex-col md:items-stretch md:min-h-full md:flex-nowrap"
   >
@@ -73,11 +74,11 @@
         <li class="items-center">
           <a
             use:link
-            href="/admin/dashboard"
-            class="text-xs uppercase py-3 font-bold block {location.href.indexOf('/admin/dashboard') !== -1 ? 'text-red-500 hover:text-red-600':'text-blueGray-700 hover:text-blueGray-500'}"
+            href="/admin/list-alumni"
+            class="text-xs uppercase py-3 font-bold block {location.href.indexOf('/admin/list-alumni') !== -1 ? 'text-red-500 hover:text-red-600':'text-blueGray-700 hover:text-blueGray-500'}"
           >
             <i
-              class="fas fa-user-circle mr-2 text-sm {location.href.indexOf('/admin/dashboard') !== -1 ? 'opacity-75' : 'text-blueGray-300'}"
+              class="fas fa-user-circle mr-2 text-sm {location.href.indexOf('/admin/list-alumni') !== -1 ? 'opacity-75' : 'text-blueGray-300'}"
             ></i>
             List Alumni
           </a>
@@ -86,11 +87,11 @@
         <li class="items-center">
           <a
             use:link
-            href="/admin/settings"
-            class="text-xs uppercase py-3 font-bold block {location.href.indexOf('/admin/settings') !== -1 ? 'text-red-500 hover:text-red-600':'text-blueGray-700 hover:text-blueGray-500'}"
+            href="/admin/e-legalisir"
+            class="text-xs uppercase py-3 font-bold block {location.href.indexOf('/admin/e-legalisir') !== -1 ? 'text-red-500 hover:text-red-600':'text-blueGray-700 hover:text-blueGray-500'}"
           >
             <i
-              class="fas fa-address-card mr-2 text-sm {location.href.indexOf('/admin/settings') !== -1 ? 'opacity-75' : 'text-blueGray-300'}"
+              class="fas fa-address-card mr-2 text-sm {location.href.indexOf('/admin/e-legalisir') !== -1 ? 'opacity-75' : 'text-blueGray-300'}"
             ></i>
             List e-legalisir
           </a>

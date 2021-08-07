@@ -9,8 +9,10 @@ export const PATH_URL = {
   KUISIONER_BELUM_BEKERJA: '/kuisioner-belum-bekerja',
   KUISIONER_LANJUT_KULIAH: '/kuisioner-lanjut-kuliah',
   UPLOAD_IJAZAH: '/upload',
-  DOWNLOAD_IJAZAH: 'download',
+  DOWNLOAD_IJAZAH: '/download',
   ALUMNI_REGISTRATION: '/alumni-registration',
   APPRAISER_REGISTRATION: '/appraiser-registration',
   KUISIONER_ALUMNI: '/kuisioner-alumni',
+  LIST_ALUMNI: '/admin/list-alumni',
+  E_LEGALISIR: '/admin/e-legalisir',
 }
