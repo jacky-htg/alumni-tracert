@@ -1,7 +1,7 @@
 <script>
 	import { Router, Route } from 'svelte-routing';
 	import ProtectedRoute from './ProtectedRoute.svelte';
-
+	import Toast from './components/Toast.svelte'
 	import Home from './routes/Home.svelte';
 	import Dashboard from './routes/Dashboard.svelte';
 	import Kuisioner from './routes/Kuisioner.svelte';
@@ -34,3 +34,4 @@
 	<ProtectedRoute path={PATH_URL.DOWNLOAD_IJAZAH} component={Download} />
 	<ProtectedRoute path={PATH_URL.DASHBOARD} component={Dashboard} />
 </Router>
+<Toast />
