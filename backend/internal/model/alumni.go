@@ -16,7 +16,7 @@ type Alumni struct {
 	Pb proto.Alumni
 }
 
-func (u *Alumni) Create(ctx context.Context, db *sql.DB) error {
+func (u *Alumni) Create(ctx context.Context, db *sql.Tx) error {
 	select {
 	case <-ctx.Done():
 		return util.ContextError(ctx)

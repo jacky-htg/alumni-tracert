@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"database/sql"
 	"time"
 
 	"tracert/internal/model"
@@ -13,6 +14,47 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
+
+func (u *AlumniTracertServer) AlumniRegistration(ctx context.Context, in *proto.AlumniRegistrationInput) (*proto.Alumni, error) {
+	select {
+	case <-ctx.Done():
+		return nil, util.ContextError(ctx)
+	default:
+	}
+
+	tx, err := u.Db.BeginTx(ctx, nil)
+	if err != nil {
+		tx.Rollback()
+		util.LogError(u.Log, "begin tx alumni registration", err)
+		return nil, status.Error(codes.Internal, "Failed to create and begin transaction : "+err.Error())
+	}
+
+	user, password, err := u.userCreateHelper(ctx, in.User, tx)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	alumni, err := u.alumniCreateHelper(ctx, in.Alumni, user, tx)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	err = u.sendEmailHelper(ctx, user, *password)
+	if err != nil {
+		util.LogError(u.Log, "send email create user", err)
+		tx.Rollback()
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		util.LogError(u.Log, "commit alumni registration", err)
+		return nil, err
+	}
+
+	return alumni, nil
+}
 
 func (u *AlumniTracertServer) AlumniCreate(ctx context.Context, in *proto.Alumni) (*proto.Alumni, error) {
 	select {
@@ -35,29 +77,26 @@ func (u *AlumniTracertServer) AlumniCreate(ctx context.Context, in *proto.Alumni
 		return nil, err
 	}
 
-	if err := new(validation.Alumni).Create(ctx, in); err != nil {
-		util.LogError(u.Log, "validation on create alumni", err)
-		return nil, err
-	}
-
-	var alumniModel model.Alumni
-	alumniModel.Pb.UserId = userModel.Pb.Id
-	alumniModel.Pb.Nim = in.Nim
-	alumniModel.Pb.Nik = in.Nik
-	alumniModel.Pb.PlaceOfBirth = in.PlaceOfBirth
-	alumniModel.Pb.DateOfBirth = in.DateOfBirth
-	alumniModel.Pb.MajorStudy = in.MajorStudy
-	alumniModel.Pb.GraduationYear = in.GraduationYear
-	alumniModel.Pb.NoIjazah = in.NoIjazah
-	alumniModel.Pb.Phone = in.Phone
-
-	err = alumniModel.Create(ctx, u.Db)
+	tx, err := u.Db.BeginTx(ctx, nil)
 	if err != nil {
-		util.LogError(u.Log, "create alumni", err)
+		tx.Rollback()
+		util.LogError(u.Log, "begin tx create alumni", err)
+		return nil, status.Error(codes.Internal, "Failed to create and begin transaction : "+err.Error())
+	}
+
+	alumni, err := u.alumniCreateHelper(ctx, in, &userModel.Pb, tx)
+	if err != nil {
+		tx.Rollback()
 		return nil, err
 	}
 
-	return &alumniModel.Pb, nil
+	err = tx.Commit()
+	if err != nil {
+		util.LogError(u.Log, "commit create alumni", err)
+		return nil, err
+	}
+
+	return alumni, nil
 }
 
 func (u *AlumniTracertServer) AlumniList(in *proto.ListInput, stream proto.TracertService_AlumniListServer) error {
@@ -140,6 +179,38 @@ func (u *AlumniTracertServer) AlumniGet(ctx context.Context, in *proto.Alumni) (
 
 	if err := alumniModel.Get(ctx, u.Db); err != nil {
 		util.LogError(u.Log, "get alumni", err)
+		return nil, err
+	}
+
+	return &alumniModel.Pb, nil
+}
+
+func (u *AlumniTracertServer) alumniCreateHelper(ctx context.Context, in *proto.Alumni, user *proto.User, tx *sql.Tx) (*proto.Alumni, error) {
+	select {
+	case <-ctx.Done():
+		return nil, util.ContextError(ctx)
+	default:
+	}
+
+	if err := new(validation.Alumni).Create(ctx, in); err != nil {
+		util.LogError(u.Log, "validation on create alumni", err)
+		return nil, err
+	}
+
+	var alumniModel model.Alumni
+	alumniModel.Pb.UserId = user.Id
+	alumniModel.Pb.Nim = in.Nim
+	alumniModel.Pb.Nik = in.Nik
+	alumniModel.Pb.PlaceOfBirth = in.PlaceOfBirth
+	alumniModel.Pb.DateOfBirth = in.DateOfBirth
+	alumniModel.Pb.MajorStudy = in.MajorStudy
+	alumniModel.Pb.GraduationYear = in.GraduationYear
+	alumniModel.Pb.NoIjazah = in.NoIjazah
+	alumniModel.Pb.Phone = in.Phone
+
+	err := alumniModel.Create(ctx, tx)
+	if err != nil {
+		util.LogError(u.Log, "create alumni", err)
 		return nil, err
 	}
 

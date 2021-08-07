@@ -36,3 +36,8 @@ message LoginInput {
   string email = 1;
   string password = 2;
 }
+
+message AlumniRegistrationInput {
+  Alumni alumni = 1;
+  User user = 2;
+}

@@ -251,6 +251,86 @@ proto.proto.TracertServicePromiseClient.prototype.questionList =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
+ *   !proto.proto.AlumniRegistrationInput,
+ *   !proto.proto.Alumni>}
+ */
+const methodDescriptor_TracertService_AlumniRegistration = new grpc.web.MethodDescriptor(
+  '/proto.TracertService/AlumniRegistration',
+  grpc.web.MethodType.UNARY,
+  user_message_pb.AlumniRegistrationInput,
+  alumni_message_pb.Alumni,
+  /**
+   * @param {!proto.proto.AlumniRegistrationInput} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  alumni_message_pb.Alumni.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.proto.AlumniRegistrationInput,
+ *   !proto.proto.Alumni>}
+ */
+const methodInfo_TracertService_AlumniRegistration = new grpc.web.AbstractClientBase.MethodInfo(
+  alumni_message_pb.Alumni,
+  /**
+   * @param {!proto.proto.AlumniRegistrationInput} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  alumni_message_pb.Alumni.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.proto.AlumniRegistrationInput} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.proto.Alumni)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.Alumni>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.TracertServiceClient.prototype.alumniRegistration =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/proto.TracertService/AlumniRegistration',
+      request,
+      metadata || {},
+      methodDescriptor_TracertService_AlumniRegistration,
+      callback);
+};
+
+
+/**
+ * @param {!proto.proto.AlumniRegistrationInput} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.proto.Alumni>}
+ *     Promise that resolves to the response
+ */
+proto.proto.TracertServicePromiseClient.prototype.alumniRegistration =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/proto.TracertService/AlumniRegistration',
+      request,
+      metadata || {},
+      methodDescriptor_TracertService_AlumniRegistration);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
  *   !proto.proto.Alumni,
  *   !proto.proto.Alumni>}
  */

@@ -58,7 +58,7 @@ func (u *User) Login(ctx context.Context, db *sql.DB) error {
 	return nil
 }
 
-func (u *User) Create(ctx context.Context, db *sql.DB) error {
+func (u *User) Create(ctx context.Context, db *sql.Tx) error {
 	select {
 	case <-ctx.Done():
 		return util.ContextError(ctx)
@@ -78,7 +78,7 @@ func (u *User) Create(ctx context.Context, db *sql.DB) error {
 	}
 	defer stmt.Close()
 
-	_, err = stmt.ExecContext(ctx,
+	res, err := stmt.ExecContext(ctx,
 		u.Pb.Email,
 		string(pass),
 		u.Pb.Name,
@@ -87,6 +87,13 @@ func (u *User) Create(ctx context.Context, db *sql.DB) error {
 	if err != nil {
 		return status.Errorf(codes.Internal, "Exec insert: %v", err)
 	}
+
+	id, err := res.LastInsertId()
+	if err != nil {
+		return status.Errorf(codes.Internal, "get result id: %v", err)
+	}
+
+	u.Pb.Id = uint64(id)
 
 	return nil
 }

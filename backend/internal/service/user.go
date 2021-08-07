@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"database/sql"
 	"os"
 	"time"
 
@@ -24,49 +25,33 @@ func (u *AlumniTracertServer) UserCreate(ctx context.Context, in *proto.User) (*
 	default:
 	}
 
-	if err := new(validation.User).Create(ctx, in); err != nil {
-		util.LogError(u.Log, "validation on create user", err)
+	tx, err := u.Db.BeginTx(ctx, nil)
+	if err != nil {
+		tx.Rollback()
+		util.LogError(u.Log, "begin tx create user", err)
+		return nil, status.Error(codes.Internal, "Failed to create and begin transaction : "+err.Error())
+	}
+
+	user, password, err := u.userCreateHelper(ctx, in, tx)
+	if err != nil {
+		tx.Rollback()
 		return nil, err
 	}
 
-	var userModel model.User
-	userModel.Pb.Email = in.Email
-	userModel.Pb.Name = in.Name
-	userModel.Pb.UserType = in.UserType
-
-	userModel.Password = util.GenerateRandomPassword()
-	err := userModel.Create(ctx, u.Db)
+	err = u.sendEmailHelper(ctx, user, *password)
 	if err != nil {
+		tx.Rollback()
+		util.LogError(u.Log, "send email create user", err)
 		return nil, err
 	}
 
-	token, err := token.ClaimToken(userModel.Pb.Email)
+	err = tx.Commit()
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "claim token: %v", err)
+		util.LogError(u.Log, "commit create user", err)
+		return nil, err
 	}
 
-	userModel.Pb.Token = token
-
-	// send email registration info
-	from := mail.NewEmail(os.Getenv("SENDGRID_FROM_NAME"), os.Getenv("SENDGRID_FROM_EMAIL"))
-	p := mail.NewPersonalization()
-	tos := []*mail.Email{
-		mail.NewEmail(userModel.Pb.GetName(), userModel.Pb.GetEmail()),
-	}
-	p.AddTos(tos...)
-
-	p.SetDynamicTemplateData("name", userModel.Pb.GetName())
-	p.SetDynamicTemplateData("username", userModel.Pb.Email)
-	p.SetDynamicTemplateData("password", userModel.Password)
-	p.SetDynamicTemplateData("app_name", os.Getenv("APP_NAME"))
-	p.SetDynamicTemplateData("cs_email", os.Getenv("CUSTOMERSERVICE_EMAIL"))
-	p.SetDynamicTemplateData("cs_phone", os.Getenv("CUSTOMERSERVICE_PHONE"))
-
-	err = email.SendMailV3(from, p, os.Getenv("SENDGRID_TEMPLATE_NEW_USER"))
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "send new account email: %v", err)
-	}
-	return &userModel.Pb, nil
+	return user, nil
 }
 
 func (u *AlumniTracertServer) UserList(in *proto.ListInput, stream proto.TracertService_UserListServer) error {
@@ -152,4 +137,54 @@ func (u *AlumniTracertServer) UserGet(ctx context.Context, in *proto.User) (*pro
 	}
 
 	return &userModel.Pb, nil
+}
+
+func (u *AlumniTracertServer) userCreateHelper(ctx context.Context, in *proto.User, tx *sql.Tx) (*proto.User, *string, error) {
+	if err := new(validation.User).Create(ctx, in); err != nil {
+		util.LogError(u.Log, "validation on create user", err)
+		return nil, nil, err
+	}
+
+	var userModel model.User
+	userModel.Pb.Email = in.Email
+	userModel.Pb.Name = in.Name
+	userModel.Pb.UserType = in.UserType
+
+	userModel.Password = util.GenerateRandomPassword()
+	err := userModel.Create(ctx, tx)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	token, err := token.ClaimToken(userModel.Pb.Email)
+	if err != nil {
+		return nil, nil, status.Errorf(codes.Internal, "claim token: %v", err)
+	}
+
+	userModel.Pb.Token = token
+
+	return &userModel.Pb, &userModel.Password, nil
+}
+
+func (u *AlumniTracertServer) sendEmailHelper(ctx context.Context, in *proto.User, password string) error {
+	// send email registration info
+	from := mail.NewEmail(os.Getenv("SENDGRID_FROM_NAME"), os.Getenv("SENDGRID_FROM_EMAIL"))
+	p := mail.NewPersonalization()
+	tos := []*mail.Email{
+		mail.NewEmail(in.GetName(), in.GetEmail()),
+	}
+	p.AddTos(tos...)
+
+	p.SetDynamicTemplateData("name", in.GetName())
+	p.SetDynamicTemplateData("username", in.Email)
+	p.SetDynamicTemplateData("password", password)
+	p.SetDynamicTemplateData("app_name", os.Getenv("APP_NAME"))
+	p.SetDynamicTemplateData("cs_email", os.Getenv("CUSTOMERSERVICE_EMAIL"))
+	p.SetDynamicTemplateData("cs_phone", os.Getenv("CUSTOMERSERVICE_PHONE"))
+
+	err := email.SendMailV3(from, p, os.Getenv("SENDGRID_TEMPLATE_NEW_USER"))
+	if err != nil {
+		return status.Errorf(codes.Internal, "send new account email: %v", err)
+	}
+	return nil
 }
