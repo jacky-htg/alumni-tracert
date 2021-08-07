@@ -252,13 +252,13 @@ proto.proto.TracertServicePromiseClient.prototype.questionList =
  * @const
  * @type {!grpc.web.MethodDescriptor<
  *   !proto.proto.AlumniRegistrationInput,
- *   !proto.proto.Alumni>}
+ *   !proto.proto.AlumniRegistrationInput>}
  */
 const methodDescriptor_TracertService_AlumniRegistration = new grpc.web.MethodDescriptor(
   '/proto.TracertService/AlumniRegistration',
   grpc.web.MethodType.UNARY,
   user_message_pb.AlumniRegistrationInput,
-  alumni_message_pb.Alumni,
+  user_message_pb.AlumniRegistrationInput,
   /**
    * @param {!proto.proto.AlumniRegistrationInput} request
    * @return {!Uint8Array}
@@ -266,7 +266,7 @@ const methodDescriptor_TracertService_AlumniRegistration = new grpc.web.MethodDe
   function(request) {
     return request.serializeBinary();
   },
-  alumni_message_pb.Alumni.deserializeBinary
+  user_message_pb.AlumniRegistrationInput.deserializeBinary
 );
 
 
@@ -274,10 +274,10 @@ const methodDescriptor_TracertService_AlumniRegistration = new grpc.web.MethodDe
  * @const
  * @type {!grpc.web.AbstractClientBase.MethodInfo<
  *   !proto.proto.AlumniRegistrationInput,
- *   !proto.proto.Alumni>}
+ *   !proto.proto.AlumniRegistrationInput>}
  */
 const methodInfo_TracertService_AlumniRegistration = new grpc.web.AbstractClientBase.MethodInfo(
-  alumni_message_pb.Alumni,
+  user_message_pb.AlumniRegistrationInput,
   /**
    * @param {!proto.proto.AlumniRegistrationInput} request
    * @return {!Uint8Array}
@@ -285,7 +285,7 @@ const methodInfo_TracertService_AlumniRegistration = new grpc.web.AbstractClient
   function(request) {
     return request.serializeBinary();
   },
-  alumni_message_pb.Alumni.deserializeBinary
+  user_message_pb.AlumniRegistrationInput.deserializeBinary
 );
 
 
@@ -294,9 +294,9 @@ const methodInfo_TracertService_AlumniRegistration = new grpc.web.AbstractClient
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @param {function(?grpc.web.Error, ?proto.proto.Alumni)}
+ * @param {function(?grpc.web.Error, ?proto.proto.AlumniRegistrationInput)}
  *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.proto.Alumni>|undefined}
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.AlumniRegistrationInput>|undefined}
  *     The XHR Node Readable Stream
  */
 proto.proto.TracertServiceClient.prototype.alumniRegistration =
@@ -315,7 +315,7 @@ proto.proto.TracertServiceClient.prototype.alumniRegistration =
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @return {!Promise<!proto.proto.Alumni>}
+ * @return {!Promise<!proto.proto.AlumniRegistrationInput>}
  *     Promise that resolves to the response
  */
 proto.proto.TracertServicePromiseClient.prototype.alumniRegistration =

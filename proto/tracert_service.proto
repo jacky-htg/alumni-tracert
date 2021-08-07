@@ -20,7 +20,7 @@ service TracertService {
  
   rpc QuestionList(QuestionGroupListInput) returns (QuestionGroupList) {}
 
-  rpc AlumniRegistration(AlumniRegistrationInput) returns (Alumni) {}
+  rpc AlumniRegistration(AlumniRegistrationInput) returns (AlumniRegistrationInput) {}
   rpc AlumniCreate(Alumni) returns (Alumni) {}
   rpc AlumniList(ListInput) returns (stream AlumniListResponse) {} 
   rpc AlumniGet(Alumni) returns (Alumni) {}

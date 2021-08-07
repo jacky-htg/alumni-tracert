@@ -15,7 +15,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (u *AlumniTracertServer) AlumniRegistration(ctx context.Context, in *proto.AlumniRegistrationInput) (*proto.Alumni, error) {
+func (u *AlumniTracertServer) AlumniRegistration(ctx context.Context, in *proto.AlumniRegistrationInput) (*proto.AlumniRegistrationInput, error) {
 	select {
 	case <-ctx.Done():
 		return nil, util.ContextError(ctx)
@@ -34,12 +34,14 @@ func (u *AlumniTracertServer) AlumniRegistration(ctx context.Context, in *proto.
 		tx.Rollback()
 		return nil, err
 	}
+	in.User = user
 
 	alumni, err := u.alumniCreateHelper(ctx, in.Alumni, user, tx)
 	if err != nil {
 		tx.Rollback()
 		return nil, err
 	}
+	in.Alumni = alumni
 
 	err = u.sendEmailHelper(ctx, user, *password)
 	if err != nil {
@@ -53,7 +55,7 @@ func (u *AlumniTracertServer) AlumniRegistration(ctx context.Context, in *proto.
 		return nil, err
 	}
 
-	return alumni, nil
+	return in, nil
 }
 
 func (u *AlumniTracertServer) AlumniCreate(ctx context.Context, in *proto.Alumni) (*proto.Alumni, error) {
