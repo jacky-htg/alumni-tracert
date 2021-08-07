@@ -117,7 +117,7 @@ func runWebServer(httpPort string, rpcServer *RpcServer, uploadService service.U
 		ExposedHeaders:   []string{"*"},
 		AllowCredentials: true,
 		// Enable Debugging for testing, consider disabling in production
-		Debug: false,
+		Debug: true,
 	})
 
 	// Insert the middleware

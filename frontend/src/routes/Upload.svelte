@@ -1,58 +1,145 @@
 <script>
-  import { PATH_URL } from '../helper/path'
-  import { token } from '../stores/token.js'
-  import Upload from "../components/Upload.svelte";
-  import { Images } from '../helper/images'
-  import { HOST_URL, APP_ENV } from '../env'
-  import { notifications } from "../helper/toast";
-
-  let isLoading = false;
-
+	import { token } from '../stores/token.js'
+	import Sidebar from "../components/Sidebar.svelte";
+	import Upload from "../components/Upload.svelte";
+	import { notifications } from "../helper/toast";
+	import { HOST_URL, APP_ENV } from '../env'
+	import Cookies from 'js-cookie'
+  import { Legalize } from '../../proto/legalize_message_pb'
+  import LegalizeService from '../services/legalize'
+  import { TracertServicePromiseClient } from '../../proto/tracert_service_grpc_web_pb'
+	/*const state = {
+		isLoadingIjazah: false,
+		isLoadingTranskrip: false
+	}
   const onUpload = async (e) => {
-    const { acceptedFiles, fileRejections } = e.detail;
-    isLoading = true;
+    const { acceptedFiles, name } = e.detail;
+		const field = name === 'ijazah' ? 'isLoadingIjazah' : 'isLoadingTranskrip';
+    state[field] = true;
     try {
       const response = await fetch(`${HOST_URL}/upload`, { // Your POST endpoint
         method: 'POST',
-        /* headers: {
+				mode: 'no-cors',
+        headers: {
           // Content-Type may need to be completely **omitted**
           // or you may need something
-          "Content-Type": "need content type"
-          "token": "need token"
-        }, */
+          "token": Cookies.get('token')
+        },
         body: acceptedFiles[0]
       }).then(
         response => response.json()
       );
-      isLoading = false;
+      state[field] = false;
       console.log('RESPONSE = ', response);
     } catch(e) {
-      isLoading = false;
+      state[field] = false;
+      notifications.danger(e.message)
+    }
+  } */
+
+  const fileUpload = {
+    ijazah: null,
+    transcript: null
+  }
+
+  const filePath = {
+    ijazah: null,
+    transcript: null
+  }
+
+	const changeFile = (event) => {
+    const id = event.currentTarget.id 
+    fileUpload[id] = document.getElementById(id) 
+		uploadSimpleFile(fileUpload[id].files[0], id)
+	}
+
+	const uploadSimpleFile = (file, id) => {
+
+		// add file to FormData object
+		const fd = new FormData();
+		fd.append('file', file);
+    fd.append('module', id);
+
+		// send `POST` request
+		fetch(`${HOST_URL}/upload`, {
+				method: 'POST',
+        headers: {
+          "token": Cookies.get('token')
+        },
+				body: fd
+		})
+		.then(res => res.json())
+		.then(json => filePath[id] = json.path)
+		.catch(err => console.error(err));
+	}
+
+  async function legalizeCreateCall(){
+    var deps = {
+			proto: {
+				TracertClient: TracertServicePromiseClient
+			}
+		}
+
+    const legalizeProto = new Legalize()
+    legalizeProto.setIjazah(filePath['ijazah'])
+    legalizeProto.setTranscript(filePath['transcript'])
+    
+    const legalizeService = new LegalizeService(deps, legalizeProto)
+    return await legalizeService.create()
+	}
+
+  const legalisir = async () => {
+    try {
+      if (!filePath['ijazah']) {
+        throw {'message': 'pilih file ijazah terlebih dahulu'}
+      }
+
+      if (!filePath['transcript']) {
+        throw {'message': 'pilih file transcript terlebih dahulu'}
+      }
+
+      const legalisirUpload = await legalizeCreateCall()
+      console.log(legalisirUpload)
+    } catch(e) {
       notifications.danger(e.message)
     }
   }
 </script>
 
-<div class="flex flex-wrap w-full h-full">
-  <div class="flex w-full p-4 align-center">
+<div class="w-full mx-auto max-w-8xl">
+	<div class="lg:flex">
+		
+			<input on:change="{changeFile}" type="file" id="ijazah">
+      <input on:change="{changeFile}" type="file" id="transcript">
+      <button on:click="{legalisir}">Upload</button>
 
-    <main class="max-w-full px-4 mx-auto my-24 sm:mt-12 sm:px-6 md:mt-16 lg:my-24 lg:px-8">
-      <div class="sm:text-center lg:text-left">
-        <a href={PATH_URL.BASE} class="flex items-center mb-8">
-          <i class="mr-4 fas fa-arrow-left"></i>
-          <p class="text-base">Kembali ke halaman utama</p>
-        </a>
-        <img class="object-cover w-64 h-full mb-4" src={Images.logo_poltekkes} alt="">
-        <h1 class="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-3xl md:text-3xl">
-          <span class="block xl:inline">UPLOAD IJAZAH UNTUK DI LEGALISIR</span>
-        </h1>
-        <p class="mt-3 mb-4 text-base text-gray-500 sm:mt-5 sm:text-s sm:max-w-3xl sm:mx-auto md:mt-5 md:text-s lg:mx-0">
-          Silakan Upload file ijazah yang akan di legalisir
-        </p>
-        
-        <hr class="my-8 md:min-w-full" />
-        <Upload on:drop={onUpload} isLoading={isLoading}/>
-      </div>
-    </main>
-  </div>
+	</div>
 </div>
+
+<!-- div class="w-full mx-auto max-w-8xl">
+	<div class="lg:flex">
+		
+		<Sidebar location={location}/>
+
+		<main class="flex-auto w-full min-w-0 px-20 pt-12 lg:static lg:max-h-full lg:overflow-visible">
+			
+			<h1 class="mb-12 text-4xl font-bold">E-Legalisir</h1>
+
+			<div class="mb-12">
+				<label class="block text-sm font-medium text-gray-700">
+					Upload ijazah
+				</label>
+				<Upload on:drop={onUpload} name="ijazah" isLoading={state.isLoadingIjazah}/>
+			</div>
+
+			<div class="mb-12">
+				<label class="block text-sm font-medium text-gray-700">
+					Upload transkrip nilai
+				</label>
+				<Upload on:drop={onUpload} name="transkrip" isLoading={state.isLoadingTranskrip}/>
+			</div>
+			
+		</main>
+
+	</div>
+</div-->
