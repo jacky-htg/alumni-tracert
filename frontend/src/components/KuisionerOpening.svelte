@@ -4,11 +4,13 @@
 </script>
 
 <div>
-  <a href="/" class="flex items-center mb-8">
-    <i class="mr-4 fas fa-arrow-left"></i>
-    <p class="text-base">Kembali ke halaman utama</p>
-  </a>
-  <img class="object-cover w-64 h-full mb-4" src={Images.logo_poltekkes} alt="">
+  <div class='sticky top-0 -mt-6 pt-6 bg-white'>
+    <a href="/" class="flex items-center mb-8">
+      <i class="mr-4 fas fa-arrow-left"></i>
+      <p class="text-base">Kembali ke halaman utama</p>
+    </a>
+    <img class="object-cover w-64 h-full pb-4" src={Images.logo_poltekkes} alt="">
+  </div>
   <h1 class="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-3xl md:text-3xl">
     <span class="block xl:inline">KUISIONER TRACER STUDY/PENGGUNA ALUMNI</span>
   </h1>
