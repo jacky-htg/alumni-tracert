@@ -1,4 +1,4 @@
-import Tracert from './tracert';
+import Tracert from './tracert_login';
 
 export default class extends Tracert{
   constructor(proto, questionGroupListInput) {

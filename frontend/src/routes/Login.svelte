@@ -1,6 +1,7 @@
 <script>
   import { navigate } from 'svelte-routing'
   import { token } from '../stores/token'
+  import { userStore } from '../stores/user'
   import { LoginInput } from "../../proto/user_message_pb"
 	import { TracertServicePromiseClient } from '../../proto/tracert_service_grpc_web_pb' 
   import Login from '../services/login'
@@ -41,6 +42,9 @@
       const user = await loginCall(state.username, state.password)
       localStorage.setItem('token', user.getToken())
       token.set(localStorage.getItem('token'))
+
+      localStorage.setItem('user', JSON.stringify(user))
+      userStore.set(localStorage.getItem('user'))
       
       navigate(PATH_URL.DASHBOARD, { replace: true })
     } catch(e) {

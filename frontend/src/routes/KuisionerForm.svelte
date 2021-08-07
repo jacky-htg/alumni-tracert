@@ -2,26 +2,57 @@
   import { TracertServicePromiseClient } from '../../proto/tracert_service_grpc_web_pb'
   import { Images } from '../helper/images'
   import { QuestionGroupListInput, QuestionGroupList } from '../../proto/question_group_message_pb'
+  import { UserAnswer } from '../../proto/user_answer_message_pb'
   import QuestionService from '../services/question'
   import { onMount } from 'svelte'
   import { notifications } from '../helper/toast'
+  import { navigate } from 'svelte-routing'
+  import { PATH_URL } from '../helper/path'
+  import { userStore } from '../stores/user'
+  import UserAnswerService from '../services/user_answer'
+  import { token } from '../stores/token';
   
-  export let questionGroups = 1;
+  let groups  = [1];
+  const userAnswer = [];
   
   const questionGroupListInputProto = new QuestionGroupListInput()
-  questionGroupListInputProto.setQuestionGroupIdList(questionGroups)
-
   let questionList = new QuestionGroupList()
   
   async function questionListCall(){
+    console.log('question list', $token)
     var deps = {
 			proto: {
 				TracertClient: TracertServicePromiseClient
-			}
+			},
+      'token': 'asal'
 		}
-
+    questionGroupListInputProto.setQuestionGroupIdList(groups)
     const question = new QuestionService(deps, questionGroupListInputProto)
     return await question.list()
+	}
+
+  async function userAnswerCall(){
+    var deps = {
+			proto: {
+				TracertClient: TracertServicePromiseClient
+			},
+      token: $token
+		}
+
+    const userId = JSON.parse($userStore).array[0]
+    
+    let promises = [];
+    userAnswer.forEach((answer, questionId) => {
+      const userAnswerProto = new UserAnswer()
+      userAnswerProto.setUserId(userId)
+      userAnswerProto.setQuestionId(questionId)
+      userAnswerProto.setAnswer(answer)
+
+      const userAnswerService = new UserAnswerService(deps, userAnswerProto)
+      promises.push(userAnswerService.answer())
+    })
+
+    return Promise.all(promises)
 	}
 
   onMount(async () => {
@@ -32,8 +63,44 @@
     }
 	})
 
-  const lanjutkan = async () => {
+  const changeAnswer = (event, questionId) => {
+    userAnswer[questionId] = event.currentTarget.value
+    console.log(questionId, userAnswer[questionId])
+  }
 
+  const validateAnswer = () => {
+    let result = true;
+    questionList.getQuestionGroupList().forEach(group => {
+      group.getQuestionList().forEach(question => {
+        console.log(question.getId(), userAnswer[question.getId()])
+      
+        if(!userAnswer[question.getId()]) {
+          result = false
+        } 
+      })
+    })
+    return result
+  }
+
+  const lanjutkan = async () => {
+    try {
+      if (!validateAnswer()) {
+        throw { message: "silahkan jawab kuisioner terlebih dahulu"}
+      } 
+
+      const answer = await userAnswerCall()
+
+      if (groups.length === 1 && groups[0] === 1) {
+        if (userAnswer[1] !== 5) {
+          groups = [(parseInt(userAnswer[1])+1)]
+        } 
+        questionList = await questionListCall()
+      } else {
+        navigate(PATH_URL.UPLOAD_IJAZAH, { replace: true })
+      }
+    } catch(e) {
+      notifications.danger(e.message)
+    }
   }
 
 </script>
@@ -70,10 +137,13 @@
                     {/if}
                     {#each question.getQuestionOptionList() as questionOption}
                       <div class="flex items-center">
-                        <input id="push-everything" name="push-notifications" type="radio" class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
+                        <input on:change="{(event) => changeAnswer(event, question.getId())}" id="push-everything" name="push-notifications" type="radio" value="{questionOption.getId()}" class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
                         <label for="push-everything" class="block ml-3 text-sm font-medium text-gray-700">
                           {questionOption.getTitle()} 
                         </label>
+                        {#if questionOption.getIsNeedEssay()}
+                          <input type="text" name="first-name" id="first-name" autocomplete="given-name" class="block w-full px-4 py-2 mt-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-m">
+                        {/if}
                       </div>
                     {/each}
                     {#if question.getMinimumValue() && question.getMaximumValue() }

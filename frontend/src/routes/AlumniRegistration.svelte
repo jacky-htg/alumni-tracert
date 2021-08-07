@@ -6,6 +6,7 @@
   import alumniService from '../services/alumni'
   import { notifications } from '../helper/toast'
   import { token } from '../stores/token'
+  import { userStore } from '../stores/user'
   import { PATH_URL } from '../helper/path'
   import { navigate } from 'svelte-routing'
 
@@ -75,7 +76,10 @@
       localStorage.setItem('token', registration.getUser().getToken())
       token.set(localStorage.getItem('token'))
 
-      navigate(PATH_URL.KUISIONER_FORM, { replace: true, questionGroups: [1] })
+      localStorage.setItem('user', JSON.stringify(registration.getUser()))
+      userStore.set(localStorage.getItem('user'))
+
+      navigate(PATH_URL.KUISIONER_FORM, { replace: true })
       
     } catch(e) {
       notifications.danger(e.message)
