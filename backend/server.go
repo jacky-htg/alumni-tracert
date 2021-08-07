@@ -9,6 +9,7 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
+	"github.com/rs/cors"
 	"google.golang.org/grpc"
 
 	"tracert/internal/config"
@@ -94,15 +95,14 @@ func runRpcServer(port string, rpcServer *RpcServer) error {
 func runWebServer(httpPort string, rpcServer *RpcServer, uploadService service.Upload) error {
 	grpc := rpcServer.WrappedGrpc
 
-	http.HandleFunc("/", func(resp http.ResponseWriter, req *http.Request) {
-		allowCors(resp, req)
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", func(resp http.ResponseWriter, req *http.Request) {
 		if grpc.IsGrpcWebRequest(req) || grpc.IsAcceptableGrpcCorsRequest(req) {
 			grpc.ServeHTTP(resp, req)
 		}
 	})
 
-	http.HandleFunc("/upload", func(resp http.ResponseWriter, req *http.Request) {
-		allowCors(resp, req)
+	mux.HandleFunc("/upload", func(resp http.ResponseWriter, req *http.Request) {
 		switch req.Method {
 		case http.MethodPost:
 			uploadService.UploadHandler(resp, req)
@@ -111,7 +111,9 @@ func runWebServer(httpPort string, rpcServer *RpcServer, uploadService service.U
 		}
 	})
 
-	err := http.ListenAndServe(":"+httpPort, nil)
+	handler := cors.Default().Handler(mux)
+
+	err := http.ListenAndServe(":"+httpPort, handler)
 	if err != nil {
 		return err
 	}
@@ -120,8 +122,17 @@ func runWebServer(httpPort string, rpcServer *RpcServer, uploadService service.U
 }
 
 func allowCors(resp http.ResponseWriter, req *http.Request) {
+	//resp.Header().Set("Access-Control-Allow-Origin", "*")
+	//resp.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+	//resp.Header().Set("Access-Control-Expose-Headers", "grpc-status, grpc-message")
+	//resp.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, XMLHttpRequest, x-user-agent, x-grpc-web, grpc-status, grpc-message, token")
+
 	resp.Header().Set("Access-Control-Allow-Origin", "*")
-	resp.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-	resp.Header().Set("Access-Control-Expose-Headers", "grpc-status, grpc-message")
-	resp.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, XMLHttpRequest, x-user-agent, x-grpc-web, grpc-status, grpc-message, token")
+	resp.Header().Set("Access-Control-Allow-Methods", "*")
+	resp.Header().Set("Access-Control-Allow-Headers", "*")
+	resp.Header().Set("Access-Control-Expose-Headers", "*")
+	if (*req).Method == "OPTIONS" {
+		return
+	}
+
 }
