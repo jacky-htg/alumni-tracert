@@ -1,12 +1,49 @@
 <script>
-	import { Link } from 'svelte-routing'
-	import { token } from '../stores/token.js'
-	import Sidebar from "../components/Sidebar.svelte";
+	import { TracertServicePromiseClient } from '../../proto/tracert_service_grpc_web_pb'
+  import Sidebar from '../components/Sidebar.svelte'
+  import { AlumniListResponse } from '../../proto/question_group_message_pb'
+	import { ListInput } from '../../proto/generic_message_pb'
+  import AlumniService from '../services/alumniList'
+  import { onMount } from 'svelte'
+  import { notifications } from '../helper/toast'
+	import Cookies from 'js-cookie'
+	let search = '';
+	let limit = 10;
+	let page = 1;
+  
+  const listInputProto = new ListInput()
+  listInputProto.setSearch(search)
+	listInputProto.setLimit(limit)
+	listInputProto.setPage(page)
 
-	const logout = () => {
-		localStorage.clear()
-		token.set(localStorage.getItem('token'))
+  let alumniList = [];
+  
+  async function alumniListCall(token){
+    var deps = {
+			proto: {
+				TracertClient: TracertServicePromiseClient
+			},
+			token
+		}
+
+    const alumni = new AlumniService(deps, listInputProto)
+    return await alumni.alumniList()
 	}
+
+  onMount(async () => {
+		try {
+			const token = Cookies.get('token')
+			const alumniStream = await alumniListCall(token);
+			alumniStream.on('data', (response) => {
+				alumniList = [ ...alumniList, response.toObject().alumni]
+			})
+			alumniStream.on('end', () => {
+				console.log('End stream = ');
+			})
+    } catch(e) {
+      notifications.danger(e.message)
+    }
+	})
 </script>
 
 <div class="w-full mx-auto max-w-8xl">
@@ -26,10 +63,10 @@
 								<thead class="bg-gray-50">
 									<tr>
 										<th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-											Name
+											Nama
 										</th>
 										<th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-											Email
+											NIM
 										</th>
 										<th scope="col" class="relative px-6 py-3">
 											<span class="sr-only">Edit</span>
@@ -37,78 +74,25 @@
 									</tr>
 								</thead>
 								<tbody class="bg-white divide-y divide-gray-200">
+									{#each alumniList as alumni}
 									<tr>
 										<td class="px-6 py-4 whitespace-nowrap">
 											<div class="flex items-center">
 												<div class="ml-4">
 													<div class="text-sm font-medium text-gray-900">
-														Jane Cooper
+														{alumni.name}
 													</div>
 												</div>
 											</div>
 										</td>
 										<td class="px-6 py-4 whitespace-nowrap">
-											<div class="text-sm text-gray-900">jane.cooper@example.com</div>
+											<div class="text-sm text-gray-900">{alumni.nim}</div>
 										</td>
 										<td class="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
 											<a href="#" class="text-indigo-600 hover:text-indigo-900">View profile</a>
 										</td>
 									</tr>
-
-									<tr>
-										<td class="px-6 py-4 whitespace-nowrap">
-											<div class="flex items-center">
-												<div class="ml-4">
-													<div class="text-sm font-medium text-gray-900">
-														Jane Cooper
-													</div>
-												</div>
-											</div>
-										</td>
-										<td class="px-6 py-4 whitespace-nowrap">
-											<div class="text-sm text-gray-900">jane.cooper@example.com</div>
-										</td>
-										<td class="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
-											<a href="#" class="text-indigo-600 hover:text-indigo-900">View profile</a>
-										</td>
-									</tr>
-
-									<tr>
-										<td class="px-6 py-4 whitespace-nowrap">
-											<div class="flex items-center">
-												<div class="ml-4">
-													<div class="text-sm font-medium text-gray-900">
-														Jane Cooper
-													</div>
-												</div>
-											</div>
-										</td>
-										<td class="px-6 py-4 whitespace-nowrap">
-											<div class="text-sm text-gray-900">jane.cooper@example.com</div>
-										</td>
-										<td class="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
-											<a href="#" class="text-indigo-600 hover:text-indigo-900">View profile</a>
-										</td>
-									</tr>
-
-									<tr>
-										<td class="px-6 py-4 whitespace-nowrap">
-											<div class="flex items-center">
-												<div class="ml-4">
-													<div class="text-sm font-medium text-gray-900">
-														Jane Cooper
-													</div>
-												</div>
-											</div>
-										</td>
-										<td class="px-6 py-4 whitespace-nowrap">
-											<div class="text-sm text-gray-900">jane.cooper@example.com</div>
-										</td>
-										<td class="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
-											<a href="#" class="text-indigo-600 hover:text-indigo-900">View profile</a>
-										</td>
-									</tr>
-
+									{/each}
 									<!-- More people... -->
 								</tbody>
 							</table>

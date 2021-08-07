@@ -4,6 +4,7 @@
 	import Upload from "../components/Upload.svelte";
 	import { notifications } from "../helper/toast";
 	import { HOST_URL, APP_ENV } from '../env'
+	import Cookies from 'js-cookie'
 	const state = {
 		isLoadingIjazah: false,
 		isLoadingTranskrip: false
@@ -15,12 +16,11 @@
     try {
       const response = await fetch(`${HOST_URL}/upload`, { // Your POST endpoint
         method: 'POST',
-        /* headers: {
+        headers: {
           // Content-Type may need to be completely **omitted**
           // or you may need something
-          "Content-Type": "need content type"
-          "token": "need token"
-        }, */
+          "token": Cookies.get('token')
+        },
         body: acceptedFiles[0]
       }).then(
         response => response.json()
