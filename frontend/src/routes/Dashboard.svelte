@@ -4,11 +4,10 @@
   import Sidebar from "../components/Sidebar.svelte";
 
   const logout = () => {
-      localStorage.clear()
-      token.set(localStorage.getItem('token'))
+    localStorage.clear()
+    token.set(localStorage.getItem('token'))
   }
 
-  export let location;
 </script>
 
 <div>
