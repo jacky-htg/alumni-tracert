@@ -1,16 +1,22 @@
-import { HOST_URL } from '../env'
+import { HOST_URL, APP_ENV } from '../env'
+import { token } from '../stores/token'
 
 export default class{
   constructor(deps){
-      const enableDevTools = window.__GRPCWEB_DEVTOOLS__ || (() => {})
-  
       this.proto = deps.proto
-      // this.client = new deps.proto.TracertClient(HOST_URL, null, null)
+      if (token) {
+        this.client = new deps.proto.TracertClient(HOST_URL, {
+          'token': token
+        }, null)
+      } else {
+        this.client = new deps.proto.TracertClient(HOST_URL, null, null)
+      }
 
-      this.client = new deps.proto.TracertClient('https://api.borobudur.rijalasepnugroho.com', null, null)
-
-      enableDevTools([
-        this.client,
-      ]);
+      if (APP_ENV === 'development') {
+        const enableDevTools = window.__GRPCWEB_DEVTOOLS__ || (() => {})
+        enableDevTools([
+          this.client,
+        ]);
+      }
   }
 }

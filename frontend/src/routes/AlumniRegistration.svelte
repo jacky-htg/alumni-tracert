@@ -8,7 +8,6 @@
   import { token } from '../stores/token'
   import { PATH_URL } from '../helper/path'
   import { navigate } from 'svelte-routing'
-  
 
   const userProto = new User()
   const alumniProto = new Alumni()
@@ -76,7 +75,7 @@
       localStorage.setItem('token', registration.getUser().getToken())
       token.set(localStorage.getItem('token'))
 
-      navigate(PATH_URL.KUISIONER_FORM, { replace: true, questionGroup: 1 })
+      navigate(PATH_URL.KUISIONER_FORM, { replace: true, questionGroups: [1] })
       
     } catch(e) {
       notifications.danger(e.message)

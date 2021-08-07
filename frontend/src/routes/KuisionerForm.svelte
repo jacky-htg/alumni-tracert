@@ -1,16 +1,41 @@
 <script>
+  import { TracertServicePromiseClient } from '../../proto/tracert_service_grpc_web_pb'
   import { Images } from '../helper/images'
-  import { token } from '../stores/token.js'
+  import { QuestionGroupListInput, QuestionGroupList } from '../../proto/question_group_message_pb'
+  import QuestionService from '../services/question'
+  import { onMount } from 'svelte'
+  import { notifications } from '../helper/toast'
+  
+  export let questionGroups = 1;
+  
+  const questionGroupListInputProto = new QuestionGroupListInput()
+  questionGroupListInputProto.setQuestionGroupIdList(questionGroups)
 
-  console.log($token)
-
+  let questionList = new QuestionGroupList()
+  
   async function questionListCall(){
     var deps = {
 			proto: {
 				TracertClient: TracertServicePromiseClient
 			}
 		}
+
+    const question = new QuestionService(deps, questionGroupListInputProto)
+    return await question.list()
 	}
+
+  onMount(async () => {
+		try {
+      questionList = await questionListCall()
+    } catch(e) {
+      notifications.danger(e.message)
+    }
+	})
+
+  const lanjutkan = async () => {
+
+  }
+
 </script>
 
 <div class="flex flex-wrap w-full h-full">
@@ -28,56 +53,59 @@
         </h1>
         
         <hr class="my-8 md:min-w-full" />
-        
-        <form action="#" method="POST">
-          <div class="overflow-hidden">
-            <fieldset>
-              
-              <!-- question sets -->
+
+        <div class="overflow-hidden">
+          {#each questionList.getQuestionGroupList() as group}
+            <h2>{group.getTitle()}</h2>
+            {#each group.getQuestionList() as question}
               <div>
-                <p class="text-xl font-semibold text-black">Bagaimana anda menggambarkan situasi sekarang?</p>
+                <p class="text-xl font-semibold text-black">{question.getTitle()}</p>
                 <div class="mt-4 space-y-4">
-                  <div class="flex items-center">
-                    <input id="push-everything" name="push-notifications" type="radio" class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
-                    <label for="push-everything" class="block ml-3 text-sm font-medium text-gray-700">
-                      Saya sudah bekerja 
-                    </label>
-                  </div>
-                  <div class="flex items-center">
-                    <input id="push-email" name="push-notifications" type="radio" class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
-                    <label for="push-email" class="block ml-3 text-sm font-medium text-gray-700">
-                      Saya masih melanjutkan kuliah
-                    </label>
-                  </div>
-                  <div class="flex items-center">
-                    <input id="push-nothing" name="push-notifications" type="radio" class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
-                    <label for="push-nothing" class="block ml-3 text-sm font-medium text-gray-700">
-                      Saya belum bekerja
-                    </label>
-                  </div>
-                  <div class="flex items-center">
-                    <input id="push-nothing" name="push-notifications" type="radio" class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
-                    <label for="push-nothing" class="block ml-3 text-sm font-medium text-gray-700">
-                      Saya seddang mencari pekerjaan
-                    </label>
-                  </div>
-                  <div class="flex items-center">
-                    <input id="push-nothing" name="push-notifications" type="radio" class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
-                    <label for="push-nothing" class="block ml-3 text-sm font-medium text-gray-700">
-                      Saya sudah menikah dan fokus mengurus keluarga
-                    </label>
-                  </div>
+
+                  {#if question.getQuestionType() === 1}
+                    <input type="text" name="first-name" id="first-name" autocomplete="given-name" class="block w-full px-4 py-2 mt-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-m">
+                  {:else if  question.getQuestionType() === 2}
+                    {#if question.getMinimumValue() && question.getMaximumValue() }
+                      <span>{question.getMinimumValue()}</span>
+                    {/if}
+                    {#each question.getQuestionOptionList() as questionOption}
+                      <div class="flex items-center">
+                        <input id="push-everything" name="push-notifications" type="radio" class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
+                        <label for="push-everything" class="block ml-3 text-sm font-medium text-gray-700">
+                          {questionOption.getTitle()} 
+                        </label>
+                      </div>
+                    {/each}
+                    {#if question.getMinimumValue() && question.getMaximumValue() }
+                      <span>{question.getMaximumValue()}</span>
+                    {/if}
+                  {:else if  question.getQuestionType() === 3}
+                    {#each question.getQuestionOptionList() as questionOption}
+                      <div class="flex items-start">
+                        <div class="flex items-center h-5">
+                          <input id="comments" name="comments" type="checkbox" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                        </div>
+                        <div class="ml-3 text-sm">
+                          <label for="comments" class="font-medium text-gray-700">{questionOption.getTitle()}</label>
+                        </div>
+                      </div>
+                    {/each}
+                  {/if}
                 </div>
               </div>
-            </fieldset>
-
-            <div class="px-4 py-3 text-right bg-gray-50 sm:px-6">
-              <button type="submit" class="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                Lanjutkan
-              </button>
-            </div>
+            {/each}
+          {:else}
+            <!-- this block renders when photos.length === 0 -->
+            <p>loading...</p>
+          {/each}
+        
+          
+          <div class="px-4 py-3 text-right bg-gray-50 sm:px-6">
+            <button on:click="{lanjutkan}" class="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+              Lanjutkan
+            </button>
           </div>
-        </form>
+        </div>
 
       </div>
     </main>
