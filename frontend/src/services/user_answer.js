@@ -1,4 +1,5 @@
-import Tracert from './tracert_login';
+import Tracert from './tracert';
+import { token } from '../stores/token'
 
 export default class extends Tracert{
   constructor(proto, UserAnswer) {
@@ -6,7 +7,7 @@ export default class extends Tracert{
     this.req = UserAnswer 
   }
   answer (){
-      return this.client.userAnswerCreate(this.req, {}).then(userAnswer=>{
+      return this.client.userAnswerCreate(this.req, null).then(userAnswer=>{
           return userAnswer
       })
   }

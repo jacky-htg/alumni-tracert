@@ -10,7 +10,6 @@
   import { PATH_URL } from '../helper/path'
   import { userStore } from '../stores/user'
   import UserAnswerService from '../services/user_answer'
-  import { token } from '../stores/token';
   
   let groups  = [1];
   const userAnswer = [];
@@ -19,12 +18,10 @@
   let questionList = new QuestionGroupList()
   
   async function questionListCall(){
-    console.log('question list', $token)
     var deps = {
 			proto: {
 				TracertClient: TracertServicePromiseClient
-			},
-      'token': 'asal'
+			}
 		}
     questionGroupListInputProto.setQuestionGroupIdList(groups)
     const question = new QuestionService(deps, questionGroupListInputProto)
@@ -35,8 +32,7 @@
     var deps = {
 			proto: {
 				TracertClient: TracertServicePromiseClient
-			},
-      token: $token
+			}
 		}
 
     const userId = JSON.parse($userStore).array[0]
