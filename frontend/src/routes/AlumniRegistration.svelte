@@ -9,6 +9,7 @@
   import { userStore } from '../stores/user'
   import { PATH_URL } from '../helper/path'
   import { navigate } from 'svelte-routing'
+  import Cookies from 'js-cookie'
 
   const userProto = new User()
   const alumniProto = new Alumni()
@@ -78,6 +79,9 @@
 
       localStorage.setItem('user', JSON.stringify(registration.getUser()))
       userStore.set(localStorage.getItem('user'))
+
+      Cookies.set('token', user.getToken())
+      Cookies.set('user', JSON.stringify(user))
 
       navigate(PATH_URL.KUISIONER_FORM, { replace: true })
       
