@@ -5,7 +5,7 @@
 
   export let path
   export let component
-  console.log($token)
+  //console.log($token)
 
   $: isAuthenticated = $token
 </script>
