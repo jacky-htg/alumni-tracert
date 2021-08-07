@@ -10,6 +10,7 @@
   import { PATH_URL } from '../helper/path'
   import { Images } from '../helper/images'
   import { notifications } from '../helper/toast';
+  import Cookies from 'js-cookie'
 
   async function loginCall(username, password){
     var deps = {
@@ -40,11 +41,14 @@
   const login = async () => {
     try {
       const user = await loginCall(state.username, state.password)
+      
       localStorage.setItem('token', user.getToken())
       token.set(localStorage.getItem('token'))
+      Cookies.set('token', user.getToken())
 
       localStorage.setItem('user', JSON.stringify(user))
       userStore.set(localStorage.getItem('user'))
+      Cookies.set('user', JSON.stringify(user))
       
       await token.set(localStorage.getItem('token'))
       const userType = user.getUserType();
