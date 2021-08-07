@@ -40,9 +40,18 @@
     try {
       const user = await loginCall(state.username, state.password)
       localStorage.setItem('token', user.getToken())
-      token.set(localStorage.getItem('token'))
-      
-      navigate(PATH_URL.DASHBOARD, { replace: true })
+      await token.set(localStorage.getItem('token'))
+      const userType = user.getUserType();
+      console.log('USERTYPE = ', userType);
+      switch(userType) {
+        case 0:
+        case 3:
+        case 4:
+          navigate(PATH_URL.DASHBOARD, { replace: true })
+          break;
+        default:
+          navigate(PATH_URL.UPLOAD_IJAZAH, { replace: true })
+      }
     } catch(e) {
       notifications.danger(e.message)
     }
