@@ -12,6 +12,7 @@
     TOO_MANY_FILES_REJECTION
   } from "../helper/upload";
   import { onMount, onDestroy, createEventDispatcher } from "svelte";
+  import BarLoader from './BarLoader.svelte';
   //props
   /**
    * Set accepted file types.
@@ -31,6 +32,7 @@
   export let containerClasses = "";
   export let containerStyles = "";
   export let disableDefaultStyles = false;
+  export let isLoading = false;
   const dispatch = createEventDispatcher();
   //state
   let state = {
@@ -305,6 +307,10 @@
     bind:this={inputRef}
     style="display: none;" />
   <slot>
-    <p>Drop ijazah kesini, atau click untuk memilih file</p>
+    {#if isLoading}
+      <BarLoader size="80" color="rgb(4, 120, 87)" unit="px" duration="3s" />
+    {:else}
+      <p>Drop ijazah kesini, atau click untuk memilih file</p>
+    {/if}
   </slot>
 </div>

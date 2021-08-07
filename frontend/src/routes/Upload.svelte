@@ -1,11 +1,35 @@
 <script>
-  import { Link } from 'svelte-routing'
+  import { PATH_URL } from '../helper/path'
   import { token } from '../stores/token.js'
   import Upload from "../components/Upload.svelte";
   import { Images } from '../helper/images'
-  const logout = () => {
-      localStorage.clear()
-      token.set(localStorage.getItem('token'))
+  import { HOST_URL, APP_ENV } from '../env'
+  import { notifications } from "../helper/toast";
+
+  let isLoading = false;
+
+  const onUpload = async (e) => {
+    const { acceptedFiles, fileRejections } = e.detail;
+    isLoading = true;
+    try {
+      const response = await fetch(`${HOST_URL}/upload`, { // Your POST endpoint
+        method: 'POST',
+        /* headers: {
+          // Content-Type may need to be completely **omitted**
+          // or you may need something
+          "Content-Type": "need content type"
+          "token": "need token"
+        }, */
+        body: acceptedFiles[0]
+      }).then(
+        response => response.json()
+      );
+      isLoading = false;
+      console.log('RESPONSE = ', response);
+    } catch(e) {
+      isLoading = false;
+      notifications.danger(e.message)
+    }
   }
 </script>
 
@@ -14,7 +38,7 @@
 
     <main class="max-w-full px-4 mx-auto my-24 sm:mt-12 sm:px-6 md:mt-16 lg:my-24 lg:px-8">
       <div class="sm:text-center lg:text-left">
-        <a href="/" class="flex items-center mb-8">
+        <a href={PATH_URL.BASE} class="flex items-center mb-8">
           <i class="mr-4 fas fa-arrow-left"></i>
           <p class="text-base">Kembali ke halaman utama</p>
         </a>
@@ -27,7 +51,7 @@
         </p>
         
         <hr class="my-8 md:min-w-full" />
-        <Upload />
+        <Upload on:drop={onUpload} isLoading={isLoading}/>
       </div>
     </main>
   </div>
