@@ -1,12 +1,16 @@
 <script>
-  import { Link } from 'svelte-routing'
-  import { token } from '../stores/token.js'
   import { Images } from '../helper/images'
+  import { token } from '../stores/token.js'
 
-  const logout = () => {
-      localStorage.clear()
-      token.set(localStorage.getItem('token'))
-  }
+  console.log($token)
+
+  async function questionListCall(){
+    var deps = {
+			proto: {
+				TracertClient: TracertServicePromiseClient
+			}
+		}
+	}
 </script>
 
 <div class="flex flex-wrap w-full h-full">
@@ -14,7 +18,7 @@
 
     <main class="max-w-full px-4 mx-auto my-24 sm:mt-12 sm:px-6 md:mt-16 lg:my-24 lg:px-8">
       <div class="sm:text-center lg:text-left">
-        <a use:Link href="/" class="flex items-center mb-8">
+        <a href="/" class="flex items-center mb-8">
           <i class="mr-4 fas fa-arrow-left"></i>
           <p class="text-base">Kembali ke halaman utama</p>
         </a>

@@ -39,10 +39,9 @@
   const login = async () => {
     try {
       const user = await loginCall(state.username, state.password)
-      console.log(user)
-      localStorage.setItem('token', user.token)
+      localStorage.setItem('token', user.getToken())
       token.set(localStorage.getItem('token'))
-
+      
       navigate(PATH_URL.DASHBOARD, { replace: true })
     } catch(e) {
       notifications.danger(e.message)

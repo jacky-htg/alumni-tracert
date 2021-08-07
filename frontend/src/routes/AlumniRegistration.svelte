@@ -73,8 +73,7 @@
   const lanjutkan = async () => {
     try {
       const registration = await alumniRegistrationCall()
-      console.log(registration)
-      localStorage.setItem('token', registration.getUser().token)
+      localStorage.setItem('token', registration.getUser().getToken())
       token.set(localStorage.getItem('token'))
 
       navigate(PATH_URL.KUISIONER_FORM, { replace: true, questionGroup: 1 })

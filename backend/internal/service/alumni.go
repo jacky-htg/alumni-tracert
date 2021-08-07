@@ -201,6 +201,7 @@ func (u *AlumniTracertServer) alumniCreateHelper(ctx context.Context, in *proto.
 
 	var alumniModel model.Alumni
 	alumniModel.Pb.UserId = user.Id
+	alumniModel.Pb.Name = user.Name
 	alumniModel.Pb.Nim = in.Nim
 	alumniModel.Pb.Nik = in.Nik
 	alumniModel.Pb.PlaceOfBirth = in.PlaceOfBirth
