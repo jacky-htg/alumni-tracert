@@ -16,7 +16,7 @@ type Legalize struct {
 	Model model.Legalize
 }
 
-func (u *Legalize) Create(ctx context.Context, in *proto.Legalize, db *sql.DB) error {
+func (u *Legalize) Upload(ctx context.Context, in *proto.Legalize, db *sql.DB) error {
 	alumniId := ctx.Value(app.Ctx("alumni_id"))
 
 	if alumniId == nil || alumniId.(uint64) <= 0 {
@@ -116,6 +116,26 @@ func (u *Legalize) Approved(ctx context.Context, in *proto.UintMessage, db *sql.
 
 	if u.Model.Pb.IsApproved {
 		return status.Error(codes.InvalidArgument, "Legalize has been approved")
+	}
+
+	return nil
+}
+
+func (u *Legalize) Rating(ctx context.Context, in *proto.UintMessage, db *sql.DB) error {
+	if in.Data < 1 || in.Data > 5 {
+		return status.Error(codes.InvalidArgument, "Please supply valid Rating")
+	}
+
+	if err := u.Model.GetByAlumniId(ctx, db); err != nil {
+		return err
+	}
+
+	if u.Model.Pb.Status != uint32(constant.LEGALIZE_STATUS_APPROVED) {
+		return status.Error(codes.InvalidArgument, "Legalize has not been approved")
+	}
+
+	if !u.Model.Pb.IsApproved {
+		return status.Error(codes.InvalidArgument, "Legalize has not been approved")
 	}
 
 	return nil

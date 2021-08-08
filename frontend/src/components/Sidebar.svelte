@@ -81,7 +81,7 @@ import { get } from 'svelte/store'
       <ul class="flex flex-col list-none md:flex-col md:min-w-full">
         {#each sideBarMenus as menu}
         {#if menu.key === 'e-legalisir'}
-          {#if Cookies.get('token') && Cookies.get('usertype') === "1"}
+          {#if Cookies.get('token') && Cookies.get('usertype') !== "2"}
             <li class="items-center">
               <a
                 use:link

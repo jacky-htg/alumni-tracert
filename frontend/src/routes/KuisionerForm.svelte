@@ -8,8 +8,8 @@
   import { notifications } from '../helper/toast'
   import { navigate } from 'svelte-routing'
   import { PATH_URL } from '../helper/path'
-  import { userStore } from '../stores/user'
   import UserAnswerService from '../services/user_answer'
+  import Cookies from 'js-cookie'
   
   let groups  = [1];
   const userAnswer = [];
@@ -35,10 +35,9 @@
 			}
 		}
 
-    const userId = JSON.parse($userStore).array[0]
+    const userId = Cookies.get('userid')
     
     let promises = [];
-    console.log(`userAnswer`, userAnswer)
     userAnswer.forEach((answer, questionId) => {
       const userAnswerProto = new UserAnswer()
       userAnswerProto.setUserId(userId)

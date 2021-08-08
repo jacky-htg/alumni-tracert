@@ -18,14 +18,19 @@ type Legalize struct {
 	Pb proto.Legalize
 }
 
-func (u *Legalize) Create(ctx context.Context, db *sql.DB) error {
+func (u *Legalize) Upsert(ctx context.Context, db *sql.DB) error {
 	select {
 	case <-ctx.Done():
 		return util.ContextError(ctx)
 	default:
 	}
 
-	query := `INSERT INTO legalizes (alumni_id, ijazah, transcript, status) VALUES (?, ?, ?, 1)`
+	query := `
+		INSERT INTO legalizes (alumni_id, ijazah, transcript, status) 
+		VALUES (?, ?, ?, 1)
+		ON DUPLICATE KEY UPDATE
+		ijazah = ?, transcript = ?, status = 1, is_verified = false, is_approved = false, created = NOW(), modified = NOW()
+	`
 
 	stmt, err := db.PrepareContext(ctx, query)
 	if err != nil {
@@ -35,6 +40,8 @@ func (u *Legalize) Create(ctx context.Context, db *sql.DB) error {
 
 	_, err = stmt.ExecContext(ctx,
 		u.Pb.Alumni.Id,
+		u.Pb.Ijazah,
+		u.Pb.Transcript,
 		u.Pb.Ijazah,
 		u.Pb.Transcript,
 	)
@@ -161,6 +168,50 @@ func (u *Legalize) Get(ctx context.Context, db *sql.DB) error {
 	return nil
 }
 
+func (u *Legalize) GetByAlumniId(ctx context.Context, db *sql.DB) error {
+	query := `
+		SELECT l.id, a.id, a.name, a.nim, a.nik, a.no_ijazah, 
+			l.ijazah, l.transcript, l.is_verified, l.is_approved, 
+			l.verified_by, l.verified_at, l.approved_by, l.approved_at, 
+			l.status, l.ijazah_signed, l.transcript_signed, l.rating, l.created, l.modified 
+		FROM legalizes l
+		JOIN alumni a ON l.alumni_id = a.id
+		WHERE a.id = ?
+	`
+
+	row := db.QueryRowContext(ctx, query, u.Pb.Alumni.Id)
+	var createdAt, updatedAt time.Time
+	var pbAlumni proto.Alumni
+	var verifiedBy, approvedBy sql.NullInt64
+	var rating sql.NullInt32
+	var verifiedAt, approvedAt, ijazahSigned, transcriptSigned sql.NullString
+	err := row.Scan(
+		&u.Pb.Id, &pbAlumni.Id, &pbAlumni.Name, &pbAlumni.Nim, &pbAlumni.Nik, &pbAlumni.NoIjazah,
+		&u.Pb.Ijazah, &u.Pb.Transcript, &u.Pb.IsVerified, &u.Pb.IsApproved,
+		&verifiedBy, &verifiedAt, &approvedBy, &approvedAt,
+		&u.Pb.Status, &ijazahSigned, &transcriptSigned, &rating, &createdAt, &updatedAt,
+	)
+	if err == sql.ErrNoRows {
+		return status.Errorf(codes.NotFound, "not found: %v", err)
+	}
+
+	if err != nil {
+		return status.Errorf(codes.Internal, "scan data: %v", err)
+	}
+
+	u.Pb.Created = createdAt.String()
+	u.Pb.Updated = updatedAt.String()
+	u.Pb.VerifiedAt = verifiedAt.String
+	u.Pb.VerifiedBy = uint64(verifiedBy.Int64)
+	u.Pb.ApprovedAt = approvedAt.String
+	u.Pb.ApprovedBy = uint64(approvedBy.Int64)
+	u.Pb.IjazahSigned = ijazahSigned.String
+	u.Pb.TranscriptSigned = transcriptSigned.String
+	u.Pb.Rating = uint32(rating.Int32)
+
+	return nil
+}
+
 func (u *Legalize) Rejected(ctx context.Context, db *sql.DB) error {
 	select {
 	case <-ctx.Done():
@@ -263,6 +314,37 @@ func (u *Legalize) Approved(ctx context.Context, db *sql.DB) error {
 		time.Now().UTC(),
 		u.Pb.IjazahSigned,
 		u.Pb.TranscriptSigned,
+		u.Pb.Id,
+	)
+	if err != nil {
+		return status.Errorf(codes.Internal, "Exec update: %v", err)
+	}
+
+	return nil
+}
+
+func (u *Legalize) Rating(ctx context.Context, db *sql.DB) error {
+	select {
+	case <-ctx.Done():
+		return util.ContextError(ctx)
+	default:
+	}
+
+	query := `
+		UPDATE legalizes 
+		SET 
+			rating = ? 
+		WHERE id = ? 
+	`
+
+	stmt, err := db.PrepareContext(ctx, query)
+	if err != nil {
+		return status.Errorf(codes.Internal, "Prepare rating: %v", err)
+	}
+	defer stmt.Close()
+
+	_, err = stmt.ExecContext(ctx,
+		u.Pb.Rating,
 		u.Pb.Id,
 	)
 	if err != nil {

@@ -8,7 +8,19 @@ export default class extends Tracert{
   }
   create (){
     const token = Cookies.get('token')
-    return this.client.legalizeCreate(this.req, {token}).then(out => {
+    return this.client.legalizeUpdate(this.req, {token}).then(out => {
+        return out
+    })
+  }
+  getOwn (){
+    const token = Cookies.get('token')
+    return this.client.legalizeGetOwn(this.req, {token}).then(out => {
+        return out
+    })
+  }
+  rating (){
+    const token = Cookies.get('token')
+    return this.client.legalizeRating(this.req, {token}).then(out => {
         return out
     })
   }

@@ -5,9 +5,16 @@
 	import { HOST_URL, APP_ENV } from '../env'
 	import Cookies from 'js-cookie'
   import { Legalize } from '../../proto/legalize_message_pb'
+  import { EmptyMessage, StringMessage, UintMessage } from '../../proto/generic_message_pb'
   import LegalizeService from '../services/legalize'
   import { TracertServicePromiseClient } from '../../proto/tracert_service_grpc_web_pb'
   import { SIDEBAR_USER } from '../helper/path'
+  import { onMount } from 'svelte'
+
+  let myLegalize = new Legalize()
+  let stringMessage = new StringMessage()
+  let uintMessage = new UintMessage()
+  let hideRate = false
 
   const fileUpload = {
     ijazah: null,
@@ -80,8 +87,52 @@
         throw {'message': 'pilih file transcript terlebih dahulu'}
       }
 
-      const legalisirUpload = await legalizeCreateCall()
-      console.log(legalisirUpload)
+      myLegalize = await legalizeCreateCall()
+    } catch(e) {
+      notifications.danger(e.message)
+    }
+  }
+
+  async function myLegalizeCall() {
+    var deps = {
+			proto: {
+				TracertClient: TracertServicePromiseClient
+			}
+		}
+
+    const legalizeService = new LegalizeService(deps, new EmptyMessage())
+    return await legalizeService.getOwn() 
+  }
+
+  async function myLegalizeRate() {
+    var deps = {
+			proto: {
+				TracertClient: TracertServicePromiseClient
+			}
+		}
+    console.log(uintMessage.getData())
+    const legalizeService = new LegalizeService(deps, uintMessage)
+    return await legalizeService.rating() 
+  }
+
+  onMount(async () => {
+		try {
+      myLegalize = await myLegalizeCall()
+      console.log(myLegalize)
+    } catch(e) {
+      notifications.danger(e.message)
+    }
+	})
+
+  const changeRating = (event) => {
+    uintMessage.setData(event.currentTarget.value)
+  }
+
+  const sendRating = async() => {
+    try {
+      stringMessage = await myLegalizeRate()
+      notifications.success(stringMessage.getData(), 3000)
+      hideRate = true
     } catch(e) {
       notifications.danger(e.message)
     }
@@ -106,25 +157,59 @@
 		<main class="flex-auto w-full min-w-0 px-20 pt-12 lg:static lg:max-h-full lg:overflow-visible">
 			
 			<h1 class="mb-12 text-4xl font-bold">E-Legalisir</h1>
+      {#if  myLegalize.getId()}
+        Anda telah mengajukan e-legalisir dengan status :
+        {#if myLegalize.getStatus() === 0}
+          <h2>DITOLAK</h2>
+          <p>Silahkan ajukan e-legalisir ulang, atau hubungi admin untuk info lebih lanjut</p>
+        {:else if myLegalize.getStatus() === 1}
+          <h2>SUBMIT</h2>
+          <p>Mohon menunggu proses verifikasi</p>
+        {:else if myLegalize.getStatus() === 2}
+          <h2>DIVERIFIKASI</h2>
+          <p>Mohon menunggu proses tanda tangan</p>
+        {:else if myLegalize.getStatus() === 3}
+          <h2>DISETUJUI</h2>
+          <a href="{myLegalize.getIjazahSigned()}">Download Ijazah</a> | <a href="{myLegalize.getTranscriptSigned()}">Download Transcript</a> 
+          {#if !myLegalize.getRating() && !hideRate}
+            <hr/>
+            <div id="formRating">
+              <h3>Apakah anda puas dengan pelayanan e legalisir online?</h3>
+              <select on:blur="{changeRating}">
+                <option value="" disabled selected>Pilih Tingkat Kepuasan</option>
+                <option value="5">sangat puas</option>
+                <option value="4">puas</option>
+                <option value="3">cukup puas</option>
+                <option value="2">tidak puas</option>
+                <option value="1">sangat tidak puas</option>
+              </select>
+              <button on:click="{sendRating}">Send</button>
+            </div>
+          {/if}
+        {/if}
+      {/if}
+
+      {#if !myLegalize.getId() || myLegalize.getStatus() === 0 }
 
 			<div class="mb-12">
-				<label class="block text-sm font-medium text-gray-700">
+				<label for="ijazah" class="block text-sm font-medium text-gray-700">
 					Upload ijazah
 				</label>
-				<Upload on:drop={uploadSimpleFile} name="ijazah" isLoading={state.isLoadingIjazah}/>
+				<Upload on:drop={uploadSimpleFile} id="ijazah" name="ijazah" isLoading={state.isLoadingIjazah}/>
 			</div>
 
 			<div class="mb-12">
-				<label class="block text-sm font-medium text-gray-700">
+				<label for="transcript" class="block text-sm font-medium text-gray-700">
 					Upload transkrip nilai
 				</label>
-				<Upload on:drop={uploadSimpleFile} name="transcript" isLoading={state.isLoadingTranskrip}/>
+				<Upload on:drop={uploadSimpleFile} id="transcript" name="transcript" isLoading={state.isLoadingTranskrip}/>
 			</div>
 			<div class="mt-10 px-4 py-3 text-right bg-gray-50 sm:px-6">
         <button on:click={legalisir} class="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
           Legalisir
         </button>
       </div>
+      {/if}
 		</main>
 
 	</div>

@@ -23,7 +23,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (u *AlumniTracertServer) LegalizeCreate(ctx context.Context, in *proto.Legalize) (*proto.Legalize, error) {
+func (u *AlumniTracertServer) LegalizeUpload(ctx context.Context, in *proto.Legalize) (*proto.Legalize, error) {
 	select {
 	case <-ctx.Done():
 		return nil, util.ContextError(ctx)
@@ -36,7 +36,7 @@ func (u *AlumniTracertServer) LegalizeCreate(ctx context.Context, in *proto.Lega
 		return nil, err
 	}
 
-	if err := new(validation.Legalize).Create(ctx, in, u.Db); err != nil {
+	if err := new(validation.Legalize).Upload(ctx, in, u.Db); err != nil {
 		util.LogError(u.Log, "validation on upload legalize", err)
 		return nil, err
 	}
@@ -46,12 +46,71 @@ func (u *AlumniTracertServer) LegalizeCreate(ctx context.Context, in *proto.Lega
 	legalizeModel.Pb.Ijazah = in.Ijazah
 	legalizeModel.Pb.Transcript = in.Transcript
 
-	err = legalizeModel.Create(ctx, u.Db)
+	err = legalizeModel.Upsert(ctx, u.Db)
 	if err != nil {
 		return nil, err
 	}
 
 	return &legalizeModel.Pb, nil
+}
+
+func (u *AlumniTracertServer) LegalizeGetOwn(ctx context.Context, in *proto.EmptyMessage) (*proto.Legalize, error) {
+	select {
+	case <-ctx.Done():
+		return nil, util.ContextError(ctx)
+	default:
+	}
+
+	ctx, err := GetUserLogin(ctx, u.Db)
+	if err != nil {
+		util.LogError(u.Log, "Get user login on get own legalize ", err)
+		return nil, err
+	}
+
+	var legalizeModel model.Legalize
+	legalizeModel.Pb.Alumni = &proto.Alumni{Id: ctx.Value(app.Ctx("alumni_id")).(uint64)}
+
+	err = legalizeModel.GetByAlumniId(ctx, u.Db)
+	if err != nil {
+		return nil, err
+	}
+
+	legalizeModel.Pb.IjazahSigned = "https://" + os.Getenv("OSS_BUCKET_DOCUMENT") + "." + os.Getenv("OSS_ENDPOINT") + "/" + legalizeModel.Pb.IjazahSigned
+	legalizeModel.Pb.TranscriptSigned = "https://" + os.Getenv("OSS_BUCKET_DOCUMENT") + "." + os.Getenv("OSS_ENDPOINT") + "/" + legalizeModel.Pb.TranscriptSigned
+
+	return &legalizeModel.Pb, nil
+}
+
+func (u *AlumniTracertServer) LegalizeRating(ctx context.Context, in *proto.UintMessage) (*proto.StringMessage, error) {
+	select {
+	case <-ctx.Done():
+		return nil, util.ContextError(ctx)
+	default:
+	}
+
+	ctx, err := GetUserLogin(ctx, u.Db)
+	if err != nil {
+		util.LogError(u.Log, "Get user login on rating legalize ", err)
+		return nil, err
+	}
+
+	var legalizeValidate validation.Legalize
+	legalizeValidate.Model.Pb.Alumni = &proto.Alumni{Id: ctx.Value(app.Ctx("alumni_id")).(uint64)}
+	if err := legalizeValidate.Rating(ctx, in, u.Db); err != nil {
+		util.LogError(u.Log, "validation on rate legalize", err)
+		return nil, err
+	}
+
+	var legalizeModel model.Legalize
+	legalizeModel.Pb.Id = legalizeValidate.Model.Pb.Id
+	legalizeModel.Pb.Rating = uint32(in.Data)
+
+	err = legalizeModel.Rating(ctx, u.Db)
+	if err != nil {
+		return nil, err
+	}
+
+	return &proto.StringMessage{Data: "Success"}, nil
 }
 
 func (u *AlumniTracertServer) LegalizeList(in *proto.ListInput, stream proto.TracertService_LegalizeListServer) error {
