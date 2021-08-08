@@ -6,7 +6,7 @@
   import AlumniService from '../services/alumniList'
   import { onMount } from 'svelte'
   import { notifications } from '../helper/toast'
-	import { SIDEBAR_ADMIN } from '../helper/path'
+	import { PATH_URL, SIDEBAR_ADMIN } from '../helper/path'
 	import Cookies from 'js-cookie'
 	let search = '';
 	let limit = 10;
@@ -89,7 +89,7 @@
 											<div class="text-sm text-gray-900">{alumni.nim}</div>
 										</td>
 										<td class="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
-											<a href="#" class="text-indigo-600 hover:text-indigo-900">View profile</a>
+											<a href={`${PATH_URL.ADMIN_ALUMNI_DETAIL}?id=${alumni.id}`} class="text-indigo-600 hover:text-indigo-900">View profile</a>
 										</td>
 									</tr>
 									{/each}

@@ -18,17 +18,18 @@ export const PATH_URL = {
   SAPA_ALUMNI: '/sapa-alumni',
   ADMIN_ALUMNI: '/admin/list-alumni',
   ADMIN_E_LEGALISIR: '/admin/e-legalisir',
+  ADMIN_ALUMNI_DETAIL: '/admin/alumni-detail'
 }
 
 export const SIDEBAR_ADMIN = [
   {
-    path: PATH_URL.LIST_ALUMNI,
+    path: PATH_URL.ADMIN_ALUMNI,
     label: 'List Alumni',
     icon: 'fa-user-circle',
     key: 'list-alumni'
   },
   {
-    path: PATH_URL.E_LEGALISIR,
+    path: PATH_URL.ADMIN_E_LEGALISIR,
     label: 'List e-legalisir',
     icon: 'fa-address-card',
     key: 'e-legalisir'

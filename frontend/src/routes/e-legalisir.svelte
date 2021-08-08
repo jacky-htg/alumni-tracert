@@ -1,13 +1,17 @@
 <script>
 	import { TracertServicePromiseClient } from '../../proto/tracert_service_grpc_web_pb'
 	import { ListInput } from '../../proto/generic_message_pb'
-  import LegalisirService from '../services/alumniList'
+  import LegalisirService from '../services/legalisirList'
 	import Sidebar from "../components/Sidebar.svelte";
 	import Upload from "../components/Upload.svelte";
+	import { onMount } from 'svelte'
 	import { notifications } from "../helper/toast";
 	import { HOST_URL, APP_ENV } from '../env'
 	import { SIDEBAR_ADMIN } from '../helper/path.js';
 	import Cookies from 'js-cookie'
+	let search = '';
+	let limit = 10;
+	let page = 1;
 	// state legalisir admin
 	const listInputProto = new ListInput()
   listInputProto.setSearch(search)
