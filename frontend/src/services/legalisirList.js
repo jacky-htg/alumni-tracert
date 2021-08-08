@@ -10,4 +10,8 @@ export default class extends Tracert{
     const token = Cookies.get('token')
     return this.client.alumniAppraiserList(this.req, { token })
   }
+  legalizeList() {
+    const token = Cookies.get('token')
+    return this.client.legalizeList(this.req, { token })
+  }
 }
