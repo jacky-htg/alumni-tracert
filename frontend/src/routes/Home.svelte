@@ -3,7 +3,8 @@
   import Cookies from 'js-cookie'
   import { PATH_URL } from '../helper/path'
   
-  if (Cookies.get('token') !== null && Cookies.get('token') !== 'undefined') {
+  if (!(Cookies.get('token') == null)) {
+    console.log(Cookies.get('token'))
     location = PATH_URL.DASHBOARD  
   }
   
