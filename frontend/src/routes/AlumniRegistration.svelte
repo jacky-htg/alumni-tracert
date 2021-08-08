@@ -1,5 +1,5 @@
 <script>
-  import KuisionerOpening from '../components/KuisionerOpening.svelte'
+  import KuisionerNoOpening from '../components/KuisionerNoOpening.svelte'
   import { Alumni } from "../../proto/alumni_message_pb"
 	import { User, AlumniRegistrationInput } from "../../proto/user_message_pb"
 	import { TracertServicePromiseClient } from '../../proto/tracert_service_grpc_web_pb'
@@ -7,6 +7,7 @@
   import { notifications } from '../helper/toast'
   import { token } from '../stores/token'
   import { userStore } from '../stores/user'
+  import { Images } from '../helper/images'
   import { PATH_URL } from '../helper/path'
   import { navigate } from 'svelte-routing'
   import Cookies from 'js-cookie'
@@ -97,10 +98,13 @@
 
     <main class="max-w-full px-4 mx-auto my-24 sm:mt-12 sm:px-6 md:mt-16 lg:my-24 lg:px-8">
       <div class="sm:text-center lg:text-left">
-        <KuisionerOpening/>
-        <h2 class="text-xl font-semibold text-black">Data Alumni</h2>
+        
+        <KuisionerNoOpening/>
+
+        <h2 class="mb-8 text-xl font-semibold text-black">Data Alumni</h2>
           <div class="overflow-hidden">
-            <div class="grid grid-cols-4 gap-4">
+
+            <div class="grid grid-cols-4 gap-4 mb-8">
               <div class="col-span-4">
                 <label for="name" class="block text-sm font-medium text-gray-700">Nama</label>
                 <input on:change="{changeName}" type="text" name="name" id="name" autocomplete="given-name" class="block w-full px-4 py-2 mt-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-m">
@@ -116,12 +120,12 @@
                 <input on:change="{changeNik}" type="text" name="nik" id="nik" autocomplete="nikemail" class="block w-full px-4 py-2 mt-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-m">
               </div>
 
-              <div class="col-span-2 sm:col-span-2 lg:col-span-1">
+              <div class="col-span-2">
                 <label for="city" class="block text-sm font-medium text-gray-700">Tempat lahir</label>
                 <input on:change="{changeCity}" type="text" name="city" id="city" class="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
               </div>
 
-              <div class="col-span-2 sm:col-span-2 lg:col-span-1">
+              <div class="col-span-2">
                 <label for="bod" class="block text-sm font-medium text-gray-700">Tanggal kelahiran</label>
                 <input on:change="{changeBod}" type="date" name="bod" id="bod" class="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
               </div>

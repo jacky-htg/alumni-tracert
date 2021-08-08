@@ -123,6 +123,8 @@
     }
   }
 
+  let rangeQuestion = true;
+
 </script>
 
 <div class="flex flex-wrap w-full h-full">
@@ -130,6 +132,7 @@
 
     <main class="max-w-3xl px-4 mx-auto my-24 sm:mt-12 sm:px-6 md:mt-16 lg:my-24 lg:px-8">
       <div class="sm:text-center lg:text-left">
+        
         <div class="sticky top-0 pt-6 bg-white">
           <a href="/" class="flex items-center mb-8">
             <i class="mr-4 fas fa-arrow-left"></i>
@@ -145,32 +148,44 @@
 
         <div class="">
           {#each questionList.getQuestionGroupList() as group}
-            <h2 class="-mb-4">{group.getTitle()}</h2>
-            {#each group.getQuestionList() as question}
-              <div class="mt-8">
-                <p class="text-xl font-semibold text-black">{question.getTitle()}</p>
-                <div class="mt-2 space-y-4">
+            
+          <h2 class="block mb-4 mb-8 font-bold text-blue-700">{group.getTitle()}</h2>
 
+            {#each group.getQuestionList() as question}
+              <div class="mb-12">
+                
+                <p class="mb-4 text-xl font-semibold text-black">{question.getTitle()}</p>
+
+                <div class={question.getMinimumValue() && question.getMaximumValue() ? "flex justify-between mt-6 items-center" : "mt-2 space-y-4"}>
+                  
                   {#if question.getQuestionType() === 1}
                     <input on:change="{(event) => changeAnswer(event, question.getId())}" type="text" name="first-name" id="first-name" autocomplete="given-name" class="block w-full px-4 py-2 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-m">
                   {:else if  question.getQuestionType() === 2}
+
                     {#if question.getMinimumValue() && question.getMaximumValue() }
                       <span>{question.getMinimumValue()}</span>
                     {/if}
+
                     {#each question.getQuestionOptionList() as questionOption, i}
                       <div class="flex items-center">
                         <input checked={userAnswer[question.getId()] == questionOption.getId()} on:change="{(event) => changeAnswer(event, question.getId())}" id={`radio-${question.getId()}-${i}`} name={`radio-${question.getId()}-${i}`} type="radio" value="{questionOption.getId()}" class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
-                        <label for={`radio-${question.getId()}-${i}`} class="cursor-pointer block ml-3 text-sm font-medium text-gray-700">
-                          {questionOption.getTitle()} 
-                        </label>
-                        {#if questionOption.getIsNeedEssay()}
-                          <input type="text" name="first-name" id="first-name" autocomplete="given-name" class="block w-full px-4 py-2 mt-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-m">
-                        {/if}
+
+                        <div class="flex items-center w-full">
+                          <label for={`radio-${question.getId()}-${i}`} class="block max-w-xl ml-3 text-sm font-medium text-gray-700 cursor-pointer w-max min-w-max">
+                            {questionOption.getTitle()} 
+                          </label>
+                          {#if questionOption.getIsNeedEssay()}
+                            <input type="text" class="block w-full px-4 py-2 ml-2 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-m">
+                          {/if}
+                        </div>
+
                       </div>
                     {/each}
+
                     {#if question.getMinimumValue() && question.getMaximumValue() }
-                      <span>{question.getMaximumValue()}</span>
+                        <span>{question.getMaximumValue()}</span>
                     {/if}
+                    
                   {:else if  question.getQuestionType() === 3}
                     {#each question.getQuestionOptionList() as questionOption, i}
                       <div class="flex items-start">
@@ -178,7 +193,7 @@
                           <input value={questionOption.getId()} on:change="{(event) => changeAnswer(event, question.getId(), true)}" id={`check-${question.getId()}-${i}`} name={`check-${question.getId()}-${i}`} type="checkbox" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
                         </div>
                         <div class="ml-3 text-sm">
-                          <label for={`check-${question.getId()}-${i}`} class="cursor-pointer font-medium text-gray-700">{questionOption.getTitle()}</label>
+                          <label for={`check-${question.getId()}-${i}`} class="font-medium text-gray-700 cursor-pointer">{questionOption.getTitle()}</label>
                         </div>
                       </div>
                     {/each}
@@ -192,7 +207,7 @@
           {/each}
         
           
-          <div class="mt-10 px-4 py-3 text-right bg-gray-50 sm:px-6">
+          <div class="px-4 py-3 mt-10 text-right bg-gray-50 sm:px-6">
             <button on:click="{lanjutkan}" class="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
               Lanjutkan
             </button>

@@ -84,14 +84,14 @@
 			<h1 class="mb-12 text-4xl font-bold">E-Legalisir</h1>
 
 			<div class="mb-12">
-				<label class="block text-sm font-medium text-gray-700">
+				<label for="ijazah" class="block text-sm font-medium text-gray-700">
 					Upload ijazah
 				</label>
 				<Upload on:drop={onUpload} name="ijazah" isLoading={state.isLoadingIjazah}/>
 			</div>
 
 			<div class="mb-12">
-				<label class="block text-sm font-medium text-gray-700">
+				<label for="transkrip" class="block text-sm font-medium text-gray-700">
 					Upload transkrip nilai
 				</label>
 				<Upload on:drop={onUpload} name="transkrip" isLoading={state.isLoadingTranskrip}/>
