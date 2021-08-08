@@ -33,17 +33,6 @@
     </main>
   </div>
   <div class="flex w-full mt-4 md:mt-0 md:w-1/3 lg:inset-y-0 lg:right-0">
-    <img class="object-cover w-full h-56 sm:h-72 md:h-96 lg:w-full lg:h-full" src={Images.img_poltekkes} alt="">
+    <img class="object-cover w-full h-56 sm:h-72 md:h-96 lg:w-full lg:h-full" src={Images.img_poltekkes} alt="Foto poltekkes">
   </div>
 </div>
-
-
-
-<!-- <h1>👋 Welcome to the home page</h1>
-<h2>
-  <Link to="dashboard">Go to Dashboard</Link>
-</h2>
-<span>or</span>
-<h2>
-  <Link to="login">Login</Link>
-</h2> -->
