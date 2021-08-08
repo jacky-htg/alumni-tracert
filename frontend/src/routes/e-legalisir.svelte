@@ -1,10 +1,50 @@
 <script>
 	import { token } from '../stores/token.js'
+	import { TracertServicePromiseClient } from '../../proto/tracert_service_grpc_web_pb'
+	import { ListInput } from '../../proto/generic_message_pb'
+  import LegalisirService from '../services/alumniList'
 	import Sidebar from "../components/Sidebar.svelte";
 	import Upload from "../components/Upload.svelte";
 	import { notifications } from "../helper/toast";
 	import { HOST_URL, APP_ENV } from '../env'
+	import { SIDEBAR_ADMIN } from '../helper/path.js';
 	import Cookies from 'js-cookie'
+	// state legalisir admin
+	const listInputProto = new ListInput()
+  listInputProto.setSearch(search)
+	listInputProto.setLimit(limit)
+	listInputProto.setPage(page)
+
+  let legalisirList = [];
+  
+  async function legalisirListCall(token){
+    var deps = {
+			proto: {
+				TracertClient: TracertServicePromiseClient
+			},
+			token
+		}
+
+    const legalisir = new LegalisirService(deps, listInputProto)
+    return await legalisir.legalisirList()
+	}
+
+	onMount(async () => {
+		try {
+			const token = Cookies.get('token')
+			const legalisirStream = await legalisirListCall(token);
+			legalisirStream.on('data', (response) => {
+				legalisirList = [ ...legalisirList, response.toObject().alumniAppraiser]
+			})
+			legalisirStream.on('end', () => {
+				console.log('End stream = ');
+			})
+    } catch(e) {
+      notifications.danger(e.message)
+    }
+	})
+
+	// state upload
 	const state = {
 		isLoadingIjazah: false,
 		isLoadingTranskrip: false
@@ -21,7 +61,8 @@
           // or you may need something
           "token": Cookies.get('token')
         },
-        body: acceptedFiles[0]
+        body: acceptedFiles[0],
+				// mode: 'no-cors'
       }).then(
         response => response.json()
       );
@@ -36,8 +77,7 @@
 
 <div class="w-full mx-auto max-w-8xl">
 	<div class="lg:flex">
-		
-		<Sidebar location={location}/>
+		<Sidebar active="e-legalisir" sideBarMenus={SIDEBAR_ADMIN}/>
 
 		<main class="flex-auto w-full min-w-0 px-20 pt-12 lg:static lg:max-h-full lg:overflow-visible">
 			

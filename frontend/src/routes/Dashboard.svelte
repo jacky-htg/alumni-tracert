@@ -11,6 +11,6 @@
 </script>
 
 <div>
-  <Sidebar location={location}/>
+  <Sidebar active=""/>
   
 </div>

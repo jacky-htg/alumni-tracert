@@ -14,7 +14,8 @@
     token.set(localStorage.getItem('token'))
     navigate(PATH_URL.LOGIN, { replace: true })
   }
-  export let location
+  export let active;
+  export let sideBarMenus = [];
 </script>
 
 <!-- <nav
@@ -72,31 +73,20 @@
       <hr class="my-4 md:min-w-full" />
 
       <ul class="flex flex-col list-none md:flex-col md:min-w-full">
+        {#each sideBarMenus as menu}
         <li class="items-center">
           <a
             use:link
-            class="text-xs uppercase py-3 font-bold block {location.href.indexOf('/admin/list-alumni') !== -1 ? 'text-red-500 hover:text-red-600':'text-blueGray-700 hover:text-blueGray-500'}"
-            href={PATH_URL.LIST_ALUMNI}
+            class="text-xs uppercase py-3 font-bold block {active === menu.key ? '':'text-blueGray-700 hover:text-blueGray-500'}"
+            href={menu.path}
           >
             <i
-              class="fas fa-user-circle mr-2 text-sm {location.href.indexOf('/admin/list-alumni') !== -1 ? 'opacity-75' : 'text-blueGray-300'}"
-            ></i>
-            List Alumni
+              class={`fas ${menu.icon} mr-2 text-sm ${active === menu.key ? 'opacity-75' : 'text-blueGray-300'}`}
+            />
+            {menu.label}
           </a>
         </li>
-
-        <li class="items-center">
-          <a
-            use:link
-            class="text-xs uppercase py-3 font-bold block {location.href.indexOf('/admin/e-legalisir') !== -1 ? 'text-red-500 hover:text-red-600':'text-blueGray-700 hover:text-blueGray-500'}"
-            href={PATH_URL.E_LEGALISIR}
-          >
-            <i
-              class="fas fa-address-card mr-2 text-sm {location.href.indexOf('/admin/e-legalisir') !== -1 ? 'opacity-75' : 'text-blueGray-300'}"
-            ></i>
-            List e-legalisir
-          </a>
-        </li>
+        {/each}
       </ul>
 
       <!-- Divider -->

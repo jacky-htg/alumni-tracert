@@ -6,6 +6,7 @@
   import AlumniService from '../services/alumniList'
   import { onMount } from 'svelte'
   import { notifications } from '../helper/toast'
+	import { SIDEBAR_ADMIN } from '../helper/path'
 	import Cookies from 'js-cookie'
 	let search = '';
 	let limit = 10;
@@ -48,8 +49,7 @@
 
 <div class="w-full mx-auto max-w-8xl">
 	<div class="lg:flex">
-		
-		<Sidebar location={location}/>
+		<Sidebar active="list-alumni" sideBarMenus={SIDEBAR_ADMIN}/>
 
 		<main class="flex-auto w-full min-w-0 px-20 pt-12 lg:static lg:max-h-full lg:overflow-visible">
 			

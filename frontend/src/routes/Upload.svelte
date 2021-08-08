@@ -8,34 +8,7 @@
   import { Legalize } from '../../proto/legalize_message_pb'
   import LegalizeService from '../services/legalize'
   import { TracertServicePromiseClient } from '../../proto/tracert_service_grpc_web_pb'
-	/*const state = {
-		isLoadingIjazah: false,
-		isLoadingTranskrip: false
-	}
-  const onUpload = async (e) => {
-    const { acceptedFiles, name } = e.detail;
-		const field = name === 'ijazah' ? 'isLoadingIjazah' : 'isLoadingTranskrip';
-    state[field] = true;
-    try {
-      const response = await fetch(`${HOST_URL}/upload`, { // Your POST endpoint
-        method: 'POST',
-				mode: 'no-cors',
-        headers: {
-          // Content-Type may need to be completely **omitted**
-          // or you may need something
-          "token": Cookies.get('token')
-        },
-        body: acceptedFiles[0]
-      }).then(
-        response => response.json()
-      );
-      state[field] = false;
-      console.log('RESPONSE = ', response);
-    } catch(e) {
-      state[field] = false;
-      notifications.danger(e.message)
-    }
-  } */
+  import { SIDEBAR_USER } from '../helper/path'
 
   const fileUpload = {
     ijazah: null,
@@ -47,30 +20,40 @@
     transcript: null
   }
 
+  const state = {
+		isLoadingIjazah: false,
+		isLoadingTranskrip: false
+	}
+
 	const changeFile = (event) => {
     const id = event.currentTarget.id 
     fileUpload[id] = document.getElementById(id) 
 		uploadSimpleFile(fileUpload[id].files[0], id)
 	}
 
-	const uploadSimpleFile = (file, id) => {
-
+	const uploadSimpleFile = async (e) => {
+    const { acceptedFiles, name } = e.detail;
+		const field = name === 'ijazah' ? 'isLoadingIjazah' : 'isLoadingTranskrip';
 		// add file to FormData object
 		const fd = new FormData();
-		fd.append('file', file);
-    fd.append('module', id);
-
+		fd.append('file', acceptedFiles[0]);
+    fd.append('module', name);
+    state[field] = true;
 		// send `POST` request
-		fetch(`${HOST_URL}/upload`, {
-				method: 'POST',
-        headers: {
-          "token": Cookies.get('token')
-        },
-				body: fd
-		})
-		.then(res => res.json())
-		.then(json => filePath[id] = json.path)
-		.catch(err => console.error(err));
+    try {
+      const uploadedFile = await fetch(`${HOST_URL}/upload`, {
+          method: 'POST',
+          headers: {
+            "token": Cookies.get('token')
+          },
+          body: fd
+      })
+      .then(res => res.json())
+      filePath[name] = uploadedFile.path;
+      state[field] = false;
+    } catch(e) {
+      state[field] = false;
+    }
 	}
 
   async function legalizeCreateCall(){
@@ -106,7 +89,7 @@
   }
 </script>
 
-<div class="w-full mx-auto max-w-8xl">
+<!-- div class="w-full mx-auto max-w-8xl">
 	<div class="lg:flex">
 		
 			<input on:change="{changeFile}" type="file" id="ijazah">
@@ -114,12 +97,12 @@
       <button on:click="{legalisir}">Upload</button>
 
 	</div>
-</div>
+</div -->
 
-<!-- div class="w-full mx-auto max-w-8xl">
+<div class="w-full mx-auto max-w-8xl">
 	<div class="lg:flex">
 		
-		<Sidebar location={location}/>
+		<Sidebar active="e-legalisir" sideBarMenus={SIDEBAR_USER}/>
 
 		<main class="flex-auto w-full min-w-0 px-20 pt-12 lg:static lg:max-h-full lg:overflow-visible">
 			
@@ -129,17 +112,21 @@
 				<label class="block text-sm font-medium text-gray-700">
 					Upload ijazah
 				</label>
-				<Upload on:drop={onUpload} name="ijazah" isLoading={state.isLoadingIjazah}/>
+				<Upload on:drop={uploadSimpleFile} name="ijazah" isLoading={state.isLoadingIjazah}/>
 			</div>
 
 			<div class="mb-12">
 				<label class="block text-sm font-medium text-gray-700">
 					Upload transkrip nilai
 				</label>
-				<Upload on:drop={onUpload} name="transkrip" isLoading={state.isLoadingTranskrip}/>
+				<Upload on:drop={uploadSimpleFile} name="transcript" isLoading={state.isLoadingTranskrip}/>
 			</div>
-			
+			<div class="mt-10 px-4 py-3 text-right bg-gray-50 sm:px-6">
+        <button on:click={legalisir} class="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+          Legalisir
+        </button>
+      </div>
 		</main>
 
 	</div>
-</div-->
+</div>

@@ -12,6 +12,7 @@
 	import KuisionerForm from './routes/KuisionerForm.svelte'
 	import AlumniRegistration from './routes/AlumniRegistration.svelte'
 	import AppraiserRegistration from './routes/AppraiserRegistration.svelte'
+	import DetailAlumni from './routes/AlumniDetail.svelte';
 	import Upload from './routes/Upload.svelte';
 	import Download from './routes/Download.svelte';
 	import Login from './routes/Login.svelte';
@@ -51,5 +52,6 @@
 	<ProtectedRoute path={PATH_URL.DASHBOARD} component={Dashboard} />
 	<ProtectedRoute path={PATH_URL.ADMIN_ALUMNI} component={ListAlumni} />
 	<ProtectedRoute path={PATH_URL.ADMIN_E_LEGALISIR} component={ELegalisir} />
+	<ProtectedRoute path={PATH_URL.DETAIL_ALUMNI} component={DetailAlumni} />
 </Router>
 <Toast />
