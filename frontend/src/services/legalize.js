@@ -8,7 +8,7 @@ export default class extends Tracert{
   }
   create (){
     const token = Cookies.get('token')
-    return this.client.legalizeUpdate(this.req, {token}).then(out => {
+    return this.client.legalizeUpload(this.req, {token}).then(out => {
         return out
     })
   }

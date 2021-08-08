@@ -93,6 +93,9 @@
       }
 
       myLegalize = await legalizeCreateCall()
+      if (myLegalize.getId()) {
+        notifications.success('e-legalisir telah disubmit')
+      }
     } catch(e) {
       notifications.danger(e.message)
     }

@@ -5,6 +5,7 @@
 
   export let path
   export let component 
+  console.log('token', Cookies.get('token'))
 </script>
 
 {#if Cookies.get('token')}
