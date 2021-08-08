@@ -1,13 +1,12 @@
 <script>
-  import { Route, Link } from 'svelte-routing'
+  import { Route } from 'svelte-routing'
   import accessDenied from './routes/accessDenied.svelte'
-  import { token } from './stores/token.js'
+  import Cookies from 'js-cookie'
 
   export let path
   export let component
-  //console.log($token)
 
-  $: isAuthenticated = $token
+  $: isAuthenticated = Cookies.get('token')
 </script>
 
 {#if isAuthenticated}

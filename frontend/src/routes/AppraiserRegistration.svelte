@@ -1,12 +1,8 @@
 <script>
   import { Link } from 'svelte-routing'
-  import { token } from '../stores/token.js'
   import { Images } from '../helper/images'
 
-  const logout = () => {
-      localStorage.clear()
-      token.set(localStorage.getItem('token'))
-  }
+  
 </script>
 
 <div class="flex flex-wrap w-full h-full">

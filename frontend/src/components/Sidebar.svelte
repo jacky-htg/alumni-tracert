@@ -2,20 +2,24 @@
   import { link } from 'svelte-routing'
   import { navigate } from 'svelte-routing'
   import { PATH_URL } from '../helper/path'
-  import { token } from '../stores/token.js'
-  import { username } from '../stores';
+  import Cookies from 'js-cookie'
+
   // core components
   let collapseShow = 'hidden'
   function toggleCollapseShow(classes) {
     collapseShow = classes
   }
   const logout = () => {
-    localStorage.clear()
-    token.set(localStorage.getItem('token'))
+    Cookies.remove('token')
+    Cookies.remove('user')
+    
     navigate(PATH_URL.LOGIN, { replace: true })
   }
   export let active;
   export let sideBarMenus = [];
+
+  const user = JSON.parse(Cookies.get('user'))
+  console.log(user)  
 </script>
 
 <!-- <nav

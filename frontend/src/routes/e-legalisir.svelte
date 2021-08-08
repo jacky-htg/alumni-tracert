@@ -1,5 +1,4 @@
 <script>
-	import { token } from '../stores/token.js'
 	import { TracertServicePromiseClient } from '../../proto/tracert_service_grpc_web_pb'
 	import { ListInput } from '../../proto/generic_message_pb'
   import LegalisirService from '../services/alumniList'

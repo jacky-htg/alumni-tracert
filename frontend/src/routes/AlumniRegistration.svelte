@@ -5,9 +5,6 @@
 	import { TracertServicePromiseClient } from '../../proto/tracert_service_grpc_web_pb'
   import alumniService from '../services/alumni'
   import { notifications } from '../helper/toast'
-  import { token } from '../stores/token'
-  import { userStore } from '../stores/user'
-  import { Images } from '../helper/images'
   import { PATH_URL } from '../helper/path'
   import { navigate } from 'svelte-routing'
   import Cookies from 'js-cookie'
@@ -75,19 +72,14 @@
   const lanjutkan = async () => {
     try {
       const registration = await alumniRegistrationCall()
-      localStorage.setItem('token', registration.getUser().getToken())
-      token.set(localStorage.getItem('token'))
-
-      localStorage.setItem('user', JSON.stringify(registration.getUser()))
-      userStore.set(localStorage.getItem('user'))
-
       Cookies.set('token', registration.getUser().getToken())
-      Cookies.set('user', JSON.stringify(localStorage.getItem('user')))
+      Cookies.set('usertype', registration.getUser().getUserType())
+      Cookies.set('userid', registration.getUser().getId())
+      Cookies.set('username', registration.getUser().getName())
 
       navigate(PATH_URL.KUISIONER_FORM, { replace: true })
       
     } catch(e) {
-      console.log('masuk sini')
       notifications.danger(e.message)
     }
   };

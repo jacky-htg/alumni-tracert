@@ -1,5 +1,4 @@
 <script>
-	import { token } from '../stores/token.js'
 	import Sidebar from "../components/Sidebar.svelte";
 	import Upload from "../components/Upload.svelte";
 	import { notifications } from "../helper/toast";

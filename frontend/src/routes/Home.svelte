@@ -1,6 +1,12 @@
 ﻿<script>
-  import { Link } from 'svelte-routing'
   import { Images } from '../helper/images'
+  import Cookies from 'js-cookie'
+  import { PATH_URL } from '../helper/path'
+  
+  if (Cookies.get('token') !== null && Cookies.get('token') !== 'undefined') {
+    console.log("coool", Cookies.get('token'))
+    //location = PATH_URL.DASHBOARD  
+  }
   
   // let src = 'images/poltekkes-medan.jpeg'
 </script>
@@ -16,7 +22,7 @@
         <p class="mt-3 mb-4 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
           Anda sudah mempunyai akun? silahkan login untuk bisa menikmati fasilitas aplikasi ANTER Poltekkes Medan
         </p>
-        <a use:Link href="/login" class="flex items-center justify-center w-48 px-6 py-2 text-base font-medium text-green-700 bg-green-300 border border-transparent rounded-md hover:bg-white hover:border-green-300 md:text-lg " style="color: #064E3B">
+        <a href="/login" class="flex items-center justify-center w-48 px-6 py-2 text-base font-medium text-green-700 bg-green-300 border border-transparent rounded-md hover:bg-white hover:border-green-300 md:text-lg " style="color: #064E3B">
           Login
         </a>
         
@@ -25,7 +31,7 @@
         <p class="mt-3 mb-4 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
           Bagi alumni Poltekkes Medan yang belum mengisi kuesioner Tracer Study Poltekkes Medan, silahkan tekan tombol dibawah ini.
         </p>
-        <a use:Link href="/kuisioner" class="flex items-center justify-center px-6 py-2 text-base font-medium text-green-700 bg-green-100 border border-transparent rounded-md w-max md:text-lg" style="color:#047857">
+        <a href="/kuisioner" class="flex items-center justify-center px-6 py-2 text-base font-medium text-green-700 bg-green-100 border border-transparent rounded-md w-max md:text-lg" style="color:#047857">
           Kuisioner alumni tracer
         </a>
         
