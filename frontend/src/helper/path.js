@@ -43,19 +43,19 @@ export const SIDEBAR_USER = [
     key: 'e-legalisir'
   },
   {
-    path: PATH_URL.UNDER_CONSTRUCTION,
+    path: PATH_URL.CDC,
     label: 'cdc',
     icon: 'fa-address-card',
     key: 'cdc'
   },
   {
-    path: PATH_URL.UNDER_CONSTRUCTION,
+    path: PATH_URL.SAPA_ALUMNI,
     label: 'sapa alumni',
     icon: 'fa-address-card',
     key: 'hi-alumni'
   },
   {
-    path: PATH_URL.UNDER_CONSTRUCTION,
+    path: PATH_URL.TENTANG_KAMI,
     label: 'tentang kami',
     icon: 'fa-address-card',
     key: 'about-us'
