@@ -19,3 +19,45 @@ export const PATH_URL = {
   ADMIN_ALUMNI: '/admin/list-alumni',
   ADMIN_E_LEGALISIR: '/admin/e-legalisir',
 }
+
+export const SIDEBAR_ADMIN = [
+  {
+    path: PATH_URL.LIST_ALUMNI,
+    label: 'List Alumni',
+    icon: 'fa-user-circle',
+    key: 'list-alumni'
+  },
+  {
+    path: PATH_URL.E_LEGALISIR,
+    label: 'List e-legalisir',
+    icon: 'fa-address-card',
+    key: 'e-legalisir'
+  }
+];
+
+export const SIDEBAR_USER = [
+  {
+    path: PATH_URL.UPLOAD_IJAZAH,
+    label: 'e-legalisir',
+    icon: 'fa-address-card',
+    key: 'e-legalisir'
+  },
+  {
+    path: PATH_URL.UNDER_CONSTRUCTION,
+    label: 'cdc',
+    icon: 'fa-address-card',
+    key: 'cdc'
+  },
+  {
+    path: PATH_URL.UNDER_CONSTRUCTION,
+    label: 'sapa alumni',
+    icon: 'fa-address-card',
+    key: 'hi-alumni'
+  },
+  {
+    path: PATH_URL.UNDER_CONSTRUCTION,
+    label: 'tentang kami',
+    icon: 'fa-address-card',
+    key: 'about-us'
+  }
+];
