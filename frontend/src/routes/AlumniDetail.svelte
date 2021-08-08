@@ -1,4 +1,5 @@
 <script>
+  import { link } from 'svelte-routing'
   import Sidebar from "../components/Sidebar.svelte";
   import { TracertServicePromiseClient } from '../../proto/tracert_service_grpc_web_pb'
   import { navigate } from 'svelte-routing'
@@ -8,9 +9,7 @@
   import { onMount } from 'svelte'
   import { notifications } from '../helper/toast'
 
-  const onBack = () => {
-    navigate(PATH_URL.LIST_ALUMNI, { replace: true })
-  }
+  let alumni = {}
 
   async function alumniListCall(proto){
     var deps = {
@@ -33,6 +32,7 @@
       const alumniProto = new Alumni()
       alumniProto.setId(urlParams.get('id'))
 			const alumniResp = await alumniListCall(alumniProto);
+      alumni = alumniResp.toObject();
       console.log('ALUMNI = ', alumniResp.toObject());
     } catch(e) {
       notifications.danger(e.message)
@@ -40,7 +40,17 @@
 	})
 </script>
 
-<div>
-  <Sidebar active="list-alumni" sideBarMenus={SIDEBAR_ADMIN}/>
-  
+<div class="w-full mx-auto max-w-8xl">
+	<div class="lg:flex">
+    <Sidebar active="list-alumni" sideBarMenus={SIDEBAR_ADMIN}/>
+    <main class="flex-auto w-full min-w-0 px-20 pt-12 lg:static lg:max-h-full lg:overflow-visible">
+      <a use:link href={PATH_URL.LIST_ALUMNI} class="flex items-center mb-8">
+        <i class="mr-4 fas fa-arrow-left"></i>
+        <p class="text-base">Kembali ke List Alumni</p>
+      </a>
+      <h1 class="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-3xl md:text-3xl">
+        <span class="block xl:inline">{alumni.name}</span>
+      </h1>
+    </main>
+  </div>
 </div>

@@ -55,6 +55,11 @@
     }
 	}
 
+  const onDeleteFile = async (e) => {
+    const { name } = e.detail;
+		filePath[name] = null
+	}
+
   async function legalizeCreateCall(){
     var deps = {
 			proto: {
@@ -111,14 +116,26 @@
 				<label class="block text-sm font-medium text-gray-700">
 					Upload ijazah
 				</label>
-				<Upload on:drop={uploadSimpleFile} name="ijazah" isLoading={state.isLoadingIjazah}/>
+				<Upload
+          on:drop={uploadSimpleFile}
+          on:delete={onDeleteFile}
+          name="ijazah"
+          isLoading={state.isLoadingIjazah}
+          file={filePath.ijazah}
+        />
 			</div>
 
 			<div class="mb-12">
 				<label class="block text-sm font-medium text-gray-700">
 					Upload transkrip nilai
 				</label>
-				<Upload on:drop={uploadSimpleFile} name="transcript" isLoading={state.isLoadingTranskrip}/>
+				<Upload
+          on:drop={uploadSimpleFile}
+          on:delete={onDeleteFile}
+          name="transcript"
+          isLoading={state.isLoadingTranskrip}
+          file={filePath.transcript}
+        />
 			</div>
 			<div class="mt-10 px-4 py-3 text-right bg-gray-50 sm:px-6">
         <button on:click={legalisir} class="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
