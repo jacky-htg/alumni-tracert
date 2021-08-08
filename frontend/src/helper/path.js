@@ -15,7 +15,7 @@ export const PATH_URL = {
   KUISIONER_FORM: '/kuisioner-form',
   CDC: '/cdc',
   TENTANG_KAMI: '/tentang-kami',
-  SAPA_ALUMNI: '/sampa-alumni',
+  SAPA_ALUMNI: '/sapa-alumni',
   ADMIN_ALUMNI: '/admin/list-alumni',
   ADMIN_E_LEGALISIR: '/admin/e-legalisir',
 }
