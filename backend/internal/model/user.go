@@ -28,7 +28,7 @@ func (u *User) Login(ctx context.Context, db *sql.DB) error {
 
 	var password string
 	var isActived bool
-	query := ` SELECT id, password, is_actived FROM users WHERE email = ?`
+	query := ` SELECT id, password, name, user_type, is_actived FROM users WHERE email = ?`
 
 	stmt, err := db.PrepareContext(ctx, query)
 	if err != nil {
@@ -36,7 +36,7 @@ func (u *User) Login(ctx context.Context, db *sql.DB) error {
 	}
 	defer stmt.Close()
 
-	err = stmt.QueryRowContext(ctx, u.Pb.Email).Scan(&u.Pb.Id, &password, &isActived)
+	err = stmt.QueryRowContext(ctx, u.Pb.Email).Scan(&u.Pb.Id, &password, &u.Pb.Name, &u.Pb.UserType, &isActived)
 
 	if err == sql.ErrNoRows {
 		return status.Errorf(codes.NotFound, "Query Raw: %v", err)

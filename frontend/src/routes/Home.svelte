@@ -4,8 +4,7 @@
   import { PATH_URL } from '../helper/path'
   
   if (Cookies.get('token') !== null && Cookies.get('token') !== 'undefined') {
-    console.log("coool", Cookies.get('token'))
-    //location = PATH_URL.DASHBOARD  
+    location = PATH_URL.DASHBOARD  
   }
   
   // let src = 'images/poltekkes-medan.jpeg'

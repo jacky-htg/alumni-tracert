@@ -6,7 +6,7 @@
 <div class="w-full mx-auto max-w-8xl">
 	<div class="lg:flex">
 		
-		<Sidebar active="e-legalisir" sideBarMenus={SIDEBAR_USER}/>
+		<Sidebar active="cdc" sideBarMenus={SIDEBAR_USER}/>
 
 		<main class="flex-auto w-full min-w-0 px-20 pt-12 lg:static lg:max-h-full lg:overflow-visible">
 			

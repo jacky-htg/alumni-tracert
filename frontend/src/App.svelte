@@ -5,10 +5,6 @@
 	import Home from './routes/Home.svelte';
 	import Dashboard from './routes/Dashboard.svelte';
 	import Kuisioner from './routes/Kuisioner.svelte';
-	import KesesuaianPekerjaan from './routes/KesesuaianPekerjaan.svelte';
-	import KuisionerSudahBekerja from './routes/KuisionerSudahBekerja.svelte';
-	import KuisionerLanjutKuliah from './routes/KuisionerLanjutKuliah.svelte';
-	import KuisionerBelumBekerja from './routes/KuisionerBelumBekerja.svelte';
 	import KuisionerForm from './routes/KuisionerForm.svelte'
 	import AlumniRegistration from './routes/AlumniRegistration.svelte'
 	import AppraiserRegistration from './routes/AppraiserRegistration.svelte'
@@ -40,16 +36,10 @@
 	<Route path={PATH_URL.TENTANG_KAMI} component={TentangKami} />
 	<Route path={PATH_URL.ALUMNI_REGISTRATION} component={AlumniRegistration} />
 	<Route path={PATH_URL.APPRAISER_REGISTRATION} component={AppraiserRegistration} />
+	<Route path={PATH_URL.DASHBOARD} component={Dashboard} />
 	<ProtectedRoute path={PATH_URL.KUISIONER_FORM} component={KuisionerForm} />
-	<!-- 
-	<ProtectedRoute path={PATH_URL.KUISIONER_SUDAH_BEKERJA} component={KuisionerSudahBekerja} />
-	<ProtectedRoute path={PATH_URL.KUISIONER_LANJUT_KULIAH} component={KuisionerLanjutKuliah} />
-	<ProtectedRoute path={PATH_URL.KUISIONER_BELUM_BEKERJA} component={KuisionerBelumBekerja} />
-	<ProtectedRoute path={PATH_URL.KESESUAIAN_PEKERJAAN} component={KesesuaianPekerjaan} />
-	-->
 	<ProtectedRoute path={PATH_URL.UPLOAD_IJAZAH} component={Upload} />
 	<ProtectedRoute path={PATH_URL.DOWNLOAD_IJAZAH} component={Download} />
-	<ProtectedRoute path={PATH_URL.DASHBOARD} component={Dashboard} />
 	<ProtectedRoute path={PATH_URL.ADMIN_ALUMNI} component={ListAlumni} />
 	<ProtectedRoute path={PATH_URL.ADMIN_E_LEGALISIR} component={ELegalisir} />
 	<ProtectedRoute path={PATH_URL.DETAIL_ALUMNI} component={DetailAlumni} />

@@ -3,6 +3,7 @@
   import { navigate } from 'svelte-routing'
   import { PATH_URL } from '../helper/path'
   import Cookies from 'js-cookie'
+import { get } from 'svelte/store'
 
   // core components
   let collapseShow = 'hidden'
@@ -11,15 +12,14 @@
   }
   const logout = () => {
     Cookies.remove('token')
-    Cookies.remove('user')
+    Cookies.remove('usertype')
+    Cookies.remove('userid')
+    Cookies.remove('username')
     
     navigate(PATH_URL.LOGIN, { replace: true })
   }
   export let active;
   export let sideBarMenus = [];
-
-  const user = JSON.parse(Cookies.get('user'))
-  console.log(user)  
 </script>
 
 <!-- <nav
@@ -41,7 +41,7 @@
       class="inline-block p-4 px-0 mr-0 text-sm font-bold text-left uppercase md:block md:pb-2 text-blueGray-600 whitespace-nowrap"
       href={PATH_URL.DASHBOARD}
     >
-      Halo {$username}
+      {#if Cookies.get('username')}Halo {Cookies.get('username')}{/if}
     </a>
     <!-- Collapse -->
     <div
@@ -58,7 +58,9 @@
               class="inline-block p-4 px-0 mr-0 text-sm font-bold text-left uppercase md:block md:pb-2 text-blueGray-600 whitespace-nowrap"
               href={PATH_URL.DASHBOARD}
             >
-              Halo {$username}
+              {#if Cookies.get('username')}Halo {Cookies.get('username')}{/if}
+              
+              
             </a>
           </div>
           <div class="flex justify-end w-6/12">
@@ -78,18 +80,35 @@
 
       <ul class="flex flex-col list-none md:flex-col md:min-w-full">
         {#each sideBarMenus as menu}
-        <li class="items-center">
-          <a
-            use:link
-            class="text-xs uppercase py-3 font-bold block {active === menu.key ? '':'text-blueGray-700 hover:text-blueGray-500'}"
-            href={menu.path}
-          >
-            <i
-              class={`fas ${menu.icon} mr-2 text-sm ${active === menu.key ? 'opacity-75' : 'text-blueGray-300'}`}
-            />
-            {menu.label}
-          </a>
-        </li>
+        {#if menu.key === 'e-legalisir'}
+          {#if Cookies.get('token')}
+            <li class="items-center">
+              <a
+                use:link
+                class="text-xs uppercase py-3 font-bold block {active === menu.key ? '':'text-blueGray-700 hover:text-blueGray-500'}"
+                href={menu.path}
+              >
+                <i
+                  class={`fas ${menu.icon} mr-2 text-sm ${active === menu.key ? 'opacity-75' : 'text-blueGray-300'}`}
+                />
+                {menu.label}
+              </a>
+            </li>
+          {/if}
+        {:else}
+          <li class="items-center">
+            <a
+              use:link
+              class="text-xs uppercase py-3 font-bold block {active === menu.key ? '':'text-blueGray-700 hover:text-blueGray-500'}"
+              href={menu.path}
+            >
+              <i
+                class={`fas ${menu.icon} mr-2 text-sm ${active === menu.key ? 'opacity-75' : 'text-blueGray-300'}`}
+              />
+              {menu.label}
+            </a>
+          </li>
+        {/if}
         {/each}
       </ul>
 
@@ -99,9 +118,11 @@
       <h6
         class="block pt-1 pb-4 text-xs font-bold text-red-500 no-underline uppercase cursor-pointer md:min-w-full"
       >
+        {#if Cookies.get('token')}
         <div on:click={logout}>
           Logout
         </div>
+        {/if}
         
       </h6>
     </div>
