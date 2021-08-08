@@ -4,7 +4,6 @@
   import { PATH_URL } from '../helper/path'
   
   if (!(Cookies.get('token') == null)) {
-    console.log(Cookies.get('token'))
     location = PATH_URL.DASHBOARD  
   }
   

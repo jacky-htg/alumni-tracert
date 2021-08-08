@@ -4,12 +4,10 @@
   import Cookies from 'js-cookie'
 
   export let path
-  export let component
-
-  $: isAuthenticated = Cookies.get('token')
+  export let component 
 </script>
 
-{#if isAuthenticated}
+{#if Cookies.get('token')}
   <Route path={path} component={component} />
 {:else}
   <Route path={path} component={accessDenied} />
