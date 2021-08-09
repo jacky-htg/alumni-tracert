@@ -18,6 +18,7 @@
 	import Cdc from './routes/Cdc.svelte';
 	import SapaAlumni from './routes/SapaAlumni.svelte';
 	import TentangKami from './routes/TentangKami.svelte';
+	import LegalisirDetail from './routes/LegalisirDetail.svelte'
 </script>
 
 <style global lang="postcss">
@@ -42,6 +43,7 @@
 	<ProtectedRoute path={PATH_URL.DOWNLOAD_IJAZAH} component={Download} />
 	<ProtectedRoute path={PATH_URL.ADMIN_ALUMNI} component={ListAlumni} />
 	<ProtectedRoute path={PATH_URL.ADMIN_E_LEGALISIR} component={ELegalisir} />
-	<ProtectedRoute path={PATH_URL.DETAIL_ALUMNI} component={DetailAlumni} />
+	<ProtectedRoute path={PATH_URL.ADMIN_ALUMNI_DETAIL} component={DetailAlumni} />
+	<ProtectedRoute path={PATH_URL.ADMIN_LEGALISIR_DETAIL} component={LegalisirDetail} />
 </Router>
 <Toast />

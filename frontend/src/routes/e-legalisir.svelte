@@ -3,7 +3,7 @@
 	import { ListInput } from '../../proto/generic_message_pb'
   import LegalisirService from '../services/legalisirList'
 	import Sidebar from "../components/Sidebar.svelte";
-	import Upload from "../components/Upload.svelte";
+	import { navigate } from 'svelte-routing'
 	import { onMount } from 'svelte'
 	import { notifications } from "../helper/toast";
 	import { HOST_URL, APP_ENV } from '../env'
@@ -30,10 +30,7 @@
 		}
 
     const legalisir = new LegalisirService(deps, listInputProto)
-		if (userType == 4) {
-    	return await legalisir.legalizeList()
-		}
-		return await legalisir.legalisirList()
+		return await legalisir.legalizeList()
 	}
 
 	onMount(async () => {
@@ -42,7 +39,6 @@
 			const legalisirStream = await legalisirListCall(usertype);
 			const fieldObject = usertype == 4 ? 'legalize' : 'alumniAppraiser';
 			legalisirStream.on('data', (response) => {
-				console.log('RESPONSE', response.toObject());
 				legalisirList = [ ...legalisirList, response.toObject()[fieldObject]]
 			})
 			legalisirStream.on('end', () => {
@@ -68,6 +64,10 @@
 			default:
 				return 'approved'
 		}
+	}
+
+	const onViewDetail = (id) => {
+		navigate(`${PATH_URL.ADMIN_LEGALISIR_DETAIL}?id=${id}`, { replace: false })
 	}
 </script>
 
@@ -102,7 +102,7 @@
 								</thead>
 								<tbody class="bg-white divide-y divide-gray-200">
 									{#each legalisirList as legalist}
-									<tr>
+									<tr class="cursor-pointer" on:click={() => onViewDetail(legalist.id)}>
 										<td class="px-6 py-4 whitespace-nowrap">
 											<div class="flex items-center">
 												<div class="ml-4">
@@ -119,7 +119,7 @@
 											<div class="text-sm text-gray-900">{@html getStatus(legalist.status)}</div>
 										</td>
 										<td class="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
-											<a href={`${PATH_URL.ADMIN_ALUMNI_DETAIL}?id=${legalist.id}`} class="text-indigo-600 hover:text-indigo-900">View profile</a>
+											<a href={`${PATH_URL.ADMIN_LEGALISIR_DETAIL}?id=${legalist.id}`} class="text-indigo-600 hover:text-indigo-900">View</a>
 										</td>
 									</tr>
 									{/each}
