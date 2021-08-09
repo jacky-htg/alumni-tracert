@@ -2,19 +2,22 @@
   import { link } from 'svelte-routing'
   import { navigate } from 'svelte-routing'
   import { PATH_URL } from '../helper/path'
-  import { token } from '../stores/token.js'
-  import { username } from '../stores';
+  import { Images } from '../helper/images'
+  import Cookies from 'js-cookie'
+  import logoutHelper from '../helper/logout'
+
   // core components
   let collapseShow = 'hidden'
   function toggleCollapseShow(classes) {
     collapseShow = classes
   }
   const logout = () => {
-    localStorage.clear()
-    token.set(localStorage.getItem('token'))
+    logoutHelper()
+    
     navigate(PATH_URL.LOGIN, { replace: true })
   }
-  export let location
+  export let active;
+  export let sideBarMenus = [];
 </script>
 
 <!-- <nav
@@ -33,10 +36,17 @@
     </button>
     <a
       use:link
-      class="inline-block p-4 px-0 mr-0 text-sm font-bold text-left uppercase md:block md:pb-2 text-blueGray-600 whitespace-nowrap"
+      class="pt-12 pb-2 mr-0 uppercase md:block whitespace-nowrap"
       href={PATH_URL.DASHBOARD}
     >
-      Halo {$username}
+      <img class="object-cover w-64 h-full" src={Images.logo_poltekkes} alt="">
+    </a>
+    <a
+      use:link
+      href={PATH_URL.DASHBOARD}
+      class={Cookies.get('username') ? "inline-block p-4 px-0 mr-0 text-sm font-bold text-left uppercase md:block md:pb-2 text-blueGray-600 whitespace-nowrap" : "hidden"}
+    >
+      {#if Cookies.get('username')}Halo {Cookies.get('username')}{/if}
     </a>
     <!-- Collapse -->
     <div
@@ -53,7 +63,7 @@
               class="inline-block p-4 px-0 mr-0 text-sm font-bold text-left uppercase md:block md:pb-2 text-blueGray-600 whitespace-nowrap"
               href={PATH_URL.DASHBOARD}
             >
-              Halo {$username}
+              {#if Cookies.get('username')}Halo {Cookies.get('username')}{/if}
             </a>
           </div>
           <div class="flex justify-end w-6/12">
@@ -72,42 +82,52 @@
       <hr class="my-4 md:min-w-full" />
 
       <ul class="flex flex-col list-none md:flex-col md:min-w-full">
-        <li class="items-center">
-          <a
-            use:link
-            class="text-xs uppercase py-3 font-bold block {location.href.indexOf('/admin/list-alumni') !== -1 ? 'text-red-500 hover:text-red-600':'text-blueGray-700 hover:text-blueGray-500'}"
-            href={PATH_URL.LIST_ALUMNI}
-          >
-            <i
-              class="fas fa-user-circle mr-2 text-sm {location.href.indexOf('/admin/list-alumni') !== -1 ? 'opacity-75' : 'text-blueGray-300'}"
-            ></i>
-            List Alumni
-          </a>
-        </li>
-
-        <li class="items-center">
-          <a
-            use:link
-            class="text-xs uppercase py-3 font-bold block {location.href.indexOf('/admin/e-legalisir') !== -1 ? 'text-red-500 hover:text-red-600':'text-blueGray-700 hover:text-blueGray-500'}"
-            href={PATH_URL.E_LEGALISIR}
-          >
-            <i
-              class="fas fa-address-card mr-2 text-sm {location.href.indexOf('/admin/e-legalisir') !== -1 ? 'opacity-75' : 'text-blueGray-300'}"
-            ></i>
-            List e-legalisir
-          </a>
-        </li>
+        {#each sideBarMenus as menu}
+        {#if menu.key === 'e-legalisir'}
+          {#if Cookies.get('token') && Cookies.get('usertype') !== "2"}
+            <li class="items-center">
+              <a
+                use:link
+                class="text-base uppercase py-3 block {active === menu.key ? 'bg-yellow-50 pl-4 rounded font-bold text-blue-700':'pl-4 font-normal text-gray-600'}"
+                href={menu.path}
+              >
+                <i
+                  class={`fas ${menu.icon} mr-2 text-sm ${active === menu.key ? 'opacity-75' : 'text-blueGray-300'}`}
+                />
+                {menu.label}
+              </a>
+            </li>
+          {/if}
+        {:else}
+          <li class="items-center">
+            <a
+              use:link
+              class="text-base uppercase py-3 block hover {active === menu.key ? 'bg-yellow-50 pl-4 rounded text-blue-700 font-bold':'pl-4 font-normal text-gray-600'}"
+              href={menu.path}
+            >
+              <!-- <i
+                class={`fas ${menu.icon} mr-2 text-sm ${active === menu.key ? 'opacity-75' : 'text-blueGray-300'}`}
+              /> -->
+              {menu.label}
+            </a>
+          </li>
+        {/if}
+        {/each}
       </ul>
 
       <!-- Divider -->
       <hr class="my-4 md:min-w-full" />
       
       <h6
-        class="block pt-1 pb-4 text-xs font-bold text-red-500 no-underline uppercase cursor-pointer md:min-w-full"
+        class="block pt-1 pb-4 text-base font-bold text-blue-700 no-underline uppercase cursor-pointer md:min-w-full"
       >
+        {#if Cookies.get('token')}
         <div on:click={logout}>
           Logout
         </div>
+        {:else}
+        <a href="/login">Login</a>
+        {/if}
         
       </h6>
     </div>

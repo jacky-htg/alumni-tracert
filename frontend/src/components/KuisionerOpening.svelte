@@ -4,12 +4,14 @@
 </script>
 
 <div>
-  <div class='sticky top-0 -mt-6 pt-6 bg-white'>
+  <div class='sticky top-0 pt-6 mt-6 bg-white'>
     <a href="/" class="flex items-center mb-8">
       <i class="mr-4 fas fa-arrow-left"></i>
       <p class="text-base">Kembali ke halaman utama</p>
     </a>
-    <img class="object-cover w-64 h-full pb-4" src={Images.logo_poltekkes} alt="">
+    <img class="object-cover w-64 h-full pb-8 mb-6" src={Images.logo_poltekkes} alt="">
+    
+    <hr class="mb-8 md:min-w-full" />
   </div>
   <h1 class="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-3xl md:text-3xl">
     <span class="block xl:inline">KUISIONER TRACER STUDY/PENGGUNA ALUMNI</span>

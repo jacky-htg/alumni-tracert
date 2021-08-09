@@ -6,3 +6,12 @@ time="2021-08-07T12:52:27+07:00" level=fatal msg="Failed to open log file log/.l
 {"level":"error","msg":"create alumni Exec insert: Error 1062: Duplicate entry '123' for key 'alumni.no_ijazah_unique'","service":"-","time":"2021-08-07T06:13:29Z"}
 {"level":"error","msg":"create alumni Exec insert: Error 1062: Duplicate entry '123' for key 'alumni.phone_unique'","service":"-","time":"2021-08-07T06:13:38Z"}
 {"level":"error","msg":"Get use login on get user Invalid Token","service":"-","time":"2021-08-07T15:52:10Z"}
+{"level":"error","msg":"Get user login on create alumni authorization token is not provided","service":"-","time":"2021-08-07T19:56:11Z"}
+{"level":"error","msg":"Get user login on create alumni authorization token is not provided","service":"-","time":"2021-08-07T19:56:16Z"}
+{"level":"error","msg":"Get user login on create alumni authorization token is not provided","service":"-","time":"2021-08-07T19:56:57Z"}
+{"level":"error","msg":"validation on verified legalize You can not verified this document","service":"-","time":"2021-08-08T15:20:12Z"}
+{"level":"error","msg":"get alumni not found: sql: no rows in result set","service":"-","time":"2021-08-08T15:26:04Z"}
+{"level":"error","msg":"get alumni not found: sql: no rows in result set","service":"-","time":"2021-08-08T16:03:06Z"}
+{"level":"error","msg":"validation on rate legalize not found: sql: no rows in result set","service":"-","time":"2021-08-08T16:17:42Z"}
+{"level":"error","msg":"validation on rate legalize Legalize has not been approved","service":"-","time":"2021-08-08T16:26:34Z"}
+{"level":"error","msg":"validation on rate legalize Legalize has not been approved","service":"-","time":"2021-08-08T16:27:44Z"}

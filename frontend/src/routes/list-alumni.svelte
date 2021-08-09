@@ -6,7 +6,10 @@
   import AlumniService from '../services/alumniList'
   import { onMount } from 'svelte'
   import { notifications } from '../helper/toast'
+	import { PATH_URL, SIDEBAR_ADMIN } from '../helper/path'
 	import Cookies from 'js-cookie'
+	import errorServiceHandling from '../helper/error_service'
+
 	let search = '';
 	let limit = 10;
 	let page = 1;
@@ -41,6 +44,10 @@
 				console.log('End stream = ');
 			})
     } catch(e) {
+			errorServiceHandling(e)
+      if (Cookies.get('token') == null) {
+        location = PATH_URL.LOGIN  
+      } 
       notifications.danger(e.message)
     }
 	})
@@ -48,8 +55,7 @@
 
 <div class="w-full mx-auto max-w-8xl">
 	<div class="lg:flex">
-		
-		<Sidebar location={location}/>
+		<Sidebar active="list-alumni" sideBarMenus={SIDEBAR_ADMIN}/>
 
 		<main class="flex-auto w-full min-w-0 px-20 pt-12 lg:static lg:max-h-full lg:overflow-visible">
 			
@@ -89,7 +95,7 @@
 											<div class="text-sm text-gray-900">{alumni.nim}</div>
 										</td>
 										<td class="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
-											<a href="#" class="text-indigo-600 hover:text-indigo-900">View profile</a>
+											<a href={`${PATH_URL.ADMIN_ALUMNI_DETAIL}?id=${alumni.id}`} class="text-indigo-600 hover:text-indigo-900">View profile</a>
 										</td>
 									</tr>
 									{/each}

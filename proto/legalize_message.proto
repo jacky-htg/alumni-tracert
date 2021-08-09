@@ -20,8 +20,9 @@ message Legalize {
   string ijazah_signed = 11;
   string transcript_signed = 12; 
   uint32 status = 13;
-  string created = 14;
-  string updated = 15;
+  uint32 rating = 14;
+  string created = 15;
+  string updated = 16;
 }
 
 message LegalizeListResponse {

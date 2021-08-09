@@ -1,16 +1,13 @@
 import { HOST_URL, APP_ENV } from '../env'
-import { token } from '../stores/token'
+import Cookies from 'js-cookie'
 
 export default class{
   constructor(deps){
       this.proto = deps.proto
+      const token = Cookies.get('token') 
       if (token) {
-        console.log('ada token')
-        this.client = new deps.proto.TracertClient(HOST_URL, {
-          'token': token
-        }, null)
+        this.client = new deps.proto.TracertClient(HOST_URL, { token }, null)
       } else {
-        console.log('tidak ada token')
         this.client = new deps.proto.TracertClient(HOST_URL, null, null)
       }
 

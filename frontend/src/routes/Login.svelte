@@ -1,8 +1,5 @@
 <script>
   import { navigate } from 'svelte-routing'
-  import { token } from '../stores/token'
-  import { userStore } from '../stores/user'
-  import { username, usertype } from '../stores'; 
   import { LoginInput } from "../../proto/user_message_pb"
 	import { TracertServicePromiseClient } from '../../proto/tracert_service_grpc_web_pb' 
   import Login from '../services/login'
@@ -43,30 +40,12 @@
     try {
       const user = await loginCall(state.username, state.password)
       
-      localStorage.setItem('token', user.getToken())
-      token.set(localStorage.getItem('token'))
       Cookies.set('token', user.getToken())
-
-      localStorage.setItem('user', JSON.stringify(user))
-      userStore.set(localStorage.getItem('user'))
-      Cookies.set('user', JSON.stringify(user))
+      Cookies.set('usertype', user.getUserType())
+      Cookies.set('userid', user.getId())
+      Cookies.set('username', user.getName())
       
-      await token.set(localStorage.getItem('token'))
-      const userType = user.getUserType();
-      const alumni = user.getAlumni();
-      localStorage.setItem('username', name)
-      localStorage.setItem('usertype', userType)
-      username.set(name)
-      usertype.set(userType)
-      switch(userType) {
-        case 0:
-        case 3:
-        case 4:
-          navigate(PATH_URL.DASHBOARD, { replace: true })
-          break;
-        default:
-          navigate(PATH_URL.UPLOAD_IJAZAH, { replace: true })
-      }
+      navigate(PATH_URL.DASHBOARD, { replace: true })
     } catch(e) {
       notifications.danger(e.message)
     }
