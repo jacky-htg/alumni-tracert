@@ -38,25 +38,25 @@ export const SIDEBAR_USER = [
   {
     path: PATH_URL.UPLOAD_IJAZAH,
     label: 'e-legalisir',
-    icon: 'fa-address-card',
+    icon: 'fa-file-invoice',
     key: 'e-legalisir'
   },
   {
     path: PATH_URL.CDC,
     label: 'cdc',
-    icon: 'fa-address-card',
+    icon: 'fa-chart-line',
     key: 'cdc'
   },
   {
     path: PATH_URL.SAPA_ALUMNI,
     label: 'sapa alumni',
-    icon: 'fa-address-card',
+    icon: 'fa-child',
     key: 'hi-alumni'
   },
   {
     path: PATH_URL.TENTANG_KAMI,
     label: 'tentang kami',
-    icon: 'fa-address-card',
+    icon: 'fa-users',
     key: 'about-us'
   }
 ];

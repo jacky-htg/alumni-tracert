@@ -88,9 +88,9 @@
                 class="text-base uppercase py-3 block {active === menu.key ? 'bg-yellow-50 pl-4 rounded font-bold text-blue-700':'pl-4 font-normal text-gray-600'}"
                 href={menu.path}
               >
-                <i
+                <!-- <i
                   class={`fas ${menu.icon} mr-2 text-sm ${active === menu.key ? 'opacity-75' : 'text-blueGray-300'}`}
-                />
+                /> -->
                 {menu.label}
               </a>
             </li>
@@ -102,9 +102,9 @@
               class="text-base uppercase py-3 block hover {active === menu.key ? 'bg-yellow-50 pl-4 rounded text-blue-700 font-bold':'pl-4 font-normal text-gray-600'}"
               href={menu.path}
             >
-              <i
+              <!-- <i
                 class={`fas ${menu.icon} mr-2 text-sm ${active === menu.key ? 'opacity-75' : 'text-blueGray-300'}`}
-              />
+              /> -->
               {menu.label}
             </a>
           </li>
