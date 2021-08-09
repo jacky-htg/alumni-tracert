@@ -10,6 +10,7 @@
   import { PATH_URL } from '../helper/path'
   import UserAnswerService from '../services/user_answer'
   import Cookies from 'js-cookie'
+  import errorServiceHandling from '../helper/error_service'
   
   let groups  = [1];
   const userAnswer = [];

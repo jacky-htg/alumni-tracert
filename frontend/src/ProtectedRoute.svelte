@@ -4,8 +4,7 @@
   import Cookies from 'js-cookie'
 
   export let path
-  export let component 
-  console.log('token', Cookies.get('token'))
+  export let component
 </script>
 
 {#if Cookies.get('token')}

@@ -8,6 +8,8 @@
   import { notifications } from '../helper/toast'
 	import { PATH_URL, SIDEBAR_ADMIN } from '../helper/path'
 	import Cookies from 'js-cookie'
+	import errorServiceHandling from '../helper/error_service'
+
 	let search = '';
 	let limit = 10;
 	let page = 1;
@@ -42,6 +44,10 @@
 				console.log('End stream = ');
 			})
     } catch(e) {
+			errorServiceHandling(e)
+      if (Cookies.get('token') == null) {
+        location = PATH_URL.LOGIN  
+      } 
       notifications.danger(e.message)
     }
 	})

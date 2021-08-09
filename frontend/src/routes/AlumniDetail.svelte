@@ -8,6 +8,8 @@
   import AlumniService from '../services/alumni';
   import { onMount } from 'svelte'
   import { notifications } from '../helper/toast'
+  import errorServiceHandling from '../helper/error_service'
+  import Cookies from 'js-cookie'
 
   let alumni = {}
 
@@ -35,6 +37,10 @@
       alumni = alumniResp.toObject();
       console.log('ALUMNI = ', alumniResp.toObject());
     } catch(e) {
+      errorServiceHandling(e)
+      if (Cookies.get('token') == null) {
+        location = PATH_URL.LOGIN  
+      } 
       notifications.danger(e.message)
     }
 	})
