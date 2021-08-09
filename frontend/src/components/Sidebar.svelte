@@ -2,6 +2,7 @@
   import { link } from 'svelte-routing'
   import { navigate } from 'svelte-routing'
   import { PATH_URL } from '../helper/path'
+  import { Images } from '../helper/images'
   import Cookies from 'js-cookie'
   import logoutHelper from '../helper/logout'
 
@@ -35,8 +36,15 @@
     </button>
     <a
       use:link
-      class="inline-block p-4 px-0 mr-0 text-sm font-bold text-left uppercase md:block md:pb-2 text-blueGray-600 whitespace-nowrap"
+      class="pt-12 pb-2 mr-0 uppercase md:block whitespace-nowrap"
       href={PATH_URL.DASHBOARD}
+    >
+      <img class="object-cover w-64 h-full" src={Images.logo_poltekkes} alt="">
+    </a>
+    <a
+      use:link
+      href={PATH_URL.DASHBOARD}
+      class={Cookies.get('username') ? "inline-block p-4 px-0 mr-0 text-sm font-bold text-left uppercase md:block md:pb-2 text-blueGray-600 whitespace-nowrap" : "hidden"}
     >
       {#if Cookies.get('username')}Halo {Cookies.get('username')}{/if}
     </a>
@@ -56,8 +64,6 @@
               href={PATH_URL.DASHBOARD}
             >
               {#if Cookies.get('username')}Halo {Cookies.get('username')}{/if}
-              
-              
             </a>
           </div>
           <div class="flex justify-end w-6/12">
@@ -82,7 +88,7 @@
             <li class="items-center">
               <a
                 use:link
-                class="text-xs uppercase py-3 font-bold block {active === menu.key ? '':'text-blueGray-700 hover:text-blueGray-500'}"
+                class="text-base uppercase py-3 block {active === menu.key ? 'bg-yellow-50 pl-4 rounded font-bold text-blue-700':'pl-4 font-normal text-gray-600'}"
                 href={menu.path}
               >
                 <i
@@ -96,12 +102,12 @@
           <li class="items-center">
             <a
               use:link
-              class="text-xs uppercase py-3 font-bold block {active === menu.key ? '':'text-blueGray-700 hover:text-blueGray-500'}"
+              class="text-base uppercase py-3 block hover {active === menu.key ? 'bg-yellow-50 pl-4 rounded text-blue-700 font-bold':'pl-4 font-normal text-gray-600'}"
               href={menu.path}
             >
-              <i
+              <!-- <i
                 class={`fas ${menu.icon} mr-2 text-sm ${active === menu.key ? 'opacity-75' : 'text-blueGray-300'}`}
-              />
+              /> -->
               {menu.label}
             </a>
           </li>
@@ -113,7 +119,7 @@
       <hr class="my-4 md:min-w-full" />
       
       <h6
-        class="block pt-1 pb-4 text-xs font-bold text-red-500 no-underline uppercase cursor-pointer md:min-w-full"
+        class="block pt-1 pb-4 text-base font-bold text-blue-700 no-underline uppercase cursor-pointer md:min-w-full"
       >
         {#if Cookies.get('token')}
         <div on:click={logout}>

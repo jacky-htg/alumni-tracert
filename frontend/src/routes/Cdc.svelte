@@ -10,11 +10,11 @@
 
 		<main class="flex-auto w-full min-w-0 px-20 pt-12 lg:static lg:max-h-full lg:overflow-visible">
 			
-			<h1 class="mb-12 text-4xl font-bold">Career Development Center</h1>
+			<h1 class="mb-20 text-4xl font-bold">Career Development Center</h1>
 
-			<h2>Underconstruction.</h2>
-      <p>Halaman ini masih dalam pengembangan dengan fitur-fitur berikut :</p>
-      <ol>
+			<h2 class="mb-8 text-3xl font-bold text-blue-700">Underconstruction.</h2>
+      <p class="mb-4 text-base font-semibold">Halaman ini masih dalam pengembangan dengan fitur-fitur berikut :</p>
+      <ol class="grid gap-2">
         <li>Konseling Karir</li>
         <li>Pelatihan Softskill</li>
         <li>Informasi Lowongan</li>
