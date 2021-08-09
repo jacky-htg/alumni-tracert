@@ -173,7 +173,7 @@
         <div class="">
           {#each questionList.getQuestionGroupList() as group}
             
-          <h2 class="block mb-4 mb-8 font-bold text-blue-700">{group.getTitle()}</h2>
+          <h2 class="block mb-8 font-bold text-blue-700">{group.getTitle()}</h2>
 
             {#each group.getQuestionList() as question}
               <div class="mb-12">
