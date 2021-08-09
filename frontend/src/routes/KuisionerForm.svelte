@@ -55,6 +55,10 @@
 		try {
       questionList = await questionListCall()
     } catch(e) {
+      errorServiceHandling(e)
+      if (Cookies.get('token') == null) {
+        location = PATH_URL.LOGIN  
+      } 
       notifications.danger(e.message)
     }
 	})
@@ -117,7 +121,10 @@
         navigate(PATH_URL.UPLOAD_IJAZAH, { replace: true })
       }
     } catch(e) {
-      console.log(`e`, e)
+      errorServiceHandling(e)
+      if (Cookies.get('token') == null) {
+        location = PATH_URL.LOGIN  
+      } 
       notifications.danger(e.message)
     }
   }

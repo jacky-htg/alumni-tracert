@@ -3,7 +3,7 @@
   import { navigate } from 'svelte-routing'
   import { PATH_URL } from '../helper/path'
   import Cookies from 'js-cookie'
-import { get } from 'svelte/store'
+  import logoutHelper from '../helper/logout'
 
   // core components
   let collapseShow = 'hidden'
@@ -11,10 +11,7 @@ import { get } from 'svelte/store'
     collapseShow = classes
   }
   const logout = () => {
-    Cookies.remove('token')
-    Cookies.remove('usertype')
-    Cookies.remove('userid')
-    Cookies.remove('username')
+    logoutHelper()
     
     navigate(PATH_URL.LOGIN, { replace: true })
   }
@@ -122,6 +119,8 @@ import { get } from 'svelte/store'
         <div on:click={logout}>
           Logout
         </div>
+        {:else}
+        <a href="/login">Login</a>
         {/if}
         
       </h6>

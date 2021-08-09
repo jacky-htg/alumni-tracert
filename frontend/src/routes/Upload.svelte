@@ -10,6 +10,8 @@
   import { TracertServicePromiseClient } from '../../proto/tracert_service_grpc_web_pb'
   import { SIDEBAR_USER } from '../helper/path'
   import { onMount } from 'svelte'
+  import errorServiceHandling from '../helper/error_service'
+  import { PATH_URL } from '../helper/path'
 
   let myLegalize = new Legalize()
   let stringMessage = new StringMessage()
@@ -97,6 +99,10 @@
         notifications.success('e-legalisir telah disubmit')
       }
     } catch(e) {
+      errorServiceHandling(e)
+      if (Cookies.get('token') == null) {
+        location = PATH_URL.LOGIN  
+      } 
       notifications.danger(e.message)
     }
   }
@@ -128,6 +134,10 @@
       myLegalize = await myLegalizeCall()
       console.log(myLegalize)
     } catch(e) {
+      errorServiceHandling(e)
+      if (Cookies.get('token') == null) {
+        location = PATH_URL.LOGIN  
+      } 
       notifications.danger(e.message)
     }
 	})
@@ -142,6 +152,10 @@
       notifications.success(stringMessage.getData(), 3000)
       hideRate = true
     } catch(e) {
+      errorServiceHandling(e)
+      if (Cookies.get('token') == null) {
+        location = PATH_URL.LOGIN  
+      } 
       notifications.danger(e.message)
     }
   }

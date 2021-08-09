@@ -4,5 +4,5 @@
 
 <h1>No access 🤕</h1>
 <h2>
-    Go back to <Link to="/">Home page</Link>
+    Go back to <Link to="/">Home page</Link> | <Link to="/login">Login</Link>
 </h2>
