@@ -180,24 +180,46 @@
 			
 			<h1 class="mb-12 text-4xl font-bold">E-Legalisir</h1>
       {#if  myLegalize.getId()}
-        Anda telah mengajukan e-legalisir dengan status :
+        <p class="text-xl text-gray-500">Anda telah mengajukan e-legalisir dengan status saat ini:</p>
         {#if myLegalize.getStatus() === 0}
-          <h2>DITOLAK</h2>
-          <p>Silahkan ajukan e-legalisir ulang, atau hubungi admin untuk info lebih lanjut</p>
+          <div class="my-8">
+            <p class="mb-4 text-4xl font-semibold text-red-500">DITOLAK</p>
+            <p class="w-3/4 text-xl">Silahkan ajukan e-legalisir ulang, atau hubungi admin untuk info lebih lanjut</p>
+          </div>
         {:else if myLegalize.getStatus() === 1}
-          <h2>SUBMIT</h2>
-          <p>Mohon menunggu proses verifikasi</p>
+          <div class="my-8">
+            <p class="my-4 text-4xl font-semibold text-yellow-700">SUBMITTED</p>
+            <p class="w-3/4 text-xl">Dokumen sedang dalam proses pengecekan, mohon menunggu proses verifikasi</p>
+          </div>
         {:else if myLegalize.getStatus() === 2}
-          <h2>DIVERIFIKASI</h2>
-          <p>Mohon menunggu proses tanda tangan</p>
-        {:else if myLegalize.getStatus() === 3}
-          <h2>DISETUJUI</h2>
-          <a href="{myLegalize.getIjazahSigned()}">Download Ijazah</a> | <a href="{myLegalize.getTranscriptSigned()}">Download Transcript</a> 
+          <div class="my-8">
+            <p class="my-4 text-4xl font-semibold text-blue-500">DIVERIFIKASI</p>
+            <p class="w-3/4 text-xl">Dokumen sedang dalam tahap verifikasi, mohon menunggu proses tanda tangan dokumen</p>
+          </div>
+          {:else if myLegalize.getStatus() === 3}
+          <div class="my-8">
+            <p class="my-4 text-4xl font-semibold text-green-700">DISETUJUI</p>
+            <p class="w-3/4 text-xl">Dokumen telah diverifikasi dan disetujui, silahkan untuk mengunduh dokumen ijazah atau transkrip nilai yang sudah disetujui melalui tombol dibawah ini</p>
+          </div>
+
+          <div class="flex">
+            <a href="{myLegalize.getIjazahSigned()}" class="flex items-center justify-center px-6 py-2 mr-4 text-base font-medium text-green-900 border border-transparent rounded-md bg-green-50 w-max-full hover:bg-white hover:border-green-300 md:text-lg">
+              <i class="mr-4 fas fa-download"></i>
+              Download Legalisir Ijazah
+            </a>
+
+            <a href="{myLegalize.getTranscriptSigned()}" class="flex items-center justify-center px-6 py-2 text-base font-medium text-green-900 border border-transparent rounded-md bg-green-50 w-max-full hover:bg-white hover:border-green-300 md:text-lg ">
+              <i class="mr-4 fas fa-download"></i>
+              Download Legalisir Transkrip
+            </a> 
+          </div>
+          
           {#if !myLegalize.getRating() && !hideRate}
-            <hr/>
+            <hr class="my-12 md:min-w-full" />
+            
             <div id="formRating">
-              <h3>Apakah anda puas dengan pelayanan e legalisir online?</h3>
-              <select on:blur="{changeRating}">
+              <p class="mb-6 text-xl text-gray-500">Apakah anda puas dengan pelayanan e legalisir online?</p>
+              <select on:blur="{changeRating}" id="country" name="country" autocomplete="country" class="px-3 py-2 mt-1 bg-white border border-gray-300 rounded-md shadow-sm w-96 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-lg">
                 <option value="" disabled selected>Pilih Tingkat Kepuasan</option>
                 <option value="5">sangat puas</option>
                 <option value="4">puas</option>
@@ -205,7 +227,9 @@
                 <option value="2">tidak puas</option>
                 <option value="1">sangat tidak puas</option>
               </select>
-              <button on:click="{sendRating}">Send</button>
+              <button on:click="{sendRating}" type="button" class="px-6 py-2 ml-4 text-lg text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:text-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 hover:bg-indigo-500">
+                Kirim penilaian
+              </button>
             </div>
           {/if}
         {/if}
@@ -213,8 +237,10 @@
 
       {#if !myLegalize.getId() || myLegalize.getStatus() === 0 }
 
+      <p class="w-3/4 mb-8 text-xl text-gray-500">Silahkan unggah dokumen yang diperlukan berupa ijazah dan transkrip nilai Anda untuk dapat kami proses</p>
+
 			<div class="mb-12">
-				<label for="ijazah" class="block text-sm font-medium text-gray-700">
+				<label for="ijazah" class="block mb-4 text-base font-medium text-gray-700">
 					Upload ijazah
 				</label>
 				<Upload
@@ -228,7 +254,7 @@
 			</div>
 
 			<div class="mb-12">
-				<label for="transcript" class="block text-sm font-medium text-gray-700">
+				<label for="transcript" class="block mb-4 text-base font-medium text-gray-700">
 					Upload transkrip nilai
 				</label>
 				<Upload
@@ -240,7 +266,7 @@
           file={filePath.transcript}
         />
 			</div>
-			<div class="mt-10 px-4 py-3 text-right bg-gray-50 sm:px-6">
+			<div class="px-4 py-3 mt-10 text-right bg-gray-50 sm:px-6">
         <button on:click={legalisir} class="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
           Legalisir
         </button>
