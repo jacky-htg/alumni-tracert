@@ -48,7 +48,7 @@
 
 <div class="w-full mx-auto max-w-8xl">
 	<div class="lg:flex">
-    <Sidebar active="list-alumni" sideBarMenus={SIDEBAR_ADMIN}/>
+    <Sidebar active="list-alumni" sideBarMenus={SIDEBAR_ADMIN} pathImage="../" />
     <main class="flex-auto w-full min-w-0 px-20 pt-12 lg:static lg:max-h-full lg:overflow-visible">
       <a use:link href={PATH_URL.ADMIN_E_LEGALISIR} class="flex items-center mb-8">
         <i class="mr-4 fas fa-arrow-left"></i>
