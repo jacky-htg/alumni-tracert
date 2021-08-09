@@ -13,6 +13,7 @@
 	import errorServiceHandling from '../helper/error_service'
 	import Button from '../components/Button.svelte'
 	import LegalizeService from '../services/legalize'
+import AccessDenied from './accessDenied.svelte';
 
 	let search = '';
 	let limit = 10;
@@ -81,6 +82,8 @@
 			
 			const legalizeService = new LegalizeService(deps, legalizeProto)
 			await legalizeService.reject()
+			notifications.success('legalisir telah ditolak')
+			document.querySelectorAll(".legalisir-row").forEach(el => el.remove());
 			await requestList()
 		} catch(e) {
 			errorServiceHandling(e)
@@ -98,6 +101,8 @@
 			
 			const legalizeService = new LegalizeService(deps, legalizeProto)
 			await legalizeService.verify()
+			notifications.success('legalisir telah diverifikasi')
+			document.querySelectorAll(".legalisir-row").forEach(el => el.remove());
 			await requestList()
 		} catch(e) {
 			errorServiceHandling(e)
@@ -115,6 +120,8 @@
 			
 			const legalizeService = new LegalizeService(deps, legalizeProto)
 			await legalizeService.approve()
+			notifications.success('legalisir telah diapprove')
+			document.querySelectorAll(".legalisir-row").forEach(el => el.remove());
 			await requestList()
 		} catch(e) {
 			errorServiceHandling(e)
@@ -128,7 +135,7 @@
 
 <div class="w-full mx-auto max-w-8xl">
 	<div class="lg:flex">
-		<Sidebar active="e-legalisir" sideBarMenus={SIDEBAR_ADMIN}/>
+		<Sidebar active="e-legalisir" sideBarMenus={SIDEBAR_ADMIN} pathImage="../" />
 
 		<main class="flex-auto w-full min-w-0 px-20 pt-12 lg:static lg:max-h-full lg:overflow-visible">
 			
@@ -157,7 +164,7 @@
 								</thead>
 								<tbody class="bg-white divide-y divide-gray-200">
 									{#each legalisirList as legalist}
-									<tr>
+									<tr class="legalisir-row">
 										<td class="px-6 py-4 whitespace-nowrap">
 											<div class="flex items-center">
 												<div class="ml-4">
@@ -175,15 +182,15 @@
 										</td>
 										<td class="px-6 py-4 whitespace-nowrap">
 											<div class="flex items-center justify-end">
-												{#if usertype === 4}
-												{#if legalist.status === 2}
-												<Button on:click={() => onApprove(legalist.id)} className="mr-2" bgColor="bg-yellow-300" bgHoverColor="bg-yellow-200" size="small">Accept</Button>
-												{/if}
+												{#if usertype === "4"}
+													{#if legalist.status === 2}
+														<Button on:click={() => onApprove(legalist.id)} className="mr-2" bgColor="bg-yellow-300" bgHoverColor="bg-yellow-200" size="small">Sign</Button>
+													{/if}
 												{:else}
-												{#if legalist.status === 1}
-												<Button on:click={() => onReject(legalist.id)} className="mr-2" bgColor="bg-red-500" bgHoverColor="bg-red-400" size="small">Reject</Button>
-												<Button on:click={() => onAccept(legalist.id)} className="mr-2" bgColor="bg-green-500" bgHoverColor="bg-green-400" size="small">Accept</Button>
-												{/if}
+													{#if legalist.status === 1}
+														<Button on:click={() => onReject(legalist.id)} className="mr-2" bgColor="bg-red-500" bgHoverColor="bg-red-400" size="small">Reject</Button>
+														<Button on:click={() => onAccept(legalist.id)} className="mr-2" bgColor="bg-green-500" bgHoverColor="bg-green-400" size="small">Accept</Button>
+													{/if}
 												{/if}
 												<Button on:click={() => onViewDetail(legalist.id)} size="small" bgColor="bg-gray-300" bgHoverColor="bg-gray-200">View</Button>
 											</div>

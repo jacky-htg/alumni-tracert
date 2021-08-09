@@ -66,7 +66,6 @@ func (u *Legalize) ListQuery(ctx context.Context, db *sql.DB, in *proto.ListInpu
 	if ctx.Value(app.Ctx("user_type")).(uint32) == constant.USERTYPE_ADMIN {
 		where = append(where, "l.status = 1 AND l.is_verified = FALSE AND l.is_approved = FALSE")
 	} else if ctx.Value(app.Ctx("user_type")).(uint32) == constant.USERTYPE_PEJABAT {
-		println("i am pejabat")
 		where = append(where, "l.status = 2 AND l.is_verified = TRUE AND l.is_approved = FALSE")
 	} else if ctx.Value(app.Ctx("user_type")).(uint32) == constant.USERTYPE_ALUMNI {
 		where = append(where, "l.alumni_id = ?")
@@ -99,8 +98,6 @@ func (u *Legalize) ListQuery(ctx context.Context, db *sql.DB, in *proto.ListInpu
 	if len(where) > 0 {
 		query += ` WHERE ` + strings.Join(where, " AND ")
 	}
-
-	println("query", query)
 
 	if in == nil {
 		in = &proto.ListInput{OrderBy: "created"}
@@ -168,6 +165,7 @@ func (u *Legalize) Get(ctx context.Context, db *sql.DB) error {
 	u.Pb.VerifiedBy = uint64(verifiedBy.Int64)
 	u.Pb.ApprovedAt = approvedAt.String
 	u.Pb.ApprovedBy = uint64(approvedBy.Int64)
+	u.Pb.Alumni = &pbAlumni
 
 	return nil
 }
