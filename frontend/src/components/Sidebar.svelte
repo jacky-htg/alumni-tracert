@@ -18,6 +18,8 @@
   }
   export let active;
   export let sideBarMenus = [];
+
+  let src = PATH_URL.IMAGES+'/logo-poltekkes.png';
 </script>
 
 <!-- <nav
@@ -39,18 +41,17 @@
       class="pt-12 pb-2 mr-0 uppercase md:block whitespace-nowrap"
       href={PATH_URL.DASHBOARD}
     >
-      <img class="object-cover w-64 h-full" src={Images.logo_poltekkes} alt="">
+      <!-- <img class="object-cover w-64 h-full" src={Images.logo_poltekkes} alt=""> -->
+      <img class="object-cover w-64 h-full" {src} alt="">
     </a>
-    <a
-      use:link
-      href={PATH_URL.DASHBOARD}
-      class={Cookies.get('username') ? "inline-block p-4 px-0 mr-0 text-sm font-bold text-left uppercase md:block md:pb-2 text-blueGray-600 whitespace-nowrap" : "hidden"}
+    <p
+      class={Cookies.get('username') ? "inline-block mt-8 p-4 px-0 mr-0 text-lg font-bold text-left uppercase md:block md:pb-2 text-blueGray-600 whitespace-nowrap" : "hidden"}
     >
       {#if Cookies.get('username')}Halo {Cookies.get('username')}{/if}
-    </a>
+    </p>
     <!-- Collapse -->
     <div
-      class="md:flex md:flex-col md:items-stretch md:opacity-100 md:relative md:mt-4 md:shadow-none shadow absolute top-0 left-0 right-0 z-40 overflow-y-auto overflow-x-hidden h-auto items-center flex-1 rounded {collapseShow}"
+      class="md:flex md:flex-col md:items-stretch md:opacity-100 md:relative md:shadow-none shadow absolute top-0 left-0 right-0 z-40 overflow-y-auto overflow-x-hidden h-auto items-center flex-1 rounded {collapseShow}"
     >
       <!-- Collapse header -->
       <div
@@ -58,13 +59,11 @@
       >
         <div class="flex flex-wrap">
           <div class="w-6/12">
-            <a
-              use:link
-              class="inline-block p-4 px-0 mr-0 text-sm font-bold text-left uppercase md:block md:pb-2 text-blueGray-600 whitespace-nowrap"
-              href={PATH_URL.DASHBOARD}
+            <p
+              class="inline-block p-4 px-0 mt-8 mr-0 text-sm font-bold text-left uppercase md:block md:pb-2 text-blueGray-600 whitespace-nowrap"
             >
               {#if Cookies.get('username')}Halo {Cookies.get('username')}{/if}
-            </a>
+            </p>
           </div>
           <div class="flex justify-end w-6/12">
             <button
@@ -105,9 +104,9 @@
               class="text-base uppercase py-3 block hover {active === menu.key ? 'bg-yellow-50 pl-4 rounded text-blue-700 font-bold':'pl-4 font-normal text-gray-600'}"
               href={menu.path}
             >
-              <!-- <i
+              <i
                 class={`fas ${menu.icon} mr-2 text-sm ${active === menu.key ? 'opacity-75' : 'text-blueGray-300'}`}
-              /> -->
+              />
               {menu.label}
             </a>
           </li>
