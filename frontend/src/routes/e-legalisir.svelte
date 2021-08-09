@@ -113,7 +113,7 @@ import AccessDenied from './accessDenied.svelte';
 			legalizeProto.setId(id)
 			
 			const legalizeService = new LegalizeService(deps, legalizeProto)
-			await legalizeService.verify()
+			await legalizeService.verify() 
 			updateStatusList(id, 2)
 			isLoadingAccept = false;
 		} catch(e) {
@@ -203,7 +203,7 @@ import AccessDenied from './accessDenied.svelte';
 												{:else}
 													{#if legalist.status === 1}
 														<Button isLoading={isLoadingReject} on:click={() => onReject(legalist.id)} className="mr-2" bgColor="bg-red-500" bgHoverColor="bg-red-400" size="small">Reject</Button>
-														<Button isLoading={isLoadingAccept} on:click={() => onAccept(legalist.id)} className="mr-2" bgColor="bg-green-500" bgHoverColor="bg-green-400" size="small">Accept</Button>
+														<Button isLoading={isLoadingAccept} on:click={() => onAccept(legalist.id)} className="mr-2" bgColor="bg-green-500" bgHoverColor="bg-green-400" size="small">Verify</Button>
 													{/if}
 												{/if}
 												<Button on:click={() => onViewDetail(legalist.id)} size="small" bgColor="bg-gray-400" bgHoverColor="bg-gray-300">View</Button>
