@@ -191,11 +191,8 @@ func (u *Legalize) GetByAlumniId(ctx context.Context, db *sql.DB) error {
 		&verifiedBy, &verifiedAt, &approvedBy, &approvedAt,
 		&u.Pb.Status, &ijazahSigned, &transcriptSigned, &rating, &createdAt, &updatedAt,
 	)
-	if err == sql.ErrNoRows {
-		return status.Errorf(codes.NotFound, "not found: %v", err)
-	}
 
-	if err != nil {
+	if err != nil && err != sql.ErrNoRows {
 		return status.Errorf(codes.Internal, "scan data: %v", err)
 	}
 
