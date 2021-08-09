@@ -1,7 +1,11 @@
 <script>
   import { Link } from 'svelte-routing'
+
   import { token } from '../stores/token.js'
   import { Images } from '../helper/images'
+
+  import { AlumniAppraiser } from "../../proto/alumni_appraiser_message_pb"
+  import { User, AlumniRegistrationInput } from "../../proto/user_message_pb"
 
   const logout = () => {
       localStorage.clear()
