@@ -24,4 +24,28 @@ export default class extends Tracert{
         return out
     })
   }
+  get (){
+    const token = Cookies.get('token')
+    return this.client.legalizeGet(this.req, {token}).then(out => {
+        return out
+    })
+  }
+  reject (){
+    const token = Cookies.get('token')
+    return this.client.legalizeRejected(this.req, {token}).then(out => {
+        return out
+    })
+  }
+  verify (){
+    const token = Cookies.get('token')
+    return this.client.legalizeVerified(this.req, {token}).then(out => {
+        return out
+    })
+  }
+  approve (){
+    const token = Cookies.get('token')
+    return this.client.legalizeApproved(this.req, {token}).then(out => {
+        return out
+    })
+  }
 }
