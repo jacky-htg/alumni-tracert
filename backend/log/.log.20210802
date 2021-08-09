@@ -15,3 +15,10 @@ time="2021-08-07T12:52:27+07:00" level=fatal msg="Failed to open log file log/.l
 {"level":"error","msg":"validation on rate legalize not found: sql: no rows in result set","service":"-","time":"2021-08-08T16:17:42Z"}
 {"level":"error","msg":"validation on rate legalize Legalize has not been approved","service":"-","time":"2021-08-08T16:26:34Z"}
 {"level":"error","msg":"validation on rate legalize Legalize has not been approved","service":"-","time":"2021-08-08T16:27:44Z"}
+{"level":"error","msg":"Get user login  on list user Invalid Token","service":"-","time":"2021-08-09T10:35:44Z"}
+{"level":"error","msg":"Get user login  on list user Invalid Token","service":"-","time":"2021-08-09T10:35:45Z"}
+{"level":"error","msg":"Get user login  on list user Invalid Token","service":"-","time":"2021-08-09T10:35:51Z"}
+{"level":"error","msg":"Get user login  on list user Invalid Token","service":"-","time":"2021-08-09T10:40:47Z"}
+{"level":"error","msg":"Get user login  on list user Invalid Token","service":"-","time":"2021-08-09T11:02:16Z"}
+{"level":"error","msg":"Get use login on get user Invalid Token","service":"-","time":"2021-08-09T11:26:53Z"}
+{"level":"error","msg":"get legalize not found: sql: no rows in result set","service":"-","time":"2021-08-09T11:27:19Z"}

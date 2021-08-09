@@ -9,6 +9,7 @@
   import { Images } from '../helper/images'
   import { notifications } from '../helper/toast';
   import Cookies from 'js-cookie'
+  let isLoading = false;
 
   async function loginCall(username, password){
     var deps = {
@@ -38,15 +39,18 @@
 
   const login = async () => {
     try {
+      isLoading = true
       const user = await loginCall(state.username, state.password)
       
       Cookies.set('token', user.getToken())
       Cookies.set('usertype', user.getUserType())
       Cookies.set('userid', user.getId())
       Cookies.set('username', user.getName())
-      
+      isLoading = false;
+
       navigate(PATH_URL.DASHBOARD, { replace: true })
     } catch(e) {
+      isLoading = false;
       notifications.danger(e.message)
     }
   };
@@ -58,6 +62,6 @@
   <form on:submit|preventDefault={login} class="flex flex-col w-full p-8 mt-10 bg-gray-100 rounded-lg lg:w-2/6 md:w-1/2 md:mt-0">
       <Input label="Username" name="username" on:input={handleInput} bind:value={state.username} placeholder="username" type="text" required/>
       <Input label="Password" name="password" on:input={handleInput} bind:value={state.password} placeholder="password" type="password" required/>
-      <Button>Login</Button>
+      <Button isLoading={isLoading}>Login</Button>
   </form>
 </div>

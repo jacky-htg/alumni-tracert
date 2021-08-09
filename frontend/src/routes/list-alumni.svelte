@@ -55,7 +55,7 @@
 
 <div class="w-full mx-auto max-w-8xl">
 	<div class="lg:flex">
-		<Sidebar active="list-alumni" sideBarMenus={SIDEBAR_ADMIN}/>
+		<Sidebar active="list-alumni" sideBarMenus={SIDEBAR_ADMIN} pathImage="../" />
 
 		<main class="flex-auto w-full min-w-0 px-20 pt-12 lg:static lg:max-h-full lg:overflow-visible">
 			
