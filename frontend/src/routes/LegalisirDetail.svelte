@@ -11,6 +11,8 @@
   import errorServiceHandling from '../helper/error_service'
   import Cookies from 'js-cookie'
   import Button from '../components/Button.svelte'
+  import Loader from '../components/Loader.svelte'
+  
   let isLoadingPage = false;
   let legalize = {}
   let legalizeProtoResp = new Legalize();
@@ -121,6 +123,11 @@
         <i class="mr-4 fas fa-arrow-left"></i>
         <p class="text-base">Kembali ke List Legalisir</p>
       </a>
+      {#if isLoadingPage}
+      <div class="flex w-full h-full justify-center items-center">
+        <Loader color="#047857"/>
+      </div>
+      {:else}
       <div class="flex align-center justify-between my-4 py-2 border-b-2 border-gray-300">
         <h1 class="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-3xl md:text-3xl">
           <span class="block xl:inline">{alumniData.name}</span>
@@ -180,6 +187,7 @@
           <p class="text-md text-gray-900">{`: ${alumniData.graduationYear}`}</p>
         </div>
       </div>
+      {/if}
     </main>
   </div>
 </div>

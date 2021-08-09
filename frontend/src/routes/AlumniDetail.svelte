@@ -11,8 +11,10 @@
   import errorServiceHandling from '../helper/error_service'
   import Cookies from 'js-cookie'
   import moment from 'moment';
+  import Loader from '../components/Loader.svelte'
 
   let alumni = {}
+  let isLoadingPage = true;
 
   async function alumniListCall(proto){
     var deps = {
@@ -27,6 +29,7 @@
 
   onMount(async () => {
 		try {
+      isLoadingPage = true;
       const urlParams = new URLSearchParams(window.location.search);
       if(!urlParams.has('id')) {
         navigate(PATH_URL.LIST_ALUMNI, { replace: true })
@@ -36,8 +39,10 @@
       alumniProto.setId(urlParams.get('id'))
 			const alumniResp = await alumniListCall(alumniProto);
       alumni = alumniResp.toObject();
+      isLoadingPage = false;
       console.log('ALUMNI = ', alumniResp.toObject());
     } catch(e) {
+      isLoadingPage = false;
       errorServiceHandling(e)
       if (Cookies.get('token') == null) {
         location = PATH_URL.LOGIN  
@@ -55,6 +60,11 @@
         <i class="mr-4 fas fa-arrow-left"></i>
         <p class="text-base">Kembali ke List Alumni</p>
       </a>
+      {#if isLoadingPage}
+      <div class="flex w-full h-full justify-center items-center">
+        <Loader color="#047857"/>
+      </div>
+      {:else}
       <h1 class="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-3xl md:text-3xl">
         <span class="block xl:inline">{alumni.name}</span>
       </h1>
@@ -82,6 +92,7 @@
         <h3 class="text-lg font-bold">No. Ijazah</h3>
         <p class="text-sm text-gray-900">{alumni.noIjazah}</p>
       </div>
+      {/if}
     </main>
   </div>
 </div>
