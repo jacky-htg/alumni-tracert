@@ -10,6 +10,7 @@
   import { notifications } from '../helper/toast'
   import errorServiceHandling from '../helper/error_service'
   import Cookies from 'js-cookie'
+  import moment from 'moment';
 
   let alumni = {}
 
@@ -48,7 +49,7 @@
 
 <div class="w-full mx-auto max-w-8xl">
 	<div class="lg:flex">
-    <Sidebar active="list-alumni" sideBarMenus={SIDEBAR_ADMIN}/>
+    <Sidebar active="list-alumni" sideBarMenus={SIDEBAR_ADMIN} pathImage="../" />
     <main class="flex-auto w-full min-w-0 px-20 pt-12 lg:static lg:max-h-full lg:overflow-visible">
       <a use:link href={PATH_URL.ADMIN_ALUMNI} class="flex items-center mb-8">
         <i class="mr-4 fas fa-arrow-left"></i>
@@ -57,6 +58,30 @@
       <h1 class="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-3xl md:text-3xl">
         <span class="block xl:inline">{alumni.name}</span>
       </h1>
+      <p class="text-sm text-blue-400">{alumni.phone}</p>
+      <div class="mt-4">
+        <h3 class="text-lg font-bold">Study</h3>
+        <p class="text-sm text-gray-900">{alumni.majorStudy}</p>
+      </div>
+      <div class="grid grid-cols-2 gap-4 mt-6">
+        <div>
+          <h3 class="text-lg font-bold">NIK</h3>
+          <p class="text-sm text-gray-900">{alumni.nik}</p>
+          <h3 class="text-lg font-bold mt-4">TTL</h3>
+          <p class="text-sm text-gray-900">{`${alumni.placeOfBirth}`}</p>
+          <p class="text-sm text-gray-900">{moment(alumni.dateOfBirth || moment()).format('DD/MM/YYYY')}</p>
+        </div>
+        <div>
+          <h3 class="text-lg font-bold">NIM</h3>
+          <p class="text-sm text-gray-900">{alumni.nim}</p>
+          <h3 class="text-lg font-bold mt-4">Lulus</h3>
+          <p class="text-sm text-gray-900">{alumni.graduationYear}</p>
+        </div>
+      </div>
+      <div class="mt-4">
+        <h3 class="text-lg font-bold">No. Ijazah</h3>
+        <p class="text-sm text-gray-900">{alumni.noIjazah}</p>
+      </div>
     </main>
   </div>
 </div>

@@ -18,8 +18,7 @@
   }
   export let active;
   export let sideBarMenus = [];
-
-  let src = PATH_URL.IMAGES+'/logo-poltekkes.png';
+  export let pathImage = './';
 </script>
 
 <!-- <nav
@@ -41,8 +40,7 @@
       class="pt-12 pb-2 mr-0 uppercase md:block whitespace-nowrap"
       href={PATH_URL.DASHBOARD}
     >
-      <!-- <img class="object-cover w-64 h-full" src={Images.logo_poltekkes} alt=""> -->
-      <img class="object-cover w-64 h-full" {src} alt="">
+      <img class="object-cover w-64 h-full" src={pathImage+Images.logo_poltekkes} alt="logo-poltekkes-kemenkes-medan">
     </a>
     <p
       class={Cookies.get('username') ? "inline-block mt-8 p-4 px-0 mr-0 text-lg font-bold text-left uppercase md:block md:pb-2 text-blueGray-600 whitespace-nowrap" : "hidden"}

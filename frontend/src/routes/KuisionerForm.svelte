@@ -1,18 +1,26 @@
 <script>
-  import { TracertServicePromiseClient } from '../../proto/tracert_service_grpc_web_pb'
+  import { onMount } from 'svelte'
+  import { navigate } from 'svelte-routing'
+  import { globalHistory } from 'svelte-routing/src/history';
+  import Cookies from 'js-cookie'
+
   import { Images } from '../helper/images'
+  import { PATH_URL } from '../helper/path'
+  import { notifications } from '../helper/toast'
+  
+  import { TracertServicePromiseClient } from '../../proto/tracert_service_grpc_web_pb'
   import { QuestionGroupListInput, QuestionGroupList } from '../../proto/question_group_message_pb'
   import { UserAnswer } from '../../proto/user_answer_message_pb'
   import QuestionService from '../services/question'
-  import { onMount } from 'svelte'
-  import { notifications } from '../helper/toast'
-  import { navigate } from 'svelte-routing'
-  import { PATH_URL } from '../helper/path'
   import UserAnswerService from '../services/user_answer'
-  import Cookies from 'js-cookie'
   import errorServiceHandling from '../helper/error_service'
   
-  let groups  = [1];
+  let groups = [1];
+  onMount(() => {
+    if (Cookies.get('usertype') == 2) {
+      groups = [6];
+    }
+  })
   const userAnswer = [];
   
   const questionGroupListInputProto = new QuestionGroupListInput()
@@ -55,6 +63,11 @@
   onMount(async () => {
 		try {
       questionList = await questionListCall()
+      // let questionGroupList = questionList.getQuestionGroupList();
+      // console.log(`questionList`, questionGroupList)
+      // questionGroupList.forEach(group => {
+      //   console.log(`group`, group.getTitle())
+      // })
     } catch(e) {
       errorServiceHandling(e)
       if (Cookies.get('token') == null) {
@@ -119,7 +132,11 @@
         } 
         questionList = await questionListCall()
       } else {
-        navigate(PATH_URL.UPLOAD_IJAZAH, { replace: true })
+        if (Cookies.get('usertype') == 2) {
+          navigate(PATH_URL.DASHBOARD, { replace: true })
+        } else {
+          navigate(PATH_URL.UPLOAD_IJAZAH, { replace: true })
+        }
       }
     } catch(e) {
       errorServiceHandling(e)

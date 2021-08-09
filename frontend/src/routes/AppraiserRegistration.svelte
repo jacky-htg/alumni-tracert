@@ -1,8 +1,186 @@
 <script>
-  import { Link } from 'svelte-routing'
-  import { Images } from '../helper/images'
+  import { onMount, afterUpdate } from 'svelte'
+  import { navigate } from 'svelte-routing'
+  import Cookies from 'js-cookie'
+  import AutoComplete from "simple-svelte-autocomplete";
 
+  import { token } from '../stores/token.js'
+  import { Images } from '../helper/images'
+  import { PATH_URL } from '../helper/path'
+  import { notifications } from '../helper/toast'
+  import errorServiceHandling from '../helper/error_service'
+
+
+  import { TracertServicePromiseClient } from '../../proto/tracert_service_grpc_web_pb'
+  import { User } from "../../proto/user_message_pb"
+  import { Alumni } from "../../proto/alumni_message_pb"
+  import { AlumniAppraiser } from "../../proto/alumni_appraiser_message_pb"
+  import { ListInput } from '../../proto/generic_message_pb'
+
+  import userService from '../services/user'
+  import alumniService from '../services/alumni'
+  import AlumniListService from '../services/alumniList'
+  import appraiserService from '../services/appraiser'
+
+  const userProto = new User()
+  const alumniProto = new Alumni()
+  const alumniAppraiserProto = new AlumniAppraiser()
+
+  let search = '';
+  let limit = 10;
+  let page = 1;
+
+  const listInputProto = new ListInput()
+  listInputProto.setSearch(search)
+  listInputProto.setLimit(limit)
+  listInputProto.setPage(page)
+
+  let alumniList = [];
+  let selectedAlumni;
+
+  let userId = undefined;
+
+  async function alumniListCall(token){
+    var deps = {
+      proto: {
+        TracertClient: TracertServicePromiseClient
+      },
+      token
+    }
+
+    const alumni = new AlumniListService(deps, listInputProto)
+    return await alumni.alumniList()
+  }
+
+  afterUpdate(async () => {
+    if (userId && alumniList.length === 0) {
+      try {
+        const token = Cookies.get('token')
+        const alumniStream = await alumniListCall(token);
+        alumniStream.on('data', (response) => {
+          alumniList = [ ...alumniList, response.toObject().alumni]
+          console.log(`alumniList`, alumniList)
+        })
+        alumniStream.on('end', () => {
+          console.log('End stream = ');
+        })
+      } catch(e) {
+        errorServiceHandling(e)
+        notifications.danger(e.message)
+      }
+
+    }
+  })
+
+  afterUpdate(() => {
+    if (selectedAlumni) {
+      // console.log(`selectedAlumni`, selectedAlumni)
+      alumniProto.setId(selectedAlumni.id)
+      alumniProto.setCreated(selectedAlumni.created)
+      alumniProto.setDateOfBirth(selectedAlumni.dateOfBirth)
+      alumniProto.setGraduationYear(selectedAlumni.graduationYear)
+      alumniProto.setMajorStudy(selectedAlumni.majorStudy)
+      alumniProto.setName(selectedAlumni.name)
+      alumniProto.setNik(selectedAlumni.nik)
+      alumniProto.setNim(selectedAlumni.nim)
+      alumniProto.setNoIjazah(selectedAlumni.noIjazah)
+      alumniProto.setPhone(selectedAlumni.phone)
+      alumniProto.setPlaceOfBirth(selectedAlumni.placeOfBirth)
+      alumniProto.setUpdated(selectedAlumni.updated)
+      alumniProto.setUserId(selectedAlumni.userId)
+      alumniAppraiserProto.setAlumni(alumniProto)
+      // console.log(`alumniAppraiserProto`, alumniAppraiserProto)
+    }
+  })
+
+  const onChange = event => {
+    // console.log(`event.target.name`, event.target.name)
+    // console.log(`event.target.value`, event.target.value)
+
+    switch (event.target.name) {
+      case 'email':
+        userProto.setEmail(event.target.value)
+        break;
+      case 'name':
+        userProto.setName(event.target.value)
+        alumniAppraiserProto.setName(event.target.value)
+        break;
+      case 'instansi':
+        alumniAppraiserProto.setInstansi(event.target.value)
+        break;
+      case 'position':
+        alumniAppraiserProto.setPosition(event.target.value)
+        break;
+      case 'alumni_position':
+        alumniAppraiserProto.setAlumniPosition(event.target.value)
+        break;
+
+      default:
+        break;
+    }
+
+  }
+
+  async function userRegistrationCall(){
+    var deps = {
+      proto: {
+        TracertClient: TracertServicePromiseClient
+      }
+    }
+
+    userProto.setUserType(2) // 2 = appraiser
+    
+    const user = new userService(deps, userProto)
+    return await user.create();
+  }
+
+  async function appraiserRegistrationCall(id){
+    var deps = {
+      proto: {
+        TracertClient: TracertServicePromiseClient
+      }
+    }
+
+    alumniAppraiserProto.setUserId(id)
+
+    console.log(`alumniAppraiserProto`, alumniAppraiserProto.array)
+    
+    const appraiser = new appraiserService(deps, alumniAppraiserProto)
+    return await appraiser.registration();
+  }
+
+  const lanjutkan = async (event) => {
+    event.preventDefault()
+
+    if (!userId) {
+      try {
+        const registerUser = await userRegistrationCall()
+        console.log(`registerUser`, registerUser)
+        Cookies.set('token', registerUser.getToken())
+        Cookies.set('usertype', registerUser.getUserType())
+        Cookies.set('username', registerUser.getName())
+
+        userId = registerUser.array[0]
+      
+      } catch(e) {
+        console.log(`e`, e)
+        notifications.danger(e.message)
+      }
+    } else {
+      try {
+        const appraiserRegister = await appraiserRegistrationCall(userId)
+        console.log(`appraiserRegister`, appraiserRegister)
   
+        navigate(PATH_URL.KUISIONER_FORM, { replace: true })
+        
+      } catch(e) {
+        console.log(`e`, e)
+        notifications.danger(e.message)
+      }
+
+    }
+  };
+
 </script>
 
 <div class="flex flex-wrap w-full h-full">
@@ -10,14 +188,16 @@
 
     <main class="max-w-full px-4 mx-auto my-24 sm:mt-12 sm:px-6 md:mt-16 lg:my-24 lg:px-8">
       <div class="sm:text-center lg:text-left">
-        <a use:Link href="/" class="flex items-center mb-8">
-          <i class="mr-4 fas fa-arrow-left"></i>
-          <p class="text-base">Kembali ke halaman utama</p>
-        </a>
-        <img class="object-cover w-64 h-full mb-4" src={Images.logo_poltekkes} alt="">
-        <h1 class="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-3xl md:text-3xl">
-          <span class="block xl:inline">KUISIONER TRACER STUDY/PENGGUNA ALUMNI</span>
-        </h1>
+        <div class='sticky top-0 pt-6 pb-4 -mb-4 bg-white'>
+          <a href="/" class="flex items-center mb-8">
+            <i class="mr-4 fas fa-arrow-left"></i>
+            <p class="text-base">Kembali ke halaman utama</p>
+          </a>
+          <img class="object-cover w-64 h-full mb-4" src={Images.logo_poltekkes} alt="">
+          <h1 class="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-3xl md:text-3xl">
+            <span class="block xl:inline">KUISIONER TRACER STUDY/PENGGUNA ALUMNI</span>
+          </h1>
+        </div>
         <p class="mt-3 mb-4 text-base text-gray-500 sm:mt-5 sm:text-s sm:max-w-3xl sm:mx-auto md:mt-5 md:text-s lg:mx-0">
           Tracer study adalah penelitian mengenai situasi alumni khususnya dalam hal pencarian kerja, situasi kerja, dan pemanfaatan pemerolehan kompetensi selama kuliah di Poltekkes Kemenkes Medan. Manfaat tracer study tidaklah terbatas pada perguruan tinggi saja, tetapi  lebih jauh lagi dapat memberikan informasi penting mengenai hubungan (link) antara dunia pendidikan tinggi dengan dunia kerja.  Tracer study dapat menyajikan informasi mendalam dan rinci mengenai kecocokan/match kerja baik horisontal (antar berbagai bidang ilmu) maupun vertikal (antar berbagai level/strata pendidikan). 
         </p>
@@ -28,123 +208,53 @@
         <hr class="my-8 md:min-w-full" />
         
         <form action="#" method="POST">
-          <div class="overflow-hidden">
+          <div class="">
+            {#if !userId}
             <div class="grid grid-cols-4 gap-4">
               <div class="col-span-4">
-                <label for="first-name" class="block text-sm font-medium text-gray-700">Nama</label>
-                <input type="text" name="first-name" id="first-name" autocomplete="given-name" class="block w-full px-4 py-2 mt-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-m">
+                <label for="name" class="block text-sm font-medium text-gray-700">Nama</label>
+                <input on:change="{onChange}" type="text" name="name" id="name" autocomplete="given-name" class="block w-full px-4 py-2 mt-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-m">
               </div>
 
               <div class="col-span-4">
-                <label for="email-address" class="block text-sm font-medium text-gray-700">NIM</label>
-                <input type="text" name="email-address" id="email-address" autocomplete="email" class="block w-full px-4 py-2 mt-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-m">
+                <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                <input on:change="{onChange}" type="text" name="email" id="email" class="block w-full px-4 py-2 mt-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-m">
               </div>
-
-              <div class="col-span-4">
-                <label for="email-address" class="block text-sm font-medium text-gray-700">NIK</label>
-                <input type="text" name="email-address" id="email-address" autocomplete="email" class="block w-full px-4 py-2 mt-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-m">
-              </div>
-
-              <div class="col-span-4 sm:col-span-4 lg:col-span-1">
-                <label for="city" class="block text-sm font-medium text-gray-700">Tempat lahir</label>
-                <input type="text" name="city" id="city" class="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-              </div>
-
-              <div class="col-span-4 sm:col-span-4 lg:col-span-1">
-                <label for="city" class="block text-sm font-medium text-gray-700">Tanggal kelahiran</label>
-                <input type="text" name="city" id="city" class="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-              </div>
-
-              <div class="col-span-4 sm:col-span-3 lg:col-span-1">
-                <label for="state" class="block text-sm font-medium text-gray-700">Bulan kelahiran</label>
-                <input type="text" name="state" id="state" class="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-              </div>
-
-              <div class="col-span-4 sm:col-span-3 lg:col-span-1">
-                <label for="postal-code" class="block text-sm font-medium text-gray-700">Tahun kelahiran</label>
-                <input type="text" name="postal-code" id="postal-code" autocomplete="postal-code" class="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-              </div>
-
-              <div class="col-span-2">
-                <label for="country" class="block text-sm font-medium text-gray-700">Jurusan/Prodi</label>
-                <select id="country" name="country" autocomplete="country" class="block w-full px-4 py-2 mt-1 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-m">
-                  <option>Pilihan A</option>
-                  <option>Pilihan B</option>
-                  <option>Pilihan C</option>
-                </select>
-              </div>
-
-              <div class="col-span-2">
-                <label for="country" class="block text-sm font-medium text-gray-700">Tahun lulus</label>
-                <select id="country" name="country" autocomplete="country" class="block w-full px-4 py-2 mt-1 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-m">
-                  <option>Pilihan A</option>
-                  <option>Pilihan B</option>
-                  <option>Pilihan C</option>
-                </select>
-              </div>
-
-              <div class="col-span-4">
-                <label for="email-address" class="block text-sm font-medium text-gray-700">Nomor Ijazah</label>
-                <input type="text" name="email-address" id="email-address" autocomplete="email" class="block w-full px-4 py-2 mt-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-m">
-              </div>
-
-              <div class="col-span-4">
-                <label for="email-address" class="block text-sm font-medium text-gray-700">Nomor telp./WhatsApp</label>
-                <input type="text" name="email-address" id="email-address" autocomplete="email" class="block w-full px-4 py-2 mt-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-m">
-              </div>
-
-              <div class="col-span-4">
-                <label for="email-address" class="block text-sm font-medium text-gray-700">Email</label>
-                <input type="text" name="email-address" id="email-address" autocomplete="email" class="block w-full px-4 py-2 mt-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-m">
-              </div>
-              
-              
             </div>
-            
-            <fieldset class="mt-16 mb-8">
+            {:else if userId}
+              <div class="grid grid-cols-4 gap-4">
+                <div class="col-span-4">
+                  <label for="instansi" class="block text-sm font-medium text-gray-700">Instansi</label>
+                  <input on:change="{onChange}" type="text" name="instansi" id="instansi" class="block w-full px-4 py-2 mt-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-m">
+                </div>
 
-              <legend class="mb-4 text-base font-medium text-gray-900">TRACER STUDY</legend>
-              
-              <!-- question sets -->
-              <div>
-                <p class="text-xl font-semibold text-black">Bagaimana anda menggambarkan situasi sekarang?</p>
-                <div class="mt-4 space-y-4">
-                  <div class="flex items-center">
-                    <input id="push-everything" name="push-notifications" type="radio" class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
-                    <label for="push-everything" class="block ml-3 text-sm font-medium text-gray-700">
-                      Saya sudah bekerja 
-                    </label>
-                  </div>
-                  <div class="flex items-center">
-                    <input id="push-email" name="push-notifications" type="radio" class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
-                    <label for="push-email" class="block ml-3 text-sm font-medium text-gray-700">
-                      Saya masih melanjutkan kuliah
-                    </label>
-                  </div>
-                  <div class="flex items-center">
-                    <input id="push-nothing" name="push-notifications" type="radio" class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
-                    <label for="push-nothing" class="block ml-3 text-sm font-medium text-gray-700">
-                      Saya belum bekerja
-                    </label>
-                  </div>
-                  <div class="flex items-center">
-                    <input id="push-nothing" name="push-notifications" type="radio" class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
-                    <label for="push-nothing" class="block ml-3 text-sm font-medium text-gray-700">
-                      Saya seddang mencari pekerjaan
-                    </label>
-                  </div>
-                  <div class="flex items-center">
-                    <input id="push-nothing" name="push-notifications" type="radio" class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
-                    <label for="push-nothing" class="block ml-3 text-sm font-medium text-gray-700">
-                      Saya sudah menikah dan fokus mengurus keluarga
-                    </label>
-                  </div>
+                <div class="col-span-4">
+                  <label for="position" class="block text-sm font-medium text-gray-700">Posisi</label>
+                  <input on:change="{onChange}" type="text" name="position" id="position" class="block w-full px-4 py-2 mt-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-m">
+                </div>
+
+                <div class="col-span-4">
+                  <label for="alumni" class="block text-sm font-medium text-gray-700">Nama Alumni</label>
+                  <!-- <input on:change="{onChange}" type="text" name="alumni" id="alumni" class="block w-full px-4 py-2 mt-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-m"> -->
+                  <AutoComplete
+                    className='block mt-1 col-span-4 w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-m'
+                    inputClassName='w-full px-4 py-2 mt-1 border-none focus:ring-transparent'
+                    dropdownClassName='max-h-10 mt-2 border-gray-300 rounded-md shadow-sm'
+                    items={alumniList}
+                    bind:selectedItem={selectedAlumni}
+                    labelFieldName="name"
+                  />
+                </div>
+
+                <div class="col-span-4">
+                  <label for="alumni_position" class="block text-sm font-medium text-gray-700">Posisi Alumni</label>
+                  <input on:change="{onChange}" type="text" name="alumni_position" id="alumni_position" class="block w-full px-4 py-2 mt-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-m">
                 </div>
               </div>
-            </fieldset>
+            {/if}
 
-            <div class="px-4 py-3 text-right bg-gray-50 sm:px-6">
-              <button type="submit" class="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            <div class="px-4 py-3 mt-10 text-right bg-gray-50 sm:px-6">
+              <button on:click="{lanjutkan}" class="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                 Lanjutkan
               </button>
             </div>

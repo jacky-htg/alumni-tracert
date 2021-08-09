@@ -81,10 +81,11 @@ func (u *Legalize) ListQuery(ctx context.Context, db *sql.DB, in *proto.ListInpu
 	}
 
 	{
-		qCount := `SELECT COUNT(*) FROM FROM legalizes l JOIN alumni a ON l.alumni_id = a.id`
+		qCount := `SELECT COUNT(*) FROM legalizes l JOIN alumni a ON l.alumni_id = a.id`
 		if len(where) > 0 {
 			qCount += " WHERE " + strings.Join(where, " AND ")
 		}
+
 		var count int
 		err := db.QueryRowContext(ctx, qCount, paramQueries...).Scan(&count)
 		if err != nil && err != sql.ErrNoRows {
@@ -164,6 +165,7 @@ func (u *Legalize) Get(ctx context.Context, db *sql.DB) error {
 	u.Pb.VerifiedBy = uint64(verifiedBy.Int64)
 	u.Pb.ApprovedAt = approvedAt.String
 	u.Pb.ApprovedBy = uint64(approvedBy.Int64)
+	u.Pb.Alumni = &pbAlumni
 
 	return nil
 }
