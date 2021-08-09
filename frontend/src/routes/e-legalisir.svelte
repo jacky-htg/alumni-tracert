@@ -74,16 +74,30 @@
 		navigate(`${PATH_URL.ADMIN_LEGALISIR_DETAIL}?id=${id}`, { replace: false })
 	}
 
+	const updateStatusList = (id, status) => {
+		legalisirList = legalisirList.map((leg) => {
+			if(leg.id === id) leg.status = status
+			return leg
+		})
+	}
+
+	let isLoadingReject = false;
+	let isLoadingAccept = false;
+	let isLoadingApproved = false;
+
 	const onReject = async (id) => {
 		try {
+			isLoadingReject = true;
 			const legalizeProto = new Legalize()
 			legalizeProto.setId(id)
 			
 			const legalizeService = new LegalizeService(deps, legalizeProto)
 			await legalizeService.reject()
-			await requestList()
+			updateStatusList(id, 0)
+			isLoadingReject = false;
 		} catch(e) {
 			errorServiceHandling(e)
+			isLoadingReject = false;
 			if (Cookies.get('token') == null) {
 				location = PATH_URL.LOGIN  
 			} 
@@ -93,14 +107,17 @@
 
 	const onAccept = async (id) => {
 		try {
+			isLoadingAccept = true;
 			const legalizeProto = new Legalize()
 			legalizeProto.setId(id)
 			
 			const legalizeService = new LegalizeService(deps, legalizeProto)
 			await legalizeService.verify()
-			await requestList()
+			updateStatusList(id, 2)
+			isLoadingAccept = false;
 		} catch(e) {
 			errorServiceHandling(e)
+			isLoadingAccept = false;
 			if (Cookies.get('token') == null) {
 				location = PATH_URL.LOGIN  
 			} 
@@ -110,14 +127,17 @@
 
 	const onApprove = async (id) => {
 		try {
+			isLoadingApproved = true;
 			const legalizeProto = new Legalize()
 			legalizeProto.setId(id)
 			
 			const legalizeService = new LegalizeService(deps, legalizeProto)
 			await legalizeService.approve()
-			await requestList()
+			updateStatusList(id, 4)
+			isLoadingApproved = false;
 		} catch(e) {
 			errorServiceHandling(e)
+			isLoadingApproved = false;
 			if (Cookies.get('token') == null) {
 				location = PATH_URL.LOGIN  
 			} 
@@ -176,16 +196,16 @@
 										<td class="px-6 py-4 whitespace-nowrap">
 											<div class="flex items-center justify-end">
 												{#if usertype === 4}
-												{#if legalist.status === 2}
-												<Button on:click={() => onApprove(legalist.id)} className="mr-2" bgColor="bg-yellow-300" bgHoverColor="bg-yellow-200" size="small">Accept</Button>
-												{/if}
+													{#if legalist.status === 2}
+														<Button isLoading={isLoadingApproved} on:click={() => onApprove(legalist.id)} className="mr-2" bgColor="bg-yellow-300" bgHoverColor="bg-yellow-200" size="small">Accept</Button>
+													{/if}
 												{:else}
-												{#if legalist.status === 1}
-												<Button on:click={() => onReject(legalist.id)} className="mr-2" bgColor="bg-red-500" bgHoverColor="bg-red-400" size="small">Reject</Button>
-												<Button on:click={() => onAccept(legalist.id)} className="mr-2" bgColor="bg-green-500" bgHoverColor="bg-green-400" size="small">Accept</Button>
+													{#if legalist.status === 1}
+														<Button isLoading={isLoadingReject} on:click={() => onReject(legalist.id)} className="mr-2" bgColor="bg-red-500" bgHoverColor="bg-red-400" size="small">Reject</Button>
+														<Button isLoading={isLoadingAccept} on:click={() => onAccept(legalist.id)} className="mr-2" bgColor="bg-green-500" bgHoverColor="bg-green-400" size="small">Accept</Button>
+													{/if}
 												{/if}
-												{/if}
-												<Button on:click={() => onViewDetail(legalist.id)} size="small" bgColor="bg-gray-300" bgHoverColor="bg-gray-200">View</Button>
+												<Button on:click={() => onViewDetail(legalist.id)} size="small" bgColor="bg-gray-400" bgHoverColor="bg-gray-300">View</Button>
 											</div>
 										</td>
 									</tr>
