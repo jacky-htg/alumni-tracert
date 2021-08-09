@@ -7,13 +7,17 @@
 	import { onMount } from 'svelte'
 	import { notifications } from "../helper/toast";
 	import { HOST_URL, APP_ENV } from '../env'
+	import { Legalize } from '../../proto/legalize_message_pb'
 	import { PATH_URL, SIDEBAR_ADMIN } from '../helper/path'
 	import Cookies from 'js-cookie'
 	import errorServiceHandling from '../helper/error_service'
+	import Button from '../components/Button.svelte'
+	import LegalizeService from '../services/legalize'
 
 	let search = '';
 	let limit = 10;
 	let page = 1;
+	const usertype = Cookies.get('usertype');
 	// state legalisir admin
 	const listInputProto = new ListInput()
   listInputProto.setSearch(search)
@@ -21,29 +25,29 @@
 	listInputProto.setPage(page)
 
   let legalisirList = [];
-  
-  async function legalisirListCall(userType){
-    var deps = {
-			proto: {
-				TracertClient: TracertServicePromiseClient
-			}
+	var deps = {
+		proto: {
+			TracertClient: TracertServicePromiseClient
 		}
-
+	}
+  async function legalisirListCall(){
     const legalisir = new LegalisirService(deps, listInputProto)
 		return await legalisir.legalizeList()
 	}
 
+	const requestList = async () => {
+		const legalisirStream = await legalisirListCall(usertype);
+		legalisirStream.on('data', (response) => {
+			legalisirList = [ ...legalisirList, response.toObject().legalize]
+		})
+		legalisirStream.on('end', () => {
+			console.log('End stream = ');
+		})
+	}
+
 	onMount(async () => {
 		try {
-			const usertype = Cookies.get('usertype');
-			const legalisirStream = await legalisirListCall(usertype);
-			const fieldObject = usertype == 4 ? 'legalize' : 'alumniAppraiser';
-			legalisirStream.on('data', (response) => {
-				legalisirList = [ ...legalisirList, response.toObject()[fieldObject]]
-			})
-			legalisirStream.on('end', () => {
-				console.log('End stream = ');
-			})
+			await requestList()
     } catch(e) {
 			errorServiceHandling(e)
       if (Cookies.get('token') == null) {
@@ -68,6 +72,57 @@
 
 	const onViewDetail = (id) => {
 		navigate(`${PATH_URL.ADMIN_LEGALISIR_DETAIL}?id=${id}`, { replace: false })
+	}
+
+	const onReject = async (id) => {
+		try {
+			const legalizeProto = new Legalize()
+			legalizeProto.setId(id)
+			
+			const legalizeService = new LegalizeService(deps, legalizeProto)
+			await legalizeService.reject()
+			await requestList()
+		} catch(e) {
+			errorServiceHandling(e)
+			if (Cookies.get('token') == null) {
+				location = PATH_URL.LOGIN  
+			} 
+			notifications.danger(e.message)
+		}
+	}
+
+	const onAccept = async (id) => {
+		try {
+			const legalizeProto = new Legalize()
+			legalizeProto.setId(id)
+			
+			const legalizeService = new LegalizeService(deps, legalizeProto)
+			await legalizeService.verify()
+			await requestList()
+		} catch(e) {
+			errorServiceHandling(e)
+			if (Cookies.get('token') == null) {
+				location = PATH_URL.LOGIN  
+			} 
+			notifications.danger(e.message)
+		}
+	}
+
+	const onApprove = async (id) => {
+		try {
+			const legalizeProto = new Legalize()
+			legalizeProto.setId(id)
+			
+			const legalizeService = new LegalizeService(deps, legalizeProto)
+			await legalizeService.approve()
+			await requestList()
+		} catch(e) {
+			errorServiceHandling(e)
+			if (Cookies.get('token') == null) {
+				location = PATH_URL.LOGIN  
+			} 
+			notifications.danger(e.message)
+		}
 	}
 </script>
 
@@ -102,7 +157,7 @@
 								</thead>
 								<tbody class="bg-white divide-y divide-gray-200">
 									{#each legalisirList as legalist}
-									<tr class="cursor-pointer" on:click={() => onViewDetail(legalist.id)}>
+									<tr>
 										<td class="px-6 py-4 whitespace-nowrap">
 											<div class="flex items-center">
 												<div class="ml-4">
@@ -118,8 +173,20 @@
 										<td class="px-6 py-4 whitespace-nowrap">
 											<div class="text-sm text-gray-900">{@html getStatus(legalist.status)}</div>
 										</td>
-										<td class="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
-											<a href={`${PATH_URL.ADMIN_LEGALISIR_DETAIL}?id=${legalist.id}`} class="text-indigo-600 hover:text-indigo-900">View</a>
+										<td class="px-6 py-4 whitespace-nowrap">
+											<div class="flex items-center justify-end">
+												{#if usertype === 4}
+												{#if legalist.status === 2}
+												<Button on:click={() => onApprove(legalist.id)} className="mr-2" bgColor="bg-yellow-300" bgHoverColor="bg-yellow-200" size="small">Accept</Button>
+												{/if}
+												{:else}
+												{#if legalist.status === 1}
+												<Button on:click={() => onReject(legalist.id)} className="mr-2" bgColor="bg-red-500" bgHoverColor="bg-red-400" size="small">Reject</Button>
+												<Button on:click={() => onAccept(legalist.id)} className="mr-2" bgColor="bg-green-500" bgHoverColor="bg-green-400" size="small">Accept</Button>
+												{/if}
+												{/if}
+												<Button on:click={() => onViewDetail(legalist.id)} size="small" bgColor="bg-gray-300" bgHoverColor="bg-gray-200">View</Button>
+											</div>
 										</td>
 									</tr>
 									{/each}
