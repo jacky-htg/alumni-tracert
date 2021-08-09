@@ -93,7 +93,7 @@ import AccessDenied from './accessDenied.svelte';
 			legalizeProto.setId(id)
 			
 			const legalizeService = new LegalizeService(deps, legalizeProto)
-			await legalizeService.reject(document.querySelecto)
+			await legalizeService.reject()
 			updateStatusList(id, 0)
 			isLoadingReject = false;
 		} catch(e) {
@@ -196,7 +196,7 @@ import AccessDenied from './accessDenied.svelte';
 										</td>
 										<td class="px-6 py-4 whitespace-nowrap">
 											<div class="flex items-center justify-end">
-												{#if usertype === "4"}
+												{#if usertype == "4"}
 													{#if legalist.status === 2}
 														<Button isLoading={isLoadingApproved} on:click={() => onApprove(legalist.id)} className="mr-2" bgColor="bg-yellow-300" bgHoverColor="bg-yellow-200" size="small">Accept</Button>
 													{/if}
