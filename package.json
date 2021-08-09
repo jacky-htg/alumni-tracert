@@ -1,5 +1,8 @@
 {
   "dependencies": {
     "tailwindcss": "^2.2.7"
+  },
+  "devDependencies": {
+    "simple-svelte-autocomplete": "^2.1.0"
   }
 }
