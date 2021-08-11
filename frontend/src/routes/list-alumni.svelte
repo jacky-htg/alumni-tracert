@@ -13,15 +13,11 @@
 	let search = '';
 	let limit = 10;
 	let page = 1;
-  
-  const listInputProto = new ListInput()
-  listInputProto.setSearch(search)
-	listInputProto.setLimit(limit)
-	listInputProto.setPage(page)
-
   let alumniList = [];
+	let isLoadingTable = false;
+	let isLastPage = false;
   
-  async function alumniListCall(token){
+  async function alumniListCall(token, proto){
     var deps = {
 			proto: {
 				TracertClient: TracertServicePromiseClient
@@ -29,21 +25,51 @@
 			token
 		}
 
-    const alumni = new AlumniService(deps, listInputProto)
+    const alumni = new AlumniService(deps, proto)
     return await alumni.alumniList()
+	}
+
+	const fetchData = async () => {
+		const listInputProto = new ListInput()
+		listInputProto.setSearch(search)
+		listInputProto.setLimit(limit)
+		listInputProto.setPage(page)
+		const token = Cookies.get('token')
+		const alumniStream = await alumniListCall(token, listInputProto);
+		return new Promise((resolve, reject) => {
+			let count = 0;
+			let data = [];
+			alumniStream.on('data', (response) => {
+				data = [ ...data, response.toObject().alumni];
+				if(count >= limit-1) {
+					resolve(data);
+				} else {
+					count++;
+				}
+			})
+			alumniStream.on('status', (status) => {
+				if(status.code === 0) {
+					resolve(data);
+				}
+			})
+			alumniStream.on('end', () => {
+				resolve(data);
+				console.log('End stream = ');
+			})
+			alumniStream.on('error', (e) => {
+				reject(e);
+			})
+		})
 	}
 
   onMount(async () => {
 		try {
-			const token = Cookies.get('token')
-			const alumniStream = await alumniListCall(token);
-			alumniStream.on('data', (response) => {
-				alumniList = [ ...alumniList, response.toObject().alumni]
-			})
-			alumniStream.on('end', () => {
-				console.log('End stream = ');
-			})
+			isLoadingTable = true;
+			alumniList = await fetchData();
+			isLoadingTable = false;
+			isLastPage = false;
     } catch(e) {
+			isLoadingTable = false;
 			errorServiceHandling(e)
       if (Cookies.get('token') == null) {
         location = PATH_URL.LOGIN  
@@ -51,6 +77,42 @@
       notifications.danger(e.message)
     }
 	})
+
+	const onNextPage = async () => {
+		try {
+			page++;
+			isLoadingTable = true;
+			alumniList = await fetchData();
+			isLoadingTable = false;
+			if(alumniList.length < limit) {
+				isLastPage = true;
+			}
+		} catch(e) {
+			isLoadingTable = false;
+			errorServiceHandling(e)
+      if (Cookies.get('token') == null) {
+        location = PATH_URL.LOGIN  
+      } 
+      notifications.danger(e.message)
+		}
+	}
+
+	const onPrevPage = async () => {
+		try {
+			page--;
+			isLoadingTable = true;
+			alumniList = await fetchData();
+			isLoadingTable = false;
+			isLastPage = false;
+		} catch(e) {
+			isLoadingTable = false;
+			errorServiceHandling(e)
+      if (Cookies.get('token') == null) {
+        location = PATH_URL.LOGIN  
+      } 
+      notifications.danger(e.message)
+		}
+	}
 </script>
 
 <div class="w-full mx-auto max-w-8xl">
@@ -102,6 +164,24 @@
 									<!-- More people... -->
 								</tbody>
 							</table>
+							{#if !isLoadingTable}
+							<div class="min-w-full flex align-center justify-end border-t-2 border-gray-200 pr-4">
+								<button
+									on:click={onPrevPage}
+									class={`"p-4 mr-2" ${page <= 1 ? 'text-gray-200' : 'text-black' }`}
+									disabled={page <=1}
+								>
+									<i class="fas fa-chevron-left"></i>
+								</button>
+								<button
+									on:click={onNextPage}
+									class={`p-4 ${isLastPage ? 'text-gray-200' : 'text-black' }`}
+									disabled={isLastPage}
+								>
+									<i class="fas fa-chevron-right"></i>
+								</button>
+							</div>
+							{/if}
 						</div>
 					</div>
 				</div>
