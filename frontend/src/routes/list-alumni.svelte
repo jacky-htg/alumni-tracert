@@ -30,7 +30,6 @@
 
 	const fetchData = async () => {
 		const listInputProto = new ListInput()
-		console.log();
 		listInputProto.setSearch(search)
 		listInputProto.setLimit(limit)
 		listInputProto.setPage(page)

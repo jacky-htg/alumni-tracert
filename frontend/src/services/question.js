@@ -1,4 +1,5 @@
 import Tracert from './tracert';
+import Cookies from 'js-cookie'
 
 export default class extends Tracert{
   constructor(proto, questionGroupListInput) {
@@ -9,5 +10,11 @@ export default class extends Tracert{
       return this.client.questionList(this.req, {}).then(questionGroupList=>{
           return questionGroupList
       })
+  }
+
+  resultList() {
+    const token = Cookies.get('token')
+    // sementara
+    return this.client.alumniList(this.req, { token })
   }
 }
