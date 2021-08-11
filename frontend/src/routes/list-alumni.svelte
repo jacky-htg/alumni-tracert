@@ -1,7 +1,7 @@
 <script>
 	import { TracertServicePromiseClient } from '../../proto/tracert_service_grpc_web_pb'
   import Sidebar from '../components/Sidebar.svelte'
-  import { AlumniListResponse } from '../../proto/question_group_message_pb'
+  import { debounce } from '../helper/commons'
 	import { ListInput } from '../../proto/generic_message_pb'
   import AlumniService from '../services/alumniList'
   import { onMount } from 'svelte'
@@ -12,17 +12,16 @@
 
 	let search = '';
 	let limit = 10;
-	let page = 1;
+	let page = 0;
   let alumniList = [];
 	let isLoadingTable = false;
 	let isLastPage = false;
   
-  async function alumniListCall(token, proto){
+  async function alumniListCall(proto){
     var deps = {
 			proto: {
 				TracertClient: TracertServicePromiseClient
-			},
-			token
+			}
 		}
 
     const alumni = new AlumniService(deps, proto)
@@ -31,11 +30,11 @@
 
 	const fetchData = async () => {
 		const listInputProto = new ListInput()
+		console.log();
 		listInputProto.setSearch(search)
 		listInputProto.setLimit(limit)
 		listInputProto.setPage(page)
-		const token = Cookies.get('token')
-		const alumniStream = await alumniListCall(token, listInputProto);
+		const alumniStream = await alumniListCall(listInputProto);
 		return new Promise((resolve, reject) => {
 			let count = 0;
 			let data = [];
@@ -62,6 +61,15 @@
 		})
 	}
 
+	const onError = (e) => {
+		isLoadingTable = false;
+		errorServiceHandling(e)
+		if (Cookies.get('token') == null) {
+			location = PATH_URL.LOGIN  
+		} 
+		notifications.danger(e.message)
+	}
+
   onMount(async () => {
 		try {
 			isLoadingTable = true;
@@ -69,12 +77,7 @@
 			isLoadingTable = false;
 			isLastPage = false;
     } catch(e) {
-			isLoadingTable = false;
-			errorServiceHandling(e)
-      if (Cookies.get('token') == null) {
-        location = PATH_URL.LOGIN  
-      } 
-      notifications.danger(e.message)
+			onError(e);
     }
 	})
 
@@ -88,12 +91,7 @@
 				isLastPage = true;
 			}
 		} catch(e) {
-			isLoadingTable = false;
-			errorServiceHandling(e)
-      if (Cookies.get('token') == null) {
-        location = PATH_URL.LOGIN  
-      } 
-      notifications.danger(e.message)
+			onError(e);
 		}
 	}
 
@@ -105,13 +103,28 @@
 			isLoadingTable = false;
 			isLastPage = false;
 		} catch(e) {
-			isLoadingTable = false;
-			errorServiceHandling(e)
-      if (Cookies.get('token') == null) {
-        location = PATH_URL.LOGIN  
-      } 
-      notifications.danger(e.message)
+			onError(e);
 		}
+	}
+
+	const onSearch = (e) => {
+		const { value } = e.target;
+		debounce(async () => {
+			try {
+				page = 0;
+				search = value;
+				isLoadingTable = true;
+				alumniList = await fetchData();
+				isLoadingTable = false;
+				if(alumniList.length < limit) {
+					isLastPage = true;
+				} else {
+					isLastPage = false;
+				}
+			} catch(e) {
+				onError(e);
+			}
+		}, 500);
 	}
 </script>
 
@@ -120,8 +133,17 @@
 		<Sidebar active="list-alumni" sideBarMenus={SIDEBAR_ADMIN} pathImage="../" />
 
 		<main class="flex-auto w-full min-w-0 px-20 pt-12 lg:static lg:max-h-full lg:overflow-visible">
-			
-			<h1 class="mb-12 text-4xl font-bold">List Alumni</h1>
+			<div class="flex">
+				<h1 class="mb-8 text-4xl font-bold">List Alumni</h1>
+				<div class="flex align-center justify-center mb-3 pt-0 ml-6">
+          <input
+            type="text"
+            placeholder="Cari"
+						on:input={onSearch}
+            class="border-0 px-3 py-1 h-10 border border-solid border-gray-200 placeholder-gray-300 text-gray-600 bg-white rounded text-base leading-snug shadow-none outline-none focus:outline-none w-full font-normal"
+          />
+        </div>
+			</div>
 
 			<div class="flex flex-col">
 				<div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
