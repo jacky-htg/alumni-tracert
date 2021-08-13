@@ -29,15 +29,16 @@
 	}
 
 	const fetchData = async () => {
-		const listInputProto = new ListInput()
-		listInputProto.setSearch(search)
-		listInputProto.setLimit(limit)
-		listInputProto.setPage(page)
+		const listInputProto = new ListInput();
+		listInputProto.setSearch(search);
+		listInputProto.setLimit(limit);
+		listInputProto.setPage(page);
 		const alumniStream = await alumniListCall(listInputProto);
 		return new Promise((resolve, reject) => {
 			let count = 0;
 			let data = [];
 			alumniStream.on('data', (response) => {
+				alumniList = [ ...alumniList, response.toObject().alumni];
 				data = [ ...data, response.toObject().alumni];
 				if(count >= limit-1) {
 					resolve(data);
@@ -52,7 +53,6 @@
 			})
 			alumniStream.on('end', () => {
 				resolve(data);
-				console.log('End stream = ');
 			})
 			alumniStream.on('error', (e) => {
 				reject(e);
@@ -72,7 +72,7 @@
   onMount(async () => {
 		try {
 			isLoadingTable = true;
-			alumniList = await fetchData();
+			await fetchData();
 			isLoadingTable = false;
 			isLastPage = false;
     } catch(e) {
@@ -84,7 +84,7 @@
 		try {
 			page++;
 			isLoadingTable = true;
-			alumniList = await fetchData();
+			await fetchData();
 			isLoadingTable = false;
 			if(alumniList.length < limit) {
 				isLastPage = true;
@@ -98,7 +98,7 @@
 		try {
 			page--;
 			isLoadingTable = true;
-			alumniList = await fetchData();
+			await fetchData();
 			isLoadingTable = false;
 			isLastPage = false;
 		} catch(e) {
@@ -113,7 +113,7 @@
 				page = 0;
 				search = value;
 				isLoadingTable = true;
-				alumniList = await fetchData();
+				await fetchData();
 				isLoadingTable = false;
 				if(alumniList.length < limit) {
 					isLastPage = true;
