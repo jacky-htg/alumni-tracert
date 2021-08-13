@@ -52,7 +52,8 @@
 			let count = 0;
 			let data = [];
 			legalisirStream.on('data', (response) => {
-				data = [ ...data, response.toObject().alumni];
+				data = [ ...data, response.toObject().legalize];
+				legalisirList = [ ...legalisirList, response.toObject().legalize]
 				if(count >= limit-1) {
 					resolve(data);
 				} else {
@@ -77,7 +78,7 @@
 	onMount(async () => {
 		try {
 			isLoadingTable = true;
-			legalisirList = await fetchData();
+			await fetchData();
 			isLoadingTable = false;
 			isLastPage = false;
     } catch(e) {
@@ -165,7 +166,7 @@
 		try {
 			page++;
 			isLoadingTable = true;
-			legalisirList = await fetchData();
+			await fetchData();
 			isLoadingTable = false;
 			if(legalisirList.length < limit) {
 				isLastPage = true;
@@ -179,7 +180,7 @@
 		try {
 			page--;
 			isLoadingTable = true;
-			legalisirList = await fetchData();
+			await fetchData();
 			isLoadingTable = false;
 			isLastPage = false;
 		} catch(e) {
@@ -194,7 +195,7 @@
 				page = 0;
 				search = value;
 				isLoadingTable = true;
-				legalisirList = await fetchData();
+				await fetchData();
 				isLoadingTable = false;
 				if(legalisirList.length < limit) {
 					isLastPage = true;
