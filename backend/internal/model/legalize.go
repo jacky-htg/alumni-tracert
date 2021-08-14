@@ -62,7 +62,7 @@ func (u *Legalize) ListQuery(ctx context.Context, db *sql.DB, in *proto.ListInpu
 			l.verified_by, l.verified_at, l.approved_by, l.approved_at, 
 			l.status, l.created, l.modified 
 		FROM legalizes l
-		JOIN certificate c ON l.certificate_id = c.id
+		JOIN certificates c ON l.certificate_id = c.id
 		JOIN alumni a ON c.alumni_id = a.id
 	`
 	where := []string{}
@@ -88,7 +88,7 @@ func (u *Legalize) ListQuery(ctx context.Context, db *sql.DB, in *proto.ListInpu
 	{
 		qCount := `
 			SELECT COUNT(*) FROM legalizes l 
-			JOIN certificate c ON l.certificate_id = c.id
+			JOIN certificates c ON l.certificate_id = c.id
 			JOIN alumni a ON c.alumni_id = a.id
 		`
 		if len(where) > 0 {
@@ -146,7 +146,7 @@ func (u *Legalize) Get(ctx context.Context, db *sql.DB) error {
 			l.verified_by, l.verified_at, l.approved_by, l.approved_at, 
 			l.status, l.created, l.modified 
 		FROM legalizes l
-		JOIN certificate c ON l.certificate_id = c.id
+		JOIN certificates c ON l.certificate_id = c.id
 		JOIN alumni a ON c.alumni_id = a.id
 		WHERE l.id = ?
 	`
@@ -193,7 +193,7 @@ func (u *Legalize) GetByAlumniId(ctx context.Context, db *sql.DB) (*proto.Legali
 			l.verified_by, l.verified_at, l.approved_by, l.approved_at, 
 			l.status, l.ijazah_signed, l.transcript_signed, l.rating, l.created, l.modified 
 		FROM legalizes l
-		JOIN certificate c ON l.certificate_id = c.id
+		JOIN certificates c ON l.certificate_id = c.id
 		JOIN alumni a ON c.alumni_id = a.id
 		WHERE a.id = ?
 	`

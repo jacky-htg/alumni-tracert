@@ -57,17 +57,9 @@ func (u *AlumniTracertServer) TracerCreate(ctx context.Context, in *proto.Tracer
 	default:
 	}
 
-	ctx, err := util.GetMetadata(ctx)
+	ctx, err := GetUserLogin(ctx, u.Db)
 	if err != nil {
-		util.LogError(u.Log, "Get metadata on tracer create", err)
-		return nil, err
-	}
-
-	var userModel model.User
-	userModel.Pb.Token = ctx.Value(app.Ctx("token")).(string)
-	err = userModel.GetUserLogin(ctx, u.Db)
-	if err != nil {
-		util.LogError(u.Log, "Get user login", err)
+		util.LogError(u.Log, "Get user login on tracer create", err)
 		return nil, err
 	}
 
@@ -77,7 +69,7 @@ func (u *AlumniTracertServer) TracerCreate(ctx context.Context, in *proto.Tracer
 	}
 
 	var tracerModel model.Tracer
-	tracerModel.Pb.UserId = userModel.Pb.Id
+	tracerModel.Pb.UserId = ctx.Value(app.Ctx("user_id")).(uint64)
 
 	err = tracerModel.Create(ctx, u.Db)
 	if err != nil {
