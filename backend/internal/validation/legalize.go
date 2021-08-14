@@ -75,6 +75,39 @@ func (u *Legalize) Rejected(ctx context.Context, in *proto.UintMessage, db *sql.
 	return nil
 }
 
+func (u *Legalize) Done(ctx context.Context, in *proto.Legalize, db *sql.DB) error {
+	if in.Id <= 0 {
+		return status.Error(codes.InvalidArgument, "Please supply valid ID")
+	}
+
+	if ctx.Value(app.Ctx("user_type")).(uint32) != constant.USERTYPE_ADMIN {
+		return status.Error(codes.PermissionDenied, "You can not finishing this document")
+	}
+
+	u.Model.Pb.Id = in.Id
+	if err := u.Model.Get(ctx, db); err != nil {
+		return err
+	}
+
+	if u.Model.Pb.Status == uint32(constant.LEGALIZE_STATUS_REJECTED) {
+		return status.Error(codes.InvalidArgument, "Legalize has been rejected")
+	}
+
+	if !u.Model.Pb.IsVerified {
+		return status.Error(codes.InvalidArgument, "Legalize has not been verified")
+	}
+
+	if !u.Model.Pb.IsOffline {
+		return status.Error(codes.InvalidArgument, "Legalize not offline option")
+	}
+
+	if u.Model.Pb.Status != uint32(constant.LEGALIZE_STATUS_VERIFIED) {
+		return status.Error(codes.InvalidArgument, "Legalize has not been verified")
+	}
+
+	return nil
+}
+
 func (u *Legalize) Verified(ctx context.Context, in *proto.UintMessage, db *sql.DB) error {
 	if in.Data <= 0 {
 		return status.Error(codes.InvalidArgument, "Please supply valid ID")

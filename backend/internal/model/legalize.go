@@ -390,3 +390,38 @@ func (u *Legalize) Rating(ctx context.Context, db *sql.DB) error {
 
 	return nil
 }
+
+func (u *Legalize) Done(ctx context.Context, db *sql.DB) error {
+	select {
+	case <-ctx.Done():
+		return util.ContextError(ctx)
+	default:
+	}
+
+	query := `
+		UPDATE legalizes 
+		SET 
+			is_approved = true, 
+			approved_by = ?, 
+			approved_at = ?,
+			status = 3 
+		WHERE id = ? 
+	`
+
+	stmt, err := db.PrepareContext(ctx, query)
+	if err != nil {
+		return status.Errorf(codes.Internal, "Prepare done: %v", err)
+	}
+	defer stmt.Close()
+
+	_, err = stmt.ExecContext(ctx,
+		ctx.Value(app.Ctx("user_id")).(uint64),
+		time.Now().UTC(),
+		u.Pb.Id,
+	)
+	if err != nil {
+		return status.Errorf(codes.Internal, "Exec update: %v", err)
+	}
+
+	return nil
+}
