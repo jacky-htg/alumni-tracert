@@ -26,6 +26,14 @@ func (u *UserAnswer) Create(ctx context.Context, in *proto.UserAnswer) error {
 	return nil
 }
 
+func (u *UserAnswer) TracerCreate(ctx context.Context) error {
+	if ctx.Value(app.Ctx("user_type")).(uint32) != constant.USERTYPE_ALUMNI {
+		return status.Error(codes.PermissionDenied, "permission denied")
+	}
+
+	return nil
+}
+
 func (u *UserAnswer) GetTrace(ctx context.Context) error {
 	if ctx.Value(app.Ctx("user_type")).(uint32) != constant.USERTYPE_ADMIN {
 		return status.Error(codes.PermissionDenied, "permission denied")

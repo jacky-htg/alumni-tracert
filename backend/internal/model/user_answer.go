@@ -21,7 +21,7 @@ func (u *UserAnswer) Create(ctx context.Context, db *sql.DB) error {
 	default:
 	}
 
-	query := `INSERT INTO user_answers (user_id, question_id, answer) VALUES (?, ?, ?)`
+	query := `INSERT INTO user_answers (tracer_id, question_id, answer) VALUES (?, ?, ?)`
 
 	stmt, err := db.PrepareContext(ctx, query)
 	if err != nil {
@@ -30,7 +30,7 @@ func (u *UserAnswer) Create(ctx context.Context, db *sql.DB) error {
 	defer stmt.Close()
 
 	_, err = stmt.ExecContext(ctx,
-		u.Pb.UserId,
+		u.Pb.TracerId,
 		u.Pb.QuestionId,
 		u.Pb.Answer,
 	)

@@ -37,7 +37,7 @@ func (u *AlumniTracertServer) UserAnswerCreate(ctx context.Context, in *proto.Us
 	}
 
 	var answerModel model.UserAnswer
-	answerModel.Pb.UserId = userModel.Pb.Id
+	answerModel.Pb.TracerId = in.TracerId
 	answerModel.Pb.QuestionId = in.QuestionId
 	answerModel.Pb.Answer = in.Answer
 
@@ -48,6 +48,44 @@ func (u *AlumniTracertServer) UserAnswerCreate(ctx context.Context, in *proto.Us
 	}
 
 	return &answerModel.Pb, nil
+}
+
+func (u *AlumniTracertServer) TracerCreate(ctx context.Context, in *proto.Tracer) (*proto.Tracer, error) {
+	select {
+	case <-ctx.Done():
+		return nil, util.ContextError(ctx)
+	default:
+	}
+
+	ctx, err := util.GetMetadata(ctx)
+	if err != nil {
+		util.LogError(u.Log, "Get metadata on tracer create", err)
+		return nil, err
+	}
+
+	var userModel model.User
+	userModel.Pb.Token = ctx.Value(app.Ctx("token")).(string)
+	err = userModel.GetUserLogin(ctx, u.Db)
+	if err != nil {
+		util.LogError(u.Log, "Get user login", err)
+		return nil, err
+	}
+
+	if err := new(validation.UserAnswer).TracerCreate(ctx); err != nil {
+		util.LogError(u.Log, "validation on create tracer", err)
+		return nil, err
+	}
+
+	var tracerModel model.Tracer
+	tracerModel.Pb.UserId = userModel.Pb.Id
+
+	err = tracerModel.Create(ctx, u.Db)
+	if err != nil {
+		util.LogError(u.Log, "create tracer", err)
+		return nil, err
+	}
+
+	return &tracerModel.Pb, nil
 }
 
 func (u *AlumniTracertServer) GetTrace(ctx context.Context, in *proto.EmptyMessage) (*proto.TracerList, error) {
