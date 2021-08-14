@@ -26,10 +26,10 @@ func (u *Legalize) Upsert(ctx context.Context, db *sql.DB) error {
 	}
 
 	query := `
-		INSERT INTO legalizes (alumni_id, ijazah, transcript, status) 
-		VALUES (?, ?, ?, 1)
+		INSERT INTO legalizes (certificate_id, ijazah, transcript, is_offline, status) 
+		VALUES (?, ?, ?, ?, 1)
 		ON DUPLICATE KEY UPDATE
-		ijazah = ?, transcript = ?, status = 1, is_verified = false, is_approved = false, created = NOW(), modified = NOW()
+		ijazah = ?, transcript = ?, is_offline = ?, status = 1, is_verified = false, is_approved = false, created = NOW(), modified = NOW()
 	`
 
 	stmt, err := db.PrepareContext(ctx, query)
@@ -39,11 +39,13 @@ func (u *Legalize) Upsert(ctx context.Context, db *sql.DB) error {
 	defer stmt.Close()
 
 	_, err = stmt.ExecContext(ctx,
-		u.Pb.Alumni.Id,
+		u.Pb.Certificate.Id,
 		u.Pb.Ijazah,
 		u.Pb.Transcript,
+		u.Pb.IsOffline,
 		u.Pb.Ijazah,
 		u.Pb.Transcript,
+		u.Pb.IsOffline,
 	)
 	if err != nil {
 		return status.Errorf(codes.Internal, "Exec insert: %v", err)
@@ -54,21 +56,24 @@ func (u *Legalize) Upsert(ctx context.Context, db *sql.DB) error {
 
 func (u *Legalize) ListQuery(ctx context.Context, db *sql.DB, in *proto.ListInput) (string, []interface{}, *proto.ListInput, error) {
 	query := `
-		SELECT l.id, a.id, a.name, a.nim, a.nik, a.no_ijazah, 
-			l.ijazah, l.transcript, l.is_verified, l.is_approved, 
+		SELECT l.id, a.id, a.name, c.nim, a.nik, 
+			c.id, c.no_ijazah, c.major_study, c.graduation_year, 
+			l.ijazah, l.transcript, l.is_offline, l.is_verified, l.is_approved, 
 			l.verified_by, l.verified_at, l.approved_by, l.approved_at, 
 			l.status, l.created, l.modified 
 		FROM legalizes l
-		JOIN alumni a ON l.alumni_id = a.id`
+		JOIN certificate c ON l.certificate_id = c.id
+		JOIN alumni a ON c.alumni_id = a.id
+	`
 	where := []string{}
 	paramQueries := []interface{}{}
 
 	if ctx.Value(app.Ctx("user_type")).(uint32) == constant.USERTYPE_ADMIN {
-		where = append(where, "l.status = 1 AND l.is_verified = FALSE AND l.is_approved = FALSE")
+		where = append(where, "((l.status = 1 AND l.is_verified = FALSE AND l.is_approved = FALSE) OR (l.is_offline = TRUE AND l.status <> 4))")
 	} else if ctx.Value(app.Ctx("user_type")).(uint32) == constant.USERTYPE_PEJABAT {
 		where = append(where, "l.status = 2 AND l.is_verified = TRUE AND l.is_approved = FALSE")
 	} else if ctx.Value(app.Ctx("user_type")).(uint32) == constant.USERTYPE_ALUMNI {
-		where = append(where, "l.alumni_id = ?")
+		where = append(where, "a.id = ?")
 		paramQueries = append(paramQueries, ctx.Value(app.Ctx("alumni_id")).(uint64))
 	}
 
@@ -77,11 +82,15 @@ func (u *Legalize) ListQuery(ctx context.Context, db *sql.DB, in *proto.ListInpu
 		paramQueries = append(paramQueries, "%"+in.Search+"%")
 		paramQueries = append(paramQueries, "%"+in.Search+"%")
 		paramQueries = append(paramQueries, "%"+in.Search+"%")
-		where = append(where, `(a.name LIKE ? OR a.nim LIKE ? OR a.nik LIKE ? OR a.no_ijazah LIKE ?)`)
+		where = append(where, `(a.name LIKE ? OR c.nim LIKE ? OR a.nik LIKE ? OR c.no_ijazah LIKE ?)`)
 	}
 
 	{
-		qCount := `SELECT COUNT(*) FROM legalizes l JOIN alumni a ON l.alumni_id = a.id`
+		qCount := `
+			SELECT COUNT(*) FROM legalizes l 
+			JOIN certificate c ON l.certificate_id = c.id
+			JOIN alumni a ON c.alumni_id = a.id
+		`
 		if len(where) > 0 {
 			qCount += " WHERE " + strings.Join(where, " AND ")
 		}
@@ -131,23 +140,27 @@ func (u *Legalize) ListQuery(ctx context.Context, db *sql.DB, in *proto.ListInpu
 
 func (u *Legalize) Get(ctx context.Context, db *sql.DB) error {
 	query := `
-		SELECT l.id, a.id, a.name, a.nim, a.nik, a.no_ijazah, 
-			l.ijazah, l.transcript, l.is_verified, l.is_approved, 
+		SELECT l.id, a.id, a.name, c.nim, a.nik, 
+			c.no_ijazah, c.major_study, c.graduation_year,
+			l.ijazah, l.transcript, l.is_offline, l.is_verified, l.is_approved, 
 			l.verified_by, l.verified_at, l.approved_by, l.approved_at, 
 			l.status, l.created, l.modified 
 		FROM legalizes l
-		JOIN alumni a ON l.alumni_id = a.id
+		JOIN certificate c ON l.certificate_id = c.id
+		JOIN alumni a ON c.alumni_id = a.id
 		WHERE l.id = ?
 	`
 
 	row := db.QueryRowContext(ctx, query, u.Pb.Id)
 	var createdAt, updatedAt time.Time
 	var pbAlumni proto.Alumni
+	var pbCertificate proto.Certificate
 	var verifiedBy, approvedBy sql.NullInt64
 	var verifiedAt, approvedAt sql.NullString
 	err := row.Scan(
-		&u.Pb.Id, &pbAlumni.Id, &pbAlumni.Name, &pbAlumni.Nim, &pbAlumni.Nik, &pbAlumni.NoIjazah,
-		&u.Pb.Ijazah, &u.Pb.Transcript, &u.Pb.IsVerified, &u.Pb.IsApproved,
+		&u.Pb.Id, &pbAlumni.Id, &pbAlumni.Name, &pbCertificate.Nim, &pbAlumni.Nik,
+		&pbCertificate.NoIjazah, &pbCertificate.MajorStudy, &pbCertificate.GraduationYear,
+		&u.Pb.Ijazah, &u.Pb.Transcript, &u.Pb.IsOffline, &u.Pb.IsVerified, &u.Pb.IsApproved,
 		&verifiedBy, &verifiedAt, &approvedBy, &approvedAt,
 		&u.Pb.Status, &createdAt, &updatedAt,
 	)
@@ -166,49 +179,74 @@ func (u *Legalize) Get(ctx context.Context, db *sql.DB) error {
 	u.Pb.ApprovedAt = approvedAt.String
 	u.Pb.ApprovedBy = uint64(approvedBy.Int64)
 	u.Pb.Alumni = &pbAlumni
+	u.Pb.Certificate = &pbCertificate
 
 	return nil
 }
 
-func (u *Legalize) GetByAlumniId(ctx context.Context, db *sql.DB) error {
+func (u *Legalize) GetByAlumniId(ctx context.Context, db *sql.DB) (*proto.Legalizes, error) {
+	var list proto.Legalizes
 	query := `
-		SELECT l.id, a.id, a.name, a.nim, a.nik, a.no_ijazah, 
-			l.ijazah, l.transcript, l.is_verified, l.is_approved, 
+		SELECT l.id, a.id, a.name, c.nim, a.nik, 
+			c.no_ijazah, c.major_study, c.graduation_year, 
+			l.ijazah, l.transcript, l.is_offline, l.is_verified, l.is_approved, 
 			l.verified_by, l.verified_at, l.approved_by, l.approved_at, 
 			l.status, l.ijazah_signed, l.transcript_signed, l.rating, l.created, l.modified 
 		FROM legalizes l
-		JOIN alumni a ON l.alumni_id = a.id
+		JOIN certificate c ON l.certificate_id = c.id
+		JOIN alumni a ON c.alumni_id = a.id
 		WHERE a.id = ?
 	`
 
-	row := db.QueryRowContext(ctx, query, u.Pb.Alumni.Id)
-	var createdAt, updatedAt time.Time
-	var pbAlumni proto.Alumni
-	var verifiedBy, approvedBy sql.NullInt64
-	var rating sql.NullInt32
-	var verifiedAt, approvedAt, ijazahSigned, transcriptSigned sql.NullString
-	err := row.Scan(
-		&u.Pb.Id, &pbAlumni.Id, &pbAlumni.Name, &pbAlumni.Nim, &pbAlumni.Nik, &pbAlumni.NoIjazah,
-		&u.Pb.Ijazah, &u.Pb.Transcript, &u.Pb.IsVerified, &u.Pb.IsApproved,
-		&verifiedBy, &verifiedAt, &approvedBy, &approvedAt,
-		&u.Pb.Status, &ijazahSigned, &transcriptSigned, &rating, &createdAt, &updatedAt,
-	)
+	rows, err := db.QueryContext(ctx, query, u.Pb.Alumni.Id)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	defer rows.Close()
 
-	if err != nil && err != sql.ErrNoRows {
-		return status.Errorf(codes.Internal, "scan data: %v", err)
+	for rows.Next() {
+		err := util.ContextError(ctx)
+		if err != nil {
+			return nil, err
+		}
+
+		var pbLegalize proto.Legalize
+		var createdAt, updatedAt time.Time
+		var pbAlumni proto.Alumni
+		var pbCertificate proto.Certificate
+		var verifiedBy, approvedBy sql.NullInt64
+		var rating sql.NullInt32
+		var verifiedAt, approvedAt, ijazahSigned, transcriptSigned sql.NullString
+		err = rows.Scan(
+			&pbLegalize.Id, &pbAlumni.Id, &pbAlumni.Name, &pbCertificate.Nim, &pbAlumni.Nik,
+			&pbCertificate.NoIjazah, &pbCertificate.MajorStudy, &pbCertificate.GraduationYear,
+			&pbLegalize.Ijazah, &pbLegalize.Transcript, &pbLegalize.IsOffline, &pbLegalize.IsVerified, &pbLegalize.IsApproved,
+			&verifiedBy, &verifiedAt, &approvedBy, &approvedAt,
+			&pbLegalize.Status, &ijazahSigned, &transcriptSigned, &rating, &createdAt, &updatedAt,
+		)
+
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "scan data: %v", err)
+		}
+
+		pbLegalize.Created = createdAt.String()
+		pbLegalize.Updated = updatedAt.String()
+		pbLegalize.VerifiedAt = verifiedAt.String
+		pbLegalize.VerifiedBy = uint64(verifiedBy.Int64)
+		pbLegalize.ApprovedAt = approvedAt.String
+		pbLegalize.ApprovedBy = uint64(approvedBy.Int64)
+		pbLegalize.IjazahSigned = ijazahSigned.String
+		pbLegalize.TranscriptSigned = transcriptSigned.String
+		pbLegalize.Rating = uint32(rating.Int32)
+
+		list.Legalize = append(list.Legalize, &pbLegalize)
 	}
 
-	u.Pb.Created = createdAt.String()
-	u.Pb.Updated = updatedAt.String()
-	u.Pb.VerifiedAt = verifiedAt.String
-	u.Pb.VerifiedBy = uint64(verifiedBy.Int64)
-	u.Pb.ApprovedAt = approvedAt.String
-	u.Pb.ApprovedBy = uint64(approvedBy.Int64)
-	u.Pb.IjazahSigned = ijazahSigned.String
-	u.Pb.TranscriptSigned = transcriptSigned.String
-	u.Pb.Rating = uint32(rating.Int32)
+	if rows.Err() != nil {
+		return nil, status.Error(codes.Internal, rows.Err().Error())
+	}
 
-	return nil
+	return &list, nil
 }
 
 func (u *Legalize) Rejected(ctx context.Context, db *sql.DB) error {
@@ -344,6 +382,41 @@ func (u *Legalize) Rating(ctx context.Context, db *sql.DB) error {
 
 	_, err = stmt.ExecContext(ctx,
 		u.Pb.Rating,
+		u.Pb.Id,
+	)
+	if err != nil {
+		return status.Errorf(codes.Internal, "Exec update: %v", err)
+	}
+
+	return nil
+}
+
+func (u *Legalize) Done(ctx context.Context, db *sql.DB) error {
+	select {
+	case <-ctx.Done():
+		return util.ContextError(ctx)
+	default:
+	}
+
+	query := `
+		UPDATE legalizes 
+		SET 
+			is_approved = true, 
+			approved_by = ?, 
+			approved_at = ?,
+			status = 3 
+		WHERE id = ? 
+	`
+
+	stmt, err := db.PrepareContext(ctx, query)
+	if err != nil {
+		return status.Errorf(codes.Internal, "Prepare done: %v", err)
+	}
+	defer stmt.Close()
+
+	_, err = stmt.ExecContext(ctx,
+		ctx.Value(app.Ctx("user_id")).(uint64),
+		time.Now().UTC(),
 		u.Pb.Id,
 	)
 	if err != nil {

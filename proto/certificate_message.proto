@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package proto;
+option go_package = ".;proto";
+
+message Certificate {
+  uint64 id = 1;
+  uint64 alumni_id = 2;
+  string nim = 3;
+  string major_study = 4;
+  uint32 graduation_year = 5;
+  string no_ijazah = 6;
+  string created = 7;
+  string updated = 8;
+}

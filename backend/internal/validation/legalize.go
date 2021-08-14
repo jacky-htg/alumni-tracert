@@ -31,6 +31,18 @@ func (u *Legalize) Upload(ctx context.Context, in *proto.Legalize, db *sql.DB) e
 		return status.Error(codes.InvalidArgument, "Please supply valid transcript")
 	}
 
+	if in.GetCertificate().GetId() <= 0 {
+		return status.Error(codes.InvalidArgument, "Please supply valid certificate")
+	}
+
+	var certificate model.Certificate
+	certificate.Pb.Id = in.GetCertificate().GetId()
+	certificate.Pb.AlumniId = alumniId.(uint64)
+	err := certificate.GetByIdAndAlumni(ctx, db)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -58,6 +70,39 @@ func (u *Legalize) Rejected(ctx context.Context, in *proto.UintMessage, db *sql.
 
 	if u.Model.Pb.IsApproved {
 		return status.Error(codes.InvalidArgument, "Legalize has been approved")
+	}
+
+	return nil
+}
+
+func (u *Legalize) Done(ctx context.Context, in *proto.Legalize, db *sql.DB) error {
+	if in.Id <= 0 {
+		return status.Error(codes.InvalidArgument, "Please supply valid ID")
+	}
+
+	if ctx.Value(app.Ctx("user_type")).(uint32) != constant.USERTYPE_ADMIN {
+		return status.Error(codes.PermissionDenied, "You can not finishing this document")
+	}
+
+	u.Model.Pb.Id = in.Id
+	if err := u.Model.Get(ctx, db); err != nil {
+		return err
+	}
+
+	if u.Model.Pb.Status == uint32(constant.LEGALIZE_STATUS_REJECTED) {
+		return status.Error(codes.InvalidArgument, "Legalize has been rejected")
+	}
+
+	if !u.Model.Pb.IsVerified {
+		return status.Error(codes.InvalidArgument, "Legalize has not been verified")
+	}
+
+	if !u.Model.Pb.IsOffline {
+		return status.Error(codes.InvalidArgument, "Legalize not offline option")
+	}
+
+	if u.Model.Pb.Status != uint32(constant.LEGALIZE_STATUS_VERIFIED) {
+		return status.Error(codes.InvalidArgument, "Legalize has not been verified")
 	}
 
 	return nil
@@ -126,7 +171,7 @@ func (u *Legalize) Rating(ctx context.Context, in *proto.UintMessage, db *sql.DB
 		return status.Error(codes.InvalidArgument, "Please supply valid Rating")
 	}
 
-	if err := u.Model.GetByAlumniId(ctx, db); err != nil {
+	if err := u.Model.Get(ctx, db); err != nil {
 		return err
 	}
 
