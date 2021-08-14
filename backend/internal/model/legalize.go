@@ -26,10 +26,10 @@ func (u *Legalize) Upsert(ctx context.Context, db *sql.DB) error {
 	}
 
 	query := `
-		INSERT INTO legalizes (alumni_id, ijazah, transcript, status) 
-		VALUES (?, ?, ?, 1)
+		INSERT INTO legalizes (certificate_id, ijazah, transcript, is_offline, status) 
+		VALUES (?, ?, ?, ?, 1)
 		ON DUPLICATE KEY UPDATE
-		ijazah = ?, transcript = ?, status = 1, is_verified = false, is_approved = false, created = NOW(), modified = NOW()
+		ijazah = ?, transcript = ?, is_offline = ?, status = 1, is_verified = false, is_approved = false, created = NOW(), modified = NOW()
 	`
 
 	stmt, err := db.PrepareContext(ctx, query)
@@ -39,11 +39,13 @@ func (u *Legalize) Upsert(ctx context.Context, db *sql.DB) error {
 	defer stmt.Close()
 
 	_, err = stmt.ExecContext(ctx,
-		u.Pb.Alumni.Id,
+		u.Pb.Certificate.Id,
 		u.Pb.Ijazah,
 		u.Pb.Transcript,
+		u.Pb.IsOffline,
 		u.Pb.Ijazah,
 		u.Pb.Transcript,
+		u.Pb.IsOffline,
 	)
 	if err != nil {
 		return status.Errorf(codes.Internal, "Exec insert: %v", err)
