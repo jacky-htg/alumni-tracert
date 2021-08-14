@@ -44,6 +44,16 @@ func (u *Certificate) Create(ctx context.Context, db *sql.Tx) error {
 	return nil
 }
 
+func (u *Certificate) GetByIdAndAlumni(ctx context.Context, db *sql.DB) error {
+	query := `SELECT id FROM certificates WHERE id = ? AND alumni_id = ?`
+
+	row := db.QueryRowContext(ctx, query, u.Pb.Id, u.Pb.AlumniId)
+	if err := row.Scan(&u.Pb.Id); err != nil {
+		return status.Error(codes.Internal, err.Error())
+	}
+	return nil
+}
+
 func (u *Certificate) GetByAlumni(ctx context.Context, db *sql.DB) ([]*proto.Certificate, error) {
 	var list []*proto.Certificate
 	query := `

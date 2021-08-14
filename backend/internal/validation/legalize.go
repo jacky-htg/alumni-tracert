@@ -31,6 +31,18 @@ func (u *Legalize) Upload(ctx context.Context, in *proto.Legalize, db *sql.DB) e
 		return status.Error(codes.InvalidArgument, "Please supply valid transcript")
 	}
 
+	if in.GetCertificate().GetId() <= 0 {
+		return status.Error(codes.InvalidArgument, "Please supply valid certificate")
+	}
+
+	var certificate model.Certificate
+	certificate.Pb.Id = in.GetCertificate().GetId()
+	certificate.Pb.AlumniId = alumniId.(uint64)
+	err := certificate.GetByIdAndAlumni()
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 

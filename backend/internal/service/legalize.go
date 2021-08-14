@@ -43,6 +43,7 @@ func (u *AlumniTracertServer) LegalizeUpload(ctx context.Context, in *proto.Lega
 
 	var legalizeModel model.Legalize
 	legalizeModel.Pb.Alumni = &proto.Alumni{Id: ctx.Value(app.Ctx("alumni_id")).(uint64)}
+	legalizeModel.Pb.Certificate = in.Certificate
 	legalizeModel.Pb.Ijazah = in.Ijazah
 	legalizeModel.Pb.Transcript = in.Transcript
 
