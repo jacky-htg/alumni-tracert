@@ -1,5 +1,5 @@
 <script>
-  import { onMount } from 'svelte'
+  import { onMount, onDestroy } from 'svelte'
   import { navigate } from 'svelte-routing'
   import { globalHistory } from 'svelte-routing/src/history';
   import Cookies from 'js-cookie'
@@ -10,7 +10,7 @@
   
   import { TracertServicePromiseClient } from '../../proto/tracert_service_grpc_web_pb'
   import { QuestionGroupListInput, QuestionGroupList } from '../../proto/question_group_message_pb'
-  import { UserAnswer } from '../../proto/user_answer_message_pb'
+  import { UserAnswer, Tracer } from '../../proto/user_answer_message_pb'
   import QuestionService from '../services/question'
   import UserAnswerService from '../services/user_answer'
   import errorServiceHandling from '../helper/error_service'
@@ -22,6 +22,7 @@
     }
   })
   const userAnswer = [];
+  let tracerId = null;
   
   const questionGroupListInputProto = new QuestionGroupListInput()
   let questionList = new QuestionGroupList()
@@ -37,6 +38,23 @@
     return await question.list()
 	}
 
+  async function tracerCreateCall(){
+    var deps = {
+      proto: {
+        TracertClient: TracertServicePromiseClient
+      }
+    }
+
+    const userId = Cookies.get('userid')
+
+    const tracerProto = new Tracer();
+
+    tracerProto.setUserId(userId);
+    const tracerService = new UserAnswerService(deps, tracerProto)
+
+    return await tracerService.tracer()
+  }
+
   async function userAnswerCall(){
     var deps = {
 			proto: {
@@ -44,14 +62,23 @@
 			}
 		}
 
-    const userId = Cookies.get('userid')
+    if (!tracerId) {
+      let tracerResponse = await tracerCreateCall();
+      tracerId = tracerResponse.getId();
+    }
     
     let promises = [];
     userAnswer.forEach((answer, questionId) => {
+      console.log(`answer`, answer)
       const userAnswerProto = new UserAnswer()
-      userAnswerProto.setUserId(userId)
+      // userAnswerProto.setUserId(userId)
+      userAnswerProto.setTracerId(tracerId)
       userAnswerProto.setQuestionId(questionId)
-      userAnswerProto.setAnswer(JSON.stringify(answer))
+      if (Array.isArray(answer)) {
+        userAnswerProto.setAnswer(JSON.stringify(answer));
+      } else {
+        userAnswerProto.setAnswer(JSON.stringify(answer.text));
+      }
 
       const userAnswerService = new UserAnswerService(deps, userAnswerProto)
       promises.push(userAnswerService.answer())
@@ -77,28 +104,33 @@
     }
 	})
 
-  const changeAnswer = (event, questionId, isMultiple) => {
+  const changeAnswer = (event, questionId, answerTitle, isMultiple) => {
     console.log(userAnswer)
     console.log(`questionList.getQuestionGroupList()`, questionList.getQuestionGroupList())
+    const answer = {
+      id: event.target.value,
+      text: answerTitle,
+    };
+
     if (isMultiple) {
       if (!userAnswer[questionId]) {
         let temp = [];
-        temp.push(event.target.value)
+        temp.push(answerTitle)
         userAnswer[questionId] = temp;
       } else {
         let temp = userAnswer[questionId];
-        let value = event.target.value;
-        let isChecked = event.target.checked;
-        if (temp.indexOf(value) === -1) {
-          temp.push(value);
+        let value = answerTitle;
+        // let isChecked = event.target.checked;
+        if (temp.indexOf(answerTitle) === -1) {
+          temp.push(answerTitle);
         } else {
-          temp.splice(temp.indexOf(value), 1);
+          temp.splice(temp.indexOf(answerTitle), 1);
         }
         userAnswer[questionId] = temp;
       }
     } else {
-      console.log(questionId, event.target.value)
-      userAnswer[questionId] = event.target.value
+      // console.log(questionId, event.target.value)
+      userAnswer[questionId] = answer
     }
     console.log(`userAnswer`, userAnswer)
   }
@@ -125,10 +157,11 @@
       } 
 
       const answer = await userAnswerCall()
-
+      console.log(`groups`, groups)
       if (groups.length === 1 && groups[0] === 1) {
-        if (userAnswer[1] !== 5) {
-          groups = [(parseInt(userAnswer[1])+1)]
+        console.log(`userAnswer`, userAnswer)
+        if (userAnswer[1].id !== 5) {
+          groups = [(parseInt(userAnswer[1].id)+1)]
         } 
         questionList = await questionListCall()
       } else {
@@ -139,6 +172,7 @@
         }
       }
     } catch(e) {
+      console.log(`e`, e)
       errorServiceHandling(e)
       if (Cookies.get('token') == null) {
         location = PATH_URL.LOGIN  
@@ -148,6 +182,18 @@
   }
 
   let rangeQuestion = true;
+
+  const isCheckedRadio = (question, questionOption) => {
+    console.log(`userAnswer[question.getId()]`, userAnswer[question.getId()])
+    console.log(`questionOption.getId()`, questionOption.getId())
+    let flag = false
+
+    if (userAnswer[question.getId()] && userAnswer[question.getId()].id) {
+      flag = userAnswer[question.getId()].id == questionOption.getId()
+    }
+
+    return flag;
+  }
 
 </script>
 
@@ -183,7 +229,7 @@
                 <div class={question.getMinimumValue() && question.getMaximumValue() ? "flex justify-between mt-6 items-center" : "mt-2 space-y-4"}>
                   
                   {#if question.getQuestionType() === 1}
-                    <input on:change="{(event) => changeAnswer(event, question.getId())}" type="text" name="first-name" id="first-name" autocomplete="given-name" class="block w-full px-4 py-2 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-m">
+                    <input on:change="{(event) => changeAnswer(event, question.getId(), event.target.value)}" type="text" name="first-name" id="first-name" autocomplete="given-name" class="block w-full px-4 py-2 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-m">
                   {:else if  question.getQuestionType() === 2}
 
                     {#if question.getMinimumValue() && question.getMaximumValue() }
@@ -192,8 +238,8 @@
 
                     {#each question.getQuestionOptionList() as questionOption, i}
                       <div class="flex items-center">
-                        <input checked={userAnswer[question.getId()] == questionOption.getId()} on:change="{(event) => changeAnswer(event, question.getId())}" id={`radio-${question.getId()}-${i}`} name={`radio-${question.getId()}-${i}`} type="radio" value="{questionOption.getId()}" class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
-
+                        <input checked={ isCheckedRadio(question, questionOption)} on:change="{(event) => changeAnswer(event, question.getId(), questionOption.getTitle())}" id={`radio-${question.getId()}-${i}`} name={`radio-${question.getId()}`} type="radio" value="{questionOption.getId()}" class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
+                        <!-- <input checked={ userAnswer[question.getId()] == questionOption.getId()} on:change="{(event) => changeAnswer(event, question.getId(), questionOption.getTitle())}" id={`radio-${question.getId()}-${i}`} name={`radio-${question.getId()}-${i}`} type="radio" value="{questionOption.getId()}" class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">                         -->
                         <div class="flex items-center w-full">
                           <label for={`radio-${question.getId()}-${i}`} class="block max-w-xl ml-3 text-sm font-medium text-gray-700 cursor-pointer w-max min-w-max">
                             {questionOption.getTitle()} 
@@ -214,7 +260,7 @@
                     {#each question.getQuestionOptionList() as questionOption, i}
                       <div class="flex items-start">
                         <div class="flex items-center h-5">
-                          <input value={questionOption.getId()} on:change="{(event) => changeAnswer(event, question.getId(), true)}" id={`check-${question.getId()}-${i}`} name={`check-${question.getId()}-${i}`} type="checkbox" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                          <input value={questionOption.getId()} on:change="{(event) => changeAnswer(event, question.getId(), questionOption.getTitle(), true)}" id={`check-${question.getId()}-${i}`} name={`check-${question.getId()}-${i}`} type="checkbox" class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
                         </div>
                         <div class="ml-3 text-sm">
                           <label for={`check-${question.getId()}-${i}`} class="font-medium text-gray-700 cursor-pointer">{questionOption.getTitle()}</label>

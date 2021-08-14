@@ -19,6 +19,7 @@
 	import SapaAlumni from './routes/SapaAlumni.svelte';
 	import TentangKami from './routes/TentangKami.svelte';
 	import LegalisirDetail from './routes/LegalisirDetail.svelte'
+	import Ijazah from './routes/Ijazah.svelte'
 </script>
 
 <style global lang="postcss">
@@ -39,6 +40,7 @@
 	<Route path={PATH_URL.APPRAISER_REGISTRATION} component={AppraiserRegistration} />
 	<ProtectedRoute path={PATH_URL.DASHBOARD} component={Dashboard} />
 	<ProtectedRoute path={PATH_URL.KUISIONER_FORM} component={KuisionerForm} />
+	<ProtectedRoute path={PATH_URL.IJAZAH} component={Ijazah} />
 	<ProtectedRoute path={PATH_URL.UPLOAD_IJAZAH} component={Upload} />
 	<ProtectedRoute path={PATH_URL.DOWNLOAD_IJAZAH} component={Download} />
 	<ProtectedRoute path={PATH_URL.ADMIN_ALUMNI} component={ListAlumni} />
