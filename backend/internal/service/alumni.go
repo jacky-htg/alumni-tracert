@@ -43,6 +43,13 @@ func (u *AlumniTracertServer) AlumniRegistration(ctx context.Context, in *proto.
 	}
 	in.Alumni = alumni
 
+	certificate, err := u.certificateCreateHelper(ctx, in.Certificate, tx)
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+	in.Certificate = certificate
+
 	err = u.sendEmailHelper(ctx, user, *password)
 	if err != nil {
 		util.LogError(u.Log, "send email create user", err)
@@ -137,8 +144,8 @@ func (u *AlumniTracertServer) AlumniList(in *proto.ListInput, stream proto.Trace
 		var pbAlumni proto.Alumni
 		var createdAt, updatedAt time.Time
 		err = rows.Scan(
-			&pbAlumni.Id, &pbAlumni.UserId, &pbAlumni.Name, &pbAlumni.Nim, &pbAlumni.Nik, &pbAlumni.PlaceOfBirth, &pbAlumni.DateOfBirth,
-			&pbAlumni.MajorStudy, &pbAlumni.GraduationYear, &pbAlumni.NoIjazah, &pbAlumni.Phone, &createdAt, &updatedAt,
+			&pbAlumni.Id, &pbAlumni.UserId, &pbAlumni.Name, &pbAlumni.Nik, &pbAlumni.PlaceOfBirth, &pbAlumni.DateOfBirth,
+			&pbAlumni.Phone, &createdAt, &updatedAt,
 		)
 		if err != nil {
 			util.LogError(u.Log, "scan on looping list alumni", err)
@@ -184,6 +191,16 @@ func (u *AlumniTracertServer) AlumniGet(ctx context.Context, in *proto.Alumni) (
 		return nil, err
 	}
 
+	var certificateModel model.Certificate
+	certificateModel.Pb.AlumniId = alumniModel.Pb.Id
+	certificates, err := certificateModel.GetByAlumni(ctx, u.Db)
+	if err != nil {
+		util.LogError(u.Log, "get Certicate By Alumni", err)
+		return nil, err
+	}
+
+	alumniModel.Pb.Certificates = certificates
+
 	return &alumniModel.Pb, nil
 }
 
@@ -202,13 +219,9 @@ func (u *AlumniTracertServer) alumniCreateHelper(ctx context.Context, in *proto.
 	var alumniModel model.Alumni
 	alumniModel.Pb.UserId = user.Id
 	alumniModel.Pb.Name = user.Name
-	alumniModel.Pb.Nim = in.Nim
 	alumniModel.Pb.Nik = in.Nik
 	alumniModel.Pb.PlaceOfBirth = in.PlaceOfBirth
 	alumniModel.Pb.DateOfBirth = in.DateOfBirth
-	alumniModel.Pb.MajorStudy = in.MajorStudy
-	alumniModel.Pb.GraduationYear = in.GraduationYear
-	alumniModel.Pb.NoIjazah = in.NoIjazah
 	alumniModel.Pb.Phone = in.Phone
 
 	err := alumniModel.Create(ctx, tx)
@@ -218,4 +231,32 @@ func (u *AlumniTracertServer) alumniCreateHelper(ctx context.Context, in *proto.
 	}
 
 	return &alumniModel.Pb, nil
+}
+
+func (u *AlumniTracertServer) certificateCreateHelper(ctx context.Context, in *proto.Certificate, tx *sql.Tx) (*proto.Certificate, error) {
+	select {
+	case <-ctx.Done():
+		return nil, util.ContextError(ctx)
+	default:
+	}
+
+	if err := new(validation.Certificate).Create(ctx, in); err != nil {
+		util.LogError(u.Log, "validation on create certificate", err)
+		return nil, err
+	}
+
+	var certificateModel model.Certificate
+	certificateModel.Pb.AlumniId = in.AlumniId
+	certificateModel.Pb.Nim = in.Nim
+	certificateModel.Pb.NoIjazah = in.NoIjazah
+	certificateModel.Pb.MajorStudy = in.MajorStudy
+	certificateModel.Pb.GraduationYear = in.GraduationYear
+
+	err := certificateModel.Create(ctx, tx)
+	if err != nil {
+		util.LogError(u.Log, "create certificate", err)
+		return nil, err
+	}
+
+	return &certificateModel.Pb, nil
 }

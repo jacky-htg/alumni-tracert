@@ -8,10 +8,9 @@ import "alumni_message.proto";
 import "generic_message.proto";
 import "legalize_message.proto";
 import "question_group_message.proto";
-import "question_message.proto";
-import "question_option_message.proto";
 import "user_answer_message.proto";
 import "user_message.proto";
+import "certificate_message.proto";
 
 service TracertService {
   rpc Login(LoginInput) returns (User) {}
@@ -21,6 +20,7 @@ service TracertService {
   rpc QuestionList(QuestionGroupListInput) returns (QuestionGroupList) {}
 
   rpc AlumniRegistration(AlumniRegistrationInput) returns (AlumniRegistrationInput) {}
+  rpc CertificateCreate(Certificate) returns (Certificate) {}
   rpc AlumniCreate(Alumni) returns (Alumni) {}
   rpc AlumniList(ListInput) returns (stream AlumniListResponse) {} 
   rpc AlumniGet(Alumni) returns (Alumni) {}
@@ -40,7 +40,7 @@ service TracertService {
   rpc LegalizeUpload(Legalize) returns (Legalize) {}
   rpc LegalizeList(ListInput) returns (stream LegalizeListResponse) {}
   rpc LegalizeGet(Legalize) returns (Legalize) {}
-  rpc LegalizeGetOwn(EmptyMessage) returns (Legalize) {}
+  rpc LegalizeGetOwn(EmptyMessage) returns (Legalizes) {}
   rpc LegalizeVerified(UintMessage) returns (Legalize) {}
   rpc LegalizeRejected(UintMessage) returns (Legalize) {} 
   rpc LegalizeApproved(UintMessage) returns (Legalize) {}

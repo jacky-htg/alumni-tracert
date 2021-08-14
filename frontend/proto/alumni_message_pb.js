@@ -14,6 +14,8 @@ var global = Function('return this')();
 
 var generic_message_pb = require('./generic_message_pb.js');
 goog.object.extend(proto, generic_message_pb);
+var certificate_message_pb = require('./certificate_message_pb.js');
+goog.object.extend(proto, certificate_message_pb);
 goog.exportSymbol('proto.proto.Alumni', null, global);
 goog.exportSymbol('proto.proto.AlumniListResponse', null, global);
 /**
@@ -27,7 +29,7 @@ goog.exportSymbol('proto.proto.AlumniListResponse', null, global);
  * @constructor
  */
 proto.proto.Alumni = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.proto.Alumni.repeatedFields_, null);
 };
 goog.inherits(proto.proto.Alumni, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
@@ -58,6 +60,13 @@ if (goog.DEBUG && !COMPILED) {
    */
   proto.proto.AlumniListResponse.displayName = 'proto.proto.AlumniListResponse';
 }
+
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.proto.Alumni.repeatedFields_ = [8];
 
 
 
@@ -93,16 +102,14 @@ proto.proto.Alumni.toObject = function(includeInstance, msg) {
     id: jspb.Message.getFieldWithDefault(msg, 1, 0),
     userId: jspb.Message.getFieldWithDefault(msg, 2, 0),
     name: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    nim: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    nik: jspb.Message.getFieldWithDefault(msg, 5, ""),
-    placeOfBirth: jspb.Message.getFieldWithDefault(msg, 6, ""),
-    dateOfBirth: jspb.Message.getFieldWithDefault(msg, 7, ""),
-    majorStudy: jspb.Message.getFieldWithDefault(msg, 8, ""),
-    graduationYear: jspb.Message.getFieldWithDefault(msg, 9, 0),
-    noIjazah: jspb.Message.getFieldWithDefault(msg, 10, ""),
-    phone: jspb.Message.getFieldWithDefault(msg, 11, ""),
-    created: jspb.Message.getFieldWithDefault(msg, 12, ""),
-    updated: jspb.Message.getFieldWithDefault(msg, 13, "")
+    nik: jspb.Message.getFieldWithDefault(msg, 4, ""),
+    placeOfBirth: jspb.Message.getFieldWithDefault(msg, 5, ""),
+    dateOfBirth: jspb.Message.getFieldWithDefault(msg, 6, ""),
+    phone: jspb.Message.getFieldWithDefault(msg, 7, ""),
+    certificatesList: jspb.Message.toObjectList(msg.getCertificatesList(),
+    certificate_message_pb.Certificate.toObject, includeInstance),
+    created: jspb.Message.getFieldWithDefault(msg, 9, ""),
+    updated: jspb.Message.getFieldWithDefault(msg, 10, "")
   };
 
   if (includeInstance) {
@@ -153,41 +160,30 @@ proto.proto.Alumni.deserializeBinaryFromReader = function(msg, reader) {
       break;
     case 4:
       var value = /** @type {string} */ (reader.readString());
-      msg.setNim(value);
+      msg.setNik(value);
       break;
     case 5:
       var value = /** @type {string} */ (reader.readString());
-      msg.setNik(value);
+      msg.setPlaceOfBirth(value);
       break;
     case 6:
       var value = /** @type {string} */ (reader.readString());
-      msg.setPlaceOfBirth(value);
+      msg.setDateOfBirth(value);
       break;
     case 7:
       var value = /** @type {string} */ (reader.readString());
-      msg.setDateOfBirth(value);
-      break;
-    case 8:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setMajorStudy(value);
-      break;
-    case 9:
-      var value = /** @type {number} */ (reader.readUint32());
-      msg.setGraduationYear(value);
-      break;
-    case 10:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setNoIjazah(value);
-      break;
-    case 11:
-      var value = /** @type {string} */ (reader.readString());
       msg.setPhone(value);
       break;
-    case 12:
+    case 8:
+      var value = new certificate_message_pb.Certificate;
+      reader.readMessage(value,certificate_message_pb.Certificate.deserializeBinaryFromReader);
+      msg.addCertificates(value);
+      break;
+    case 9:
       var value = /** @type {string} */ (reader.readString());
       msg.setCreated(value);
       break;
-    case 13:
+    case 10:
       var value = /** @type {string} */ (reader.readString());
       msg.setUpdated(value);
       break;
@@ -241,73 +237,53 @@ proto.proto.Alumni.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getNim();
+  f = message.getNik();
   if (f.length > 0) {
     writer.writeString(
       4,
       f
     );
   }
-  f = message.getNik();
+  f = message.getPlaceOfBirth();
   if (f.length > 0) {
     writer.writeString(
       5,
       f
     );
   }
-  f = message.getPlaceOfBirth();
+  f = message.getDateOfBirth();
   if (f.length > 0) {
     writer.writeString(
       6,
       f
     );
   }
-  f = message.getDateOfBirth();
+  f = message.getPhone();
   if (f.length > 0) {
     writer.writeString(
       7,
       f
     );
   }
-  f = message.getMajorStudy();
+  f = message.getCertificatesList();
   if (f.length > 0) {
-    writer.writeString(
+    writer.writeRepeatedMessage(
       8,
-      f
-    );
-  }
-  f = message.getGraduationYear();
-  if (f !== 0) {
-    writer.writeUint32(
-      9,
-      f
-    );
-  }
-  f = message.getNoIjazah();
-  if (f.length > 0) {
-    writer.writeString(
-      10,
-      f
-    );
-  }
-  f = message.getPhone();
-  if (f.length > 0) {
-    writer.writeString(
-      11,
-      f
+      f,
+      certificate_message_pb.Certificate.serializeBinaryToWriter
     );
   }
   f = message.getCreated();
   if (f.length > 0) {
     writer.writeString(
-      12,
+      9,
       f
     );
   }
   f = message.getUpdated();
   if (f.length > 0) {
     writer.writeString(
-      13,
+      10,
       f
     );
   }
@@ -369,10 +345,10 @@ proto.proto.Alumni.prototype.setName = function(value) {
 
 
 /**
- * optional string nim = 4;
+ * optional string nik = 4;
  * @return {string}
  */
-proto.proto.Alumni.prototype.getNim = function() {
+proto.proto.Alumni.prototype.getNik = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
@@ -381,16 +357,16 @@ proto.proto.Alumni.prototype.getNim = function() {
  * @param {string} value
  * @return {!proto.proto.Alumni} returns this
  */
-proto.proto.Alumni.prototype.setNim = function(value) {
+proto.proto.Alumni.prototype.setNik = function(value) {
   return jspb.Message.setProto3StringField(this, 4, value);
 };
 
 
 /**
- * optional string nik = 5;
+ * optional string place_of_birth = 5;
  * @return {string}
  */
-proto.proto.Alumni.prototype.getNik = function() {
+proto.proto.Alumni.prototype.getPlaceOfBirth = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
 };
 
@@ -399,16 +375,16 @@ proto.proto.Alumni.prototype.getNik = function() {
  * @param {string} value
  * @return {!proto.proto.Alumni} returns this
  */
-proto.proto.Alumni.prototype.setNik = function(value) {
+proto.proto.Alumni.prototype.setPlaceOfBirth = function(value) {
   return jspb.Message.setProto3StringField(this, 5, value);
 };
 
 
 /**
- * optional string place_of_birth = 6;
+ * optional string date_of_birth = 6;
  * @return {string}
  */
-proto.proto.Alumni.prototype.getPlaceOfBirth = function() {
+proto.proto.Alumni.prototype.getDateOfBirth = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
 };
 
@@ -417,16 +393,16 @@ proto.proto.Alumni.prototype.getPlaceOfBirth = function() {
  * @param {string} value
  * @return {!proto.proto.Alumni} returns this
  */
-proto.proto.Alumni.prototype.setPlaceOfBirth = function(value) {
+proto.proto.Alumni.prototype.setDateOfBirth = function(value) {
   return jspb.Message.setProto3StringField(this, 6, value);
 };
 
 
 /**
- * optional string date_of_birth = 7;
+ * optional string phone = 7;
  * @return {string}
  */
-proto.proto.Alumni.prototype.getDateOfBirth = function() {
+proto.proto.Alumni.prototype.getPhone = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
 };
 
@@ -435,89 +411,55 @@ proto.proto.Alumni.prototype.getDateOfBirth = function() {
  * @param {string} value
  * @return {!proto.proto.Alumni} returns this
  */
-proto.proto.Alumni.prototype.setDateOfBirth = function(value) {
+proto.proto.Alumni.prototype.setPhone = function(value) {
   return jspb.Message.setProto3StringField(this, 7, value);
 };
 
 
 /**
- * optional string major_study = 8;
- * @return {string}
+ * repeated Certificate certificates = 8;
+ * @return {!Array<!proto.proto.Certificate>}
  */
-proto.proto.Alumni.prototype.getMajorStudy = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 8, ""));
+proto.proto.Alumni.prototype.getCertificatesList = function() {
+  return /** @type{!Array<!proto.proto.Certificate>} */ (
+    jspb.Message.getRepeatedWrapperField(this, certificate_message_pb.Certificate, 8));
 };
 
 
 /**
- * @param {string} value
+ * @param {!Array<!proto.proto.Certificate>} value
+ * @return {!proto.proto.Alumni} returns this
+*/
+proto.proto.Alumni.prototype.setCertificatesList = function(value) {
+  return jspb.Message.setRepeatedWrapperField(this, 8, value);
+};
+
+
+/**
+ * @param {!proto.proto.Certificate=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.proto.Certificate}
+ */
+proto.proto.Alumni.prototype.addCertificates = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 8, opt_value, proto.proto.Certificate, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
  * @return {!proto.proto.Alumni} returns this
  */
-proto.proto.Alumni.prototype.setMajorStudy = function(value) {
-  return jspb.Message.setProto3StringField(this, 8, value);
+proto.proto.Alumni.prototype.clearCertificatesList = function() {
+  return this.setCertificatesList([]);
 };
 
 
 /**
- * optional uint32 graduation_year = 9;
- * @return {number}
- */
-proto.proto.Alumni.prototype.getGraduationYear = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 9, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.proto.Alumni} returns this
- */
-proto.proto.Alumni.prototype.setGraduationYear = function(value) {
-  return jspb.Message.setProto3IntField(this, 9, value);
-};
-
-
-/**
- * optional string no_ijazah = 10;
- * @return {string}
- */
-proto.proto.Alumni.prototype.getNoIjazah = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 10, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.proto.Alumni} returns this
- */
-proto.proto.Alumni.prototype.setNoIjazah = function(value) {
-  return jspb.Message.setProto3StringField(this, 10, value);
-};
-
-
-/**
- * optional string phone = 11;
- * @return {string}
- */
-proto.proto.Alumni.prototype.getPhone = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 11, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.proto.Alumni} returns this
- */
-proto.proto.Alumni.prototype.setPhone = function(value) {
-  return jspb.Message.setProto3StringField(this, 11, value);
-};
-
-
-/**
- * optional string created = 12;
+ * optional string created = 9;
  * @return {string}
  */
 proto.proto.Alumni.prototype.getCreated = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 12, ""));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 9, ""));
 };
 
 
@@ -526,16 +468,16 @@ proto.proto.Alumni.prototype.getCreated = function() {
  * @return {!proto.proto.Alumni} returns this
  */
 proto.proto.Alumni.prototype.setCreated = function(value) {
-  return jspb.Message.setProto3StringField(this, 12, value);
+  return jspb.Message.setProto3StringField(this, 9, value);
 };
 
 
 /**
- * optional string updated = 13;
+ * optional string updated = 10;
  * @return {string}
  */
 proto.proto.Alumni.prototype.getUpdated = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 13, ""));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 10, ""));
 };
 
 
@@ -544,7 +486,7 @@ proto.proto.Alumni.prototype.getUpdated = function() {
  * @return {!proto.proto.Alumni} returns this
  */
 proto.proto.Alumni.prototype.setUpdated = function(value) {
-  return jspb.Message.setProto3StringField(this, 13, value);
+  return jspb.Message.setProto3StringField(this, 10, value);
 };
 
 

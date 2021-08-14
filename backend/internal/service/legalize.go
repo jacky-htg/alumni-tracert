@@ -54,7 +54,7 @@ func (u *AlumniTracertServer) LegalizeUpload(ctx context.Context, in *proto.Lega
 	return &legalizeModel.Pb, nil
 }
 
-func (u *AlumniTracertServer) LegalizeGetOwn(ctx context.Context, in *proto.EmptyMessage) (*proto.Legalize, error) {
+func (u *AlumniTracertServer) LegalizeGetOwn(ctx context.Context, in *proto.EmptyMessage) (*proto.Legalizes, error) {
 	select {
 	case <-ctx.Done():
 		return nil, util.ContextError(ctx)
@@ -70,7 +70,7 @@ func (u *AlumniTracertServer) LegalizeGetOwn(ctx context.Context, in *proto.Empt
 	var legalizeModel model.Legalize
 	legalizeModel.Pb.Alumni = &proto.Alumni{Id: ctx.Value(app.Ctx("alumni_id")).(uint64)}
 
-	err = legalizeModel.GetByAlumniId(ctx, u.Db)
+	legalizes, err := legalizeModel.GetByAlumniId(ctx, u.Db)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +78,7 @@ func (u *AlumniTracertServer) LegalizeGetOwn(ctx context.Context, in *proto.Empt
 	legalizeModel.Pb.IjazahSigned = "https://" + os.Getenv("OSS_BUCKET_DOCUMENT") + "." + os.Getenv("OSS_ENDPOINT") + "/" + legalizeModel.Pb.IjazahSigned
 	legalizeModel.Pb.TranscriptSigned = "https://" + os.Getenv("OSS_BUCKET_DOCUMENT") + "." + os.Getenv("OSS_ENDPOINT") + "/" + legalizeModel.Pb.TranscriptSigned
 
-	return &legalizeModel.Pb, nil
+	return legalizes, nil
 }
 
 func (u *AlumniTracertServer) LegalizeRating(ctx context.Context, in *proto.UintMessage) (*proto.StringMessage, error) {
@@ -154,10 +154,12 @@ func (u *AlumniTracertServer) LegalizeList(in *proto.ListInput, stream proto.Tra
 		var createdAt, updatedAt time.Time
 		var pbLegalize proto.Legalize
 		var pbAlumni proto.Alumni
+		var pbCertificate proto.Certificate
 		var verifiedAt, approvedAt sql.NullString
 		var verifiedBy, approvedBy sql.NullInt64
 		err = rows.Scan(
-			&pbLegalize.Id, &pbAlumni.Id, &pbAlumni.Name, &pbAlumni.Nim, &pbAlumni.Nik, &pbAlumni.NoIjazah,
+			&pbLegalize.Id, &pbAlumni.Id, &pbAlumni.Name, &pbCertificate.Nim, &pbAlumni.Nik,
+			&pbCertificate.Id, &pbCertificate.NoIjazah, &pbCertificate.MajorStudy, &pbCertificate.GraduationYear,
 			&pbLegalize.Ijazah, &pbLegalize.Transcript, &pbLegalize.IsVerified, &pbLegalize.IsApproved,
 			&verifiedBy, &verifiedAt, &approvedBy, &approvedAt,
 			&pbLegalize.Status, &createdAt, &updatedAt,
@@ -174,6 +176,7 @@ func (u *AlumniTracertServer) LegalizeList(in *proto.ListInput, stream proto.Tra
 		pbLegalize.VerifiedBy = uint64(verifiedBy.Int64)
 		pbLegalize.ApprovedAt = approvedAt.String
 		pbLegalize.ApprovedBy = uint64(approvedBy.Int64)
+		pbLegalize.Certificate = &pbCertificate
 
 		res := &proto.LegalizeListResponse{
 			ListInput: listResponse,

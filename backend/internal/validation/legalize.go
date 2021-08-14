@@ -126,7 +126,7 @@ func (u *Legalize) Rating(ctx context.Context, in *proto.UintMessage, db *sql.DB
 		return status.Error(codes.InvalidArgument, "Please supply valid Rating")
 	}
 
-	if err := u.Model.GetByAlumniId(ctx, db); err != nil {
+	if err := u.Model.Get(ctx, db); err != nil {
 		return err
 	}
 

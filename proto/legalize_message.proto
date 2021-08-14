@@ -4,28 +4,34 @@ package proto;
 option go_package = ".;proto";
 
 import "alumni_message.proto";
+import "certificate_message.proto";
 import "generic_message.proto";
 
 message Legalize {
   uint64 id = 1;
   Alumni alumni = 2;
-  string ijazah = 3;
-  string transcript = 4;
-  bool is_verified = 5;
-  bool is_approved = 6;
-  uint64 verified_by = 7;
-  uint64 approved_by = 8;
-  string verified_at = 9;
-  string approved_at = 10;
-  string ijazah_signed = 11;
-  string transcript_signed = 12; 
-  uint32 status = 13;
-  uint32 rating = 14;
-  string created = 15;
-  string updated = 16;
+  Certificate certificate = 3;
+  string ijazah = 4;
+  string transcript = 5;
+  bool is_verified = 6;
+  bool is_approved = 7;
+  uint64 verified_by = 8;
+  uint64 approved_by = 9;
+  string verified_at = 10;
+  string approved_at = 11;
+  string ijazah_signed = 12;
+  string transcript_signed = 13; 
+  uint32 status = 14;
+  uint32 rating = 15;
+  string created = 16;
+  string updated = 17;
 }
 
 message LegalizeListResponse {
   Legalize Legalize = 1;
   ListInput list_input = 2;
+}
+
+message Legalizes {
+  repeated Legalize legalize = 1;
 }

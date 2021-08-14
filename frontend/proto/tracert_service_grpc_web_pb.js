@@ -26,13 +26,11 @@ var legalize_message_pb = require('./legalize_message_pb.js')
 
 var question_group_message_pb = require('./question_group_message_pb.js')
 
-var question_message_pb = require('./question_message_pb.js')
-
-var question_option_message_pb = require('./question_option_message_pb.js')
-
 var user_answer_message_pb = require('./user_answer_message_pb.js')
 
 var user_message_pb = require('./user_message_pb.js')
+
+var certificate_message_pb = require('./certificate_message_pb.js')
 const proto = {};
 proto.proto = require('./tracert_service_pb.js');
 
@@ -325,6 +323,86 @@ proto.proto.TracertServicePromiseClient.prototype.alumniRegistration =
       request,
       metadata || {},
       methodDescriptor_TracertService_AlumniRegistration);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.proto.Certificate,
+ *   !proto.proto.Certificate>}
+ */
+const methodDescriptor_TracertService_CertificateCreate = new grpc.web.MethodDescriptor(
+  '/proto.TracertService/CertificateCreate',
+  grpc.web.MethodType.UNARY,
+  certificate_message_pb.Certificate,
+  certificate_message_pb.Certificate,
+  /**
+   * @param {!proto.proto.Certificate} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  certificate_message_pb.Certificate.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.proto.Certificate,
+ *   !proto.proto.Certificate>}
+ */
+const methodInfo_TracertService_CertificateCreate = new grpc.web.AbstractClientBase.MethodInfo(
+  certificate_message_pb.Certificate,
+  /**
+   * @param {!proto.proto.Certificate} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  certificate_message_pb.Certificate.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.proto.Certificate} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.proto.Certificate)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.Certificate>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.TracertServiceClient.prototype.certificateCreate =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/proto.TracertService/CertificateCreate',
+      request,
+      metadata || {},
+      methodDescriptor_TracertService_CertificateCreate,
+      callback);
+};
+
+
+/**
+ * @param {!proto.proto.Certificate} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.proto.Certificate>}
+ *     Promise that resolves to the response
+ */
+proto.proto.TracertServicePromiseClient.prototype.certificateCreate =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/proto.TracertService/CertificateCreate',
+      request,
+      metadata || {},
+      methodDescriptor_TracertService_CertificateCreate);
 };
 
 
@@ -1272,13 +1350,13 @@ proto.proto.TracertServicePromiseClient.prototype.legalizeGet =
  * @const
  * @type {!grpc.web.MethodDescriptor<
  *   !proto.proto.EmptyMessage,
- *   !proto.proto.Legalize>}
+ *   !proto.proto.Legalizes>}
  */
 const methodDescriptor_TracertService_LegalizeGetOwn = new grpc.web.MethodDescriptor(
   '/proto.TracertService/LegalizeGetOwn',
   grpc.web.MethodType.UNARY,
   generic_message_pb.EmptyMessage,
-  legalize_message_pb.Legalize,
+  legalize_message_pb.Legalizes,
   /**
    * @param {!proto.proto.EmptyMessage} request
    * @return {!Uint8Array}
@@ -1286,7 +1364,7 @@ const methodDescriptor_TracertService_LegalizeGetOwn = new grpc.web.MethodDescri
   function(request) {
     return request.serializeBinary();
   },
-  legalize_message_pb.Legalize.deserializeBinary
+  legalize_message_pb.Legalizes.deserializeBinary
 );
 
 
@@ -1294,10 +1372,10 @@ const methodDescriptor_TracertService_LegalizeGetOwn = new grpc.web.MethodDescri
  * @const
  * @type {!grpc.web.AbstractClientBase.MethodInfo<
  *   !proto.proto.EmptyMessage,
- *   !proto.proto.Legalize>}
+ *   !proto.proto.Legalizes>}
  */
 const methodInfo_TracertService_LegalizeGetOwn = new grpc.web.AbstractClientBase.MethodInfo(
-  legalize_message_pb.Legalize,
+  legalize_message_pb.Legalizes,
   /**
    * @param {!proto.proto.EmptyMessage} request
    * @return {!Uint8Array}
@@ -1305,7 +1383,7 @@ const methodInfo_TracertService_LegalizeGetOwn = new grpc.web.AbstractClientBase
   function(request) {
     return request.serializeBinary();
   },
-  legalize_message_pb.Legalize.deserializeBinary
+  legalize_message_pb.Legalizes.deserializeBinary
 );
 
 
@@ -1314,9 +1392,9 @@ const methodInfo_TracertService_LegalizeGetOwn = new grpc.web.AbstractClientBase
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @param {function(?grpc.web.Error, ?proto.proto.Legalize)}
+ * @param {function(?grpc.web.Error, ?proto.proto.Legalizes)}
  *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.proto.Legalize>|undefined}
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.Legalizes>|undefined}
  *     The XHR Node Readable Stream
  */
 proto.proto.TracertServiceClient.prototype.legalizeGetOwn =
@@ -1335,7 +1413,7 @@ proto.proto.TracertServiceClient.prototype.legalizeGetOwn =
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @return {!Promise<!proto.proto.Legalize>}
+ * @return {!Promise<!proto.proto.Legalizes>}
  *     Promise that resolves to the response
  */
 proto.proto.TracertServicePromiseClient.prototype.legalizeGetOwn =
