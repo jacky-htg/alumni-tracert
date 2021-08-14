@@ -118,7 +118,7 @@ func (u *Alumni) ListQuery(ctx context.Context, db *sql.DB, in *proto.ListInput)
 
 func (u *Alumni) Get(ctx context.Context, db *sql.DB) error {
 	query := `
-		SELECT id, user_id, name, nim, nik, place_of_birth, date_of_birth, major_study, graduation_year, no_ijazah, phone, created, updated 
+		SELECT id, user_id, name, nik, place_of_birth, date_of_birth, phone, created, updated 
 		FROM alumni
 		WHERE id = ?
 	`

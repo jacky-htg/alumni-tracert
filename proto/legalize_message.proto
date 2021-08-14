@@ -3,14 +3,12 @@ syntax = "proto3";
 package proto;
 option go_package = ".;proto";
 
-import "alumni_message.proto";
-import "certificate_message.proto";
 import "generic_message.proto";
 
 message Legalize {
   uint64 id = 1;
-  Alumni alumni = 2;
-  Certificate certificate = 3;
+  uint64 alumni_id = 2;
+  uint64 certificate_id = 3;
   string ijazah = 4;
   string transcript = 5;
   bool is_offline = 6;

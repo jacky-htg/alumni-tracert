@@ -39,7 +39,7 @@ func (u *Legalize) Upsert(ctx context.Context, db *sql.DB) error {
 	defer stmt.Close()
 
 	_, err = stmt.ExecContext(ctx,
-		u.Pb.Certificate.Id,
+		u.Pb.CertificateId,
 		u.Pb.Ijazah,
 		u.Pb.Transcript,
 		u.Pb.IsOffline,
@@ -178,8 +178,8 @@ func (u *Legalize) Get(ctx context.Context, db *sql.DB) error {
 	u.Pb.VerifiedBy = uint64(verifiedBy.Int64)
 	u.Pb.ApprovedAt = approvedAt.String
 	u.Pb.ApprovedBy = uint64(approvedBy.Int64)
-	u.Pb.Alumni = &pbAlumni
-	u.Pb.Certificate = &pbCertificate
+	u.Pb.AlumniId = pbAlumni.Id
+	u.Pb.CertificateId = pbCertificate.Id
 
 	return nil
 }
@@ -198,7 +198,7 @@ func (u *Legalize) GetByAlumniId(ctx context.Context, db *sql.DB) (*proto.Legali
 		WHERE a.id = ?
 	`
 
-	rows, err := db.QueryContext(ctx, query, u.Pb.Alumni.Id)
+	rows, err := db.QueryContext(ctx, query, u.Pb.AlumniId)
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
