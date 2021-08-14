@@ -43,6 +43,7 @@ func (u *AlumniTracertServer) AlumniRegistration(ctx context.Context, in *proto.
 	}
 	in.Alumni = alumni
 
+	in.Certificate.AlumniId = alumni.Id
 	certificate, err := u.certificateCreateHelper(ctx, in.Certificate, tx)
 	if err != nil {
 		tx.Rollback()
