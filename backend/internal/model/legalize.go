@@ -211,26 +211,35 @@ func (u *Legalize) GetByAlumniId(ctx context.Context, db *sql.DB) (*proto.Certif
 		}
 
 		var pbLegalize proto.Legalize
-		var createdAt, updatedAt time.Time
+		var createdAt, updatedAt sql.NullTime
 		var pbAlumni proto.Alumni
 		var pbCertificate proto.Certificate
 		var verifiedBy, approvedBy sql.NullInt64
-		var rating sql.NullInt32
-		var verifiedAt, approvedAt, ijazahSigned, transcriptSigned sql.NullString
+		var rating, statusLegalize sql.NullInt32
+		var verifiedAt, approvedAt, ijazah, transcript, ijazahSigned, transcriptSigned sql.NullString
+		var id sql.NullInt64
+		var isOffline, isVerified, isApproved sql.NullBool
 		err = rows.Scan(
-			&pbLegalize.Id, &pbAlumni.Id, &pbAlumni.Name, &pbCertificate.Nim, &pbAlumni.Nik,
+			&id, &pbAlumni.Id, &pbAlumni.Name, &pbCertificate.Nim, &pbAlumni.Nik,
 			&pbCertificate.NoIjazah, &pbCertificate.MajorStudy, &pbCertificate.GraduationYear,
-			&pbLegalize.Ijazah, &pbLegalize.Transcript, &pbLegalize.IsOffline, &pbLegalize.IsVerified, &pbLegalize.IsApproved,
+			&ijazah, &transcript, &isOffline, &isVerified, &isApproved,
 			&verifiedBy, &verifiedAt, &approvedBy, &approvedAt,
-			&pbLegalize.Status, &ijazahSigned, &transcriptSigned, &rating, &createdAt, &updatedAt,
+			&statusLegalize, &ijazahSigned, &transcriptSigned, &rating, &createdAt, &updatedAt,
 		)
 
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "scan data: %v", err)
 		}
 
-		pbLegalize.Created = createdAt.String()
-		pbLegalize.Updated = updatedAt.String()
+		pbLegalize.Id = uint64(id.Int64)
+		pbLegalize.Ijazah = ijazah.String
+		pbLegalize.Transcript = transcript.String
+		pbLegalize.IsOffline = isOffline.Bool
+		pbLegalize.IsVerified = isVerified.Bool
+		pbLegalize.IsApproved = isApproved.Bool
+		pbLegalize.Status = uint32(statusLegalize.Int32)
+		pbLegalize.Created = createdAt.Time.String()
+		pbLegalize.Updated = updatedAt.Time.String()
 		pbLegalize.VerifiedAt = verifiedAt.String
 		pbLegalize.VerifiedBy = uint64(verifiedBy.Int64)
 		pbLegalize.ApprovedAt = approvedAt.String
