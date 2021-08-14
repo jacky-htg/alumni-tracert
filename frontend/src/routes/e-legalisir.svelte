@@ -3,58 +3,86 @@
 	import { ListInput } from '../../proto/generic_message_pb'
   import LegalisirService from '../services/legalisirList'
 	import Sidebar from "../components/Sidebar.svelte";
+	import { debounce } from '../helper/commons'
 	import { navigate } from 'svelte-routing'
 	import { onMount } from 'svelte'
 	import { notifications } from "../helper/toast";
-	import { HOST_URL, APP_ENV } from '../env'
 	import { Legalize } from '../../proto/legalize_message_pb'
 	import { PATH_URL, SIDEBAR_ADMIN } from '../helper/path'
 	import Cookies from 'js-cookie'
 	import errorServiceHandling from '../helper/error_service'
 	import Button from '../components/Button.svelte'
 	import LegalizeService from '../services/legalize'
-import AccessDenied from './accessDenied.svelte';
 
 	let search = '';
 	let limit = 10;
-	let page = 1;
+	let page = 0;
+	let legalisirList = [];
 	const usertype = Cookies.get('usertype');
-	// state legalisir admin
-	const listInputProto = new ListInput()
-  listInputProto.setSearch(search)
-	listInputProto.setLimit(limit)
-	listInputProto.setPage(page)
+	let isLoadingTable = false;
+	let isLastPage = false;
 
-  let legalisirList = [];
 	var deps = {
 		proto: {
 			TracertClient: TracertServicePromiseClient
 		}
 	}
-  async function legalisirListCall(){
-    const legalisir = new LegalisirService(deps, listInputProto)
+
+	const onError = (e) => {
+		isLoadingTable = false;
+		errorServiceHandling(e)
+		if (Cookies.get('token') == null) {
+			location = PATH_URL.LOGIN  
+		} 
+		notifications.danger(e.message)
+	}
+
+	async function legalisirListCall(proto){
+    const legalisir = new LegalisirService(deps, proto)
 		return await legalisir.legalizeList()
 	}
 
-	const requestList = async () => {
-		const legalisirStream = await legalisirListCall(usertype);
-		legalisirStream.on('data', (response) => {
-			legalisirList = [ ...legalisirList, response.toObject().legalize]
-		})
-		legalisirStream.on('end', () => {
-			console.log('End stream = ');
+	const fetchData = async () => {
+		const listInputProto = new ListInput()
+		listInputProto.setSearch(search)
+		listInputProto.setLimit(limit)
+		listInputProto.setPage(page)
+		const legalisirStream = await legalisirListCall(listInputProto);
+		return new Promise((resolve, reject) => {
+			let count = 0;
+			let data = [];
+			legalisirStream.on('data', (response) => {
+				data = [ ...data, response.toObject().legalize];
+				legalisirList = [ ...legalisirList, response.toObject().legalize]
+				if(count >= limit-1) {
+					resolve(data);
+				} else {
+					count++;
+				}
+			})
+			legalisirStream.on('status', (status) => {
+				if(status.code === 0) {
+					resolve(data);
+				}
+			})
+			legalisirStream.on('end', () => {
+				resolve(data);
+				console.log('End stream = ');
+			})
+			legalisirStream.on('error', (e) => {
+				reject(e);
+			})
 		})
 	}
 
 	onMount(async () => {
 		try {
-			await requestList()
+			isLoadingTable = true;
+			await fetchData();
+			isLoadingTable = false;
+			isLastPage = false;
     } catch(e) {
-			errorServiceHandling(e)
-      if (Cookies.get('token') == null) {
-        location = PATH_URL.LOGIN  
-      } 
-      notifications.danger(e.message)
+			onError(e);
     }
 	})
 
@@ -97,12 +125,8 @@ import AccessDenied from './accessDenied.svelte';
 			updateStatusList(id, 0)
 			isLoadingReject = false;
 		} catch(e) {
-			errorServiceHandling(e)
 			isLoadingReject = false;
-			if (Cookies.get('token') == null) {
-				location = PATH_URL.LOGIN  
-			} 
-			notifications.danger(e.message)
+			onError(e)
 		}
 	}
 
@@ -117,12 +141,8 @@ import AccessDenied from './accessDenied.svelte';
 			updateStatusList(id, 2)
 			isLoadingAccept = false;
 		} catch(e) {
-			errorServiceHandling(e)
 			isLoadingAccept = false;
-			if (Cookies.get('token') == null) {
-				location = PATH_URL.LOGIN  
-			} 
-			notifications.danger(e.message)
+			onError(e)
 		}
 	}
 
@@ -137,13 +157,55 @@ import AccessDenied from './accessDenied.svelte';
 			updateStatusList(id, 4)
 			isLoadingApproved = false;
 		} catch(e) {
-			errorServiceHandling(e)
 			isLoadingApproved = false;
-			if (Cookies.get('token') == null) {
-				location = PATH_URL.LOGIN  
-			} 
-			notifications.danger(e.message)
+			onError(e)
 		}
+	}
+
+	const onNextPage = async () => {
+		try {
+			page++;
+			isLoadingTable = true;
+			await fetchData();
+			isLoadingTable = false;
+			if(legalisirList.length < limit) {
+				isLastPage = true;
+			}
+		} catch(e) {
+			onError(e);
+		}
+	}
+
+	const onPrevPage = async () => {
+		try {
+			page--;
+			isLoadingTable = true;
+			await fetchData();
+			isLoadingTable = false;
+			isLastPage = false;
+		} catch(e) {
+			onError(e);
+		}
+	}
+
+	const onSearch = (e) => {
+		const { value } = e.target;
+		debounce(async () => {
+			try {
+				page = 0;
+				search = value;
+				isLoadingTable = true;
+				await fetchData();
+				isLoadingTable = false;
+				if(legalisirList.length < limit) {
+					isLastPage = true;
+				} else {
+					isLastPage = false;
+				}
+			} catch(e) {
+				onError(e);
+			}
+		}, 500);
 	}
 </script>
 
@@ -152,9 +214,17 @@ import AccessDenied from './accessDenied.svelte';
 		<Sidebar active="e-legalisir" sideBarMenus={SIDEBAR_ADMIN} pathImage="../" />
 
 		<main class="flex-auto w-full min-w-0 px-20 pt-12 lg:static lg:max-h-full lg:overflow-visible">
-			
-			<h1 class="mb-12 text-4xl font-bold">List Legalisir</h1>
-
+			<div class="flex">
+				<h1 class="mb-8 text-4xl font-bold">List Legalisir</h1>
+				<div class="flex align-center justify-center mb-3 pt-0 ml-6">
+					<input
+						type="text"
+						placeholder="Cari"
+						on:input={onSearch}
+						class="border-0 px-3 py-1 h-10 border border-solid border-gray-200 placeholder-gray-300 text-gray-600 bg-white rounded text-base leading-snug shadow-none outline-none focus:outline-none w-full font-normal"
+					/>
+				</div>
+			</div>
 			<div class="flex flex-col">
 				<div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
 					<div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
@@ -214,6 +284,24 @@ import AccessDenied from './accessDenied.svelte';
 									<!-- More people... -->
 								</tbody>
 							</table>
+							{#if !isLoadingTable}
+							<div class="min-w-full flex align-center justify-end border-t-2 border-gray-200 pr-4">
+								<button
+									on:click={onPrevPage}
+									class={`"p-4 mr-2" ${page <= 1 ? 'text-gray-200' : 'text-black' }`}
+									disabled={page <=1}
+								>
+									<i class="fas fa-chevron-left"></i>
+								</button>
+								<button
+									on:click={onNextPage}
+									class={`p-4 ${isLastPage ? 'text-gray-200' : 'text-black' }`}
+									disabled={isLastPage}
+								>
+									<i class="fas fa-chevron-right"></i>
+								</button>
+							</div>
+							{/if}
 						</div>
 					</div>
 				</div>

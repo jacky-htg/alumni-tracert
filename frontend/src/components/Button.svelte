@@ -43,8 +43,27 @@
   on:click
   class={`flex align-center justify-center text-white ${bgColor} border-0 ${padding} focus:outline-none hover:${bgHoverColor} rounded ${text} ${className}`}>
   {#if isLoading}
-    <Loader size={loaderSize}/>
+    <div class="relative">
+      <div class="invisible"><slot /></div>
+      <div class="loader-container">
+        <Loader size={loaderSize}/>
+      </div>
+    </div>
   {:else}
     <slot />
   {/if}
 </button>
+
+<style>
+  .loader-container {
+    display: flex;
+    justify-content: center;
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+    margin: auto;
+    height: fit-content;
+  }
+</style>
