@@ -49,3 +49,31 @@ func (u *AlumniTracertServer) UserAnswerCreate(ctx context.Context, in *proto.Us
 
 	return &answerModel.Pb, nil
 }
+
+func (u *AlumniTracertServer) GetTrace(ctx context.Context, in *proto.EmptyMessage) (*proto.TracerList, error) {
+	select {
+	case <-ctx.Done():
+		return nil, util.ContextError(ctx)
+	default:
+	}
+
+	ctx, err := GetUserLogin(ctx, u.Db)
+	if err != nil {
+		util.LogError(u.Log, "Get user login on get trace", err)
+		return nil, err
+	}
+
+	if err := new(validation.UserAnswer).GetTrace(ctx); err != nil {
+		util.LogError(u.Log, "validation on get trace", err)
+		return nil, err
+	}
+
+	var answerModel model.UserAnswer
+	list, err := answerModel.List(ctx, u.Db)
+	if err != nil {
+		util.LogError(u.Log, "list get gtrace", err)
+		return nil, err
+	}
+
+	return list, nil
+}

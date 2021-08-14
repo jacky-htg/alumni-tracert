@@ -45,7 +45,7 @@ var file_tracert_service_proto_rawDesc = []byte{
 	0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x12, 0x75, 0x73,
 	0x65, 0x72, 0x5f, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
 	0x1a, 0x19, 0x63, 0x65, 0x72, 0x74, 0x69, 0x66, 0x69, 0x63, 0x61, 0x74, 0x65, 0x5f, 0x6d, 0x65,
-	0x73, 0x73, 0x61, 0x67, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x32, 0xef, 0x0a, 0x0a, 0x0e,
+	0x73, 0x73, 0x61, 0x67, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x32, 0xa5, 0x0b, 0x0a, 0x0e,
 	0x54, 0x72, 0x61, 0x63, 0x65, 0x72, 0x74, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x29,
 	0x0a, 0x05, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x12, 0x11, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e,
 	0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x49, 0x6e, 0x70, 0x75, 0x74, 0x1a, 0x0b, 0x2e, 0x70, 0x72, 0x6f,
@@ -132,8 +132,12 @@ var file_tracert_service_proto_rawDesc = []byte{
 	0x00, 0x12, 0x3a, 0x0a, 0x10, 0x55, 0x73, 0x65, 0x72, 0x41, 0x6e, 0x73, 0x77, 0x65, 0x72, 0x43,
 	0x72, 0x65, 0x61, 0x74, 0x65, 0x12, 0x11, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x55, 0x73,
 	0x65, 0x72, 0x41, 0x6e, 0x73, 0x77, 0x65, 0x72, 0x1a, 0x11, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x2e, 0x55, 0x73, 0x65, 0x72, 0x41, 0x6e, 0x73, 0x77, 0x65, 0x72, 0x22, 0x00, 0x42, 0x09, 0x5a,
-	0x07, 0x2e, 0x3b, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x2e, 0x55, 0x73, 0x65, 0x72, 0x41, 0x6e, 0x73, 0x77, 0x65, 0x72, 0x22, 0x00, 0x12, 0x34, 0x0a,
+	0x08, 0x47, 0x65, 0x74, 0x54, 0x72, 0x61, 0x63, 0x65, 0x12, 0x13, 0x2e, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x1a, 0x11,
+	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x54, 0x72, 0x61, 0x63, 0x65, 0x72, 0x4c, 0x69, 0x73,
+	0x74, 0x22, 0x00, 0x42, 0x09, 0x5a, 0x07, 0x2e, 0x3b, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x06,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var file_tracert_service_proto_goTypes = []interface{}{
@@ -156,6 +160,7 @@ var file_tracert_service_proto_goTypes = []interface{}{
 	(*LegalizeListResponse)(nil),        // 16: proto.LegalizeListResponse
 	(*Legalizes)(nil),                   // 17: proto.Legalizes
 	(*StringMessage)(nil),               // 18: proto.StringMessage
+	(*TracerList)(nil),                  // 19: proto.TracerList
 }
 var file_tracert_service_proto_depIdxs = []int32{
 	0,  // 0: proto.TracertService.Login:input_type -> proto.LoginInput
@@ -181,31 +186,33 @@ var file_tracert_service_proto_depIdxs = []int32{
 	10, // 20: proto.TracertService.LegalizeApproved:input_type -> proto.UintMessage
 	10, // 21: proto.TracertService.LegalizeRating:input_type -> proto.UintMessage
 	11, // 22: proto.TracertService.UserAnswerCreate:input_type -> proto.UserAnswer
-	7,  // 23: proto.TracertService.Login:output_type -> proto.User
-	12, // 24: proto.TracertService.QuestionList:output_type -> proto.QuestionGroupList
-	2,  // 25: proto.TracertService.AlumniRegistration:output_type -> proto.AlumniRegistrationInput
-	3,  // 26: proto.TracertService.CertificateCreate:output_type -> proto.Certificate
-	4,  // 27: proto.TracertService.AlumniCreate:output_type -> proto.Alumni
-	13, // 28: proto.TracertService.AlumniList:output_type -> proto.AlumniListResponse
-	4,  // 29: proto.TracertService.AlumniGet:output_type -> proto.Alumni
-	6,  // 30: proto.TracertService.AlumniAppraiserCreate:output_type -> proto.AlumniAppraiser
-	14, // 31: proto.TracertService.AlumniAppraiserList:output_type -> proto.AlumniAppraiserListResponse
-	6,  // 32: proto.TracertService.AlumniAppraiserGet:output_type -> proto.AlumniAppraiser
-	7,  // 33: proto.TracertService.UserCreate:output_type -> proto.User
-	15, // 34: proto.TracertService.UserList:output_type -> proto.UserListResponse
-	7,  // 35: proto.TracertService.UserGet:output_type -> proto.User
-	8,  // 36: proto.TracertService.LegalizeUpload:output_type -> proto.Legalize
-	16, // 37: proto.TracertService.LegalizeList:output_type -> proto.LegalizeListResponse
-	8,  // 38: proto.TracertService.LegalizeGet:output_type -> proto.Legalize
-	17, // 39: proto.TracertService.LegalizeGetOwn:output_type -> proto.Legalizes
-	8,  // 40: proto.TracertService.LegalizeDone:output_type -> proto.Legalize
-	8,  // 41: proto.TracertService.LegalizeVerified:output_type -> proto.Legalize
-	8,  // 42: proto.TracertService.LegalizeRejected:output_type -> proto.Legalize
-	8,  // 43: proto.TracertService.LegalizeApproved:output_type -> proto.Legalize
-	18, // 44: proto.TracertService.LegalizeRating:output_type -> proto.StringMessage
-	11, // 45: proto.TracertService.UserAnswerCreate:output_type -> proto.UserAnswer
-	23, // [23:46] is the sub-list for method output_type
-	0,  // [0:23] is the sub-list for method input_type
+	9,  // 23: proto.TracertService.GetTrace:input_type -> proto.EmptyMessage
+	7,  // 24: proto.TracertService.Login:output_type -> proto.User
+	12, // 25: proto.TracertService.QuestionList:output_type -> proto.QuestionGroupList
+	2,  // 26: proto.TracertService.AlumniRegistration:output_type -> proto.AlumniRegistrationInput
+	3,  // 27: proto.TracertService.CertificateCreate:output_type -> proto.Certificate
+	4,  // 28: proto.TracertService.AlumniCreate:output_type -> proto.Alumni
+	13, // 29: proto.TracertService.AlumniList:output_type -> proto.AlumniListResponse
+	4,  // 30: proto.TracertService.AlumniGet:output_type -> proto.Alumni
+	6,  // 31: proto.TracertService.AlumniAppraiserCreate:output_type -> proto.AlumniAppraiser
+	14, // 32: proto.TracertService.AlumniAppraiserList:output_type -> proto.AlumniAppraiserListResponse
+	6,  // 33: proto.TracertService.AlumniAppraiserGet:output_type -> proto.AlumniAppraiser
+	7,  // 34: proto.TracertService.UserCreate:output_type -> proto.User
+	15, // 35: proto.TracertService.UserList:output_type -> proto.UserListResponse
+	7,  // 36: proto.TracertService.UserGet:output_type -> proto.User
+	8,  // 37: proto.TracertService.LegalizeUpload:output_type -> proto.Legalize
+	16, // 38: proto.TracertService.LegalizeList:output_type -> proto.LegalizeListResponse
+	8,  // 39: proto.TracertService.LegalizeGet:output_type -> proto.Legalize
+	17, // 40: proto.TracertService.LegalizeGetOwn:output_type -> proto.Legalizes
+	8,  // 41: proto.TracertService.LegalizeDone:output_type -> proto.Legalize
+	8,  // 42: proto.TracertService.LegalizeVerified:output_type -> proto.Legalize
+	8,  // 43: proto.TracertService.LegalizeRejected:output_type -> proto.Legalize
+	8,  // 44: proto.TracertService.LegalizeApproved:output_type -> proto.Legalize
+	18, // 45: proto.TracertService.LegalizeRating:output_type -> proto.StringMessage
+	11, // 46: proto.TracertService.UserAnswerCreate:output_type -> proto.UserAnswer
+	19, // 47: proto.TracertService.GetTrace:output_type -> proto.TracerList
+	24, // [24:48] is the sub-list for method output_type
+	0,  // [0:24] is the sub-list for method input_type
 	0,  // [0:0] is the sub-list for extension type_name
 	0,  // [0:0] is the sub-list for extension extendee
 	0,  // [0:0] is the sub-list for field type_name
@@ -280,6 +287,7 @@ type TracertServiceClient interface {
 	LegalizeApproved(ctx context.Context, in *UintMessage, opts ...grpc.CallOption) (*Legalize, error)
 	LegalizeRating(ctx context.Context, in *UintMessage, opts ...grpc.CallOption) (*StringMessage, error)
 	UserAnswerCreate(ctx context.Context, in *UserAnswer, opts ...grpc.CallOption) (*UserAnswer, error)
+	GetTrace(ctx context.Context, in *EmptyMessage, opts ...grpc.CallOption) (*TracerList, error)
 }
 
 type tracertServiceClient struct {
@@ -589,6 +597,15 @@ func (c *tracertServiceClient) UserAnswerCreate(ctx context.Context, in *UserAns
 	return out, nil
 }
 
+func (c *tracertServiceClient) GetTrace(ctx context.Context, in *EmptyMessage, opts ...grpc.CallOption) (*TracerList, error) {
+	out := new(TracerList)
+	err := c.cc.Invoke(ctx, "/proto.TracertService/GetTrace", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TracertServiceServer is the server API for TracertService service.
 type TracertServiceServer interface {
 	Login(context.Context, *LoginInput) (*User, error)
@@ -616,6 +633,7 @@ type TracertServiceServer interface {
 	LegalizeApproved(context.Context, *UintMessage) (*Legalize, error)
 	LegalizeRating(context.Context, *UintMessage) (*StringMessage, error)
 	UserAnswerCreate(context.Context, *UserAnswer) (*UserAnswer, error)
+	GetTrace(context.Context, *EmptyMessage) (*TracerList, error)
 }
 
 // UnimplementedTracertServiceServer can be embedded to have forward compatible implementations.
@@ -690,6 +708,9 @@ func (*UnimplementedTracertServiceServer) LegalizeRating(context.Context, *UintM
 }
 func (*UnimplementedTracertServiceServer) UserAnswerCreate(context.Context, *UserAnswer) (*UserAnswer, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UserAnswerCreate not implemented")
+}
+func (*UnimplementedTracertServiceServer) GetTrace(context.Context, *EmptyMessage) (*TracerList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetTrace not implemented")
 }
 
 func RegisterTracertServiceServer(s *grpc.Server, srv TracertServiceServer) {
@@ -1122,6 +1143,24 @@ func _TracertService_UserAnswerCreate_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TracertService_GetTrace_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EmptyMessage)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TracertServiceServer).GetTrace(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.TracertService/GetTrace",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TracertServiceServer).GetTrace(ctx, req.(*EmptyMessage))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _TracertService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "proto.TracertService",
 	HandlerType: (*TracertServiceServer)(nil),
@@ -1201,6 +1240,10 @@ var _TracertService_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UserAnswerCreate",
 			Handler:    _TracertService_UserAnswerCreate_Handler,
+		},
+		{
+			MethodName: "GetTrace",
+			Handler:    _TracertService_GetTrace_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

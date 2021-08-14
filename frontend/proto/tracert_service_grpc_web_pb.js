@@ -1906,5 +1906,85 @@ proto.proto.TracertServicePromiseClient.prototype.userAnswerCreate =
 };
 
 
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.proto.EmptyMessage,
+ *   !proto.proto.TracerList>}
+ */
+const methodDescriptor_TracertService_GetTrace = new grpc.web.MethodDescriptor(
+  '/proto.TracertService/GetTrace',
+  grpc.web.MethodType.UNARY,
+  generic_message_pb.EmptyMessage,
+  user_answer_message_pb.TracerList,
+  /**
+   * @param {!proto.proto.EmptyMessage} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  user_answer_message_pb.TracerList.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.proto.EmptyMessage,
+ *   !proto.proto.TracerList>}
+ */
+const methodInfo_TracertService_GetTrace = new grpc.web.AbstractClientBase.MethodInfo(
+  user_answer_message_pb.TracerList,
+  /**
+   * @param {!proto.proto.EmptyMessage} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  user_answer_message_pb.TracerList.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.proto.EmptyMessage} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.proto.TracerList)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.TracerList>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.TracertServiceClient.prototype.getTrace =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/proto.TracertService/GetTrace',
+      request,
+      metadata || {},
+      methodDescriptor_TracertService_GetTrace,
+      callback);
+};
+
+
+/**
+ * @param {!proto.proto.EmptyMessage} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.proto.TracerList>}
+ *     Promise that resolves to the response
+ */
+proto.proto.TracertServicePromiseClient.prototype.getTrace =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/proto.TracertService/GetTrace',
+      request,
+      metadata || {},
+      methodDescriptor_TracertService_GetTrace);
+};
+
+
 module.exports = proto.proto;
 

@@ -291,12 +291,12 @@ func (u *AlumniTracertServer) LegalizeDone(ctx context.Context, in *proto.Legali
 
 	ctx, err := GetUserLogin(ctx, u.Db)
 	if err != nil {
-		util.LogError(u.Log, "Get user login on rejected legalize", err)
+		util.LogError(u.Log, "Get user login on done legalize", err)
 		return nil, err
 	}
 
 	if err := new(validation.Legalize).Done(ctx, in, u.Db); err != nil {
-		util.LogError(u.Log, "validation on rejected legalize", err)
+		util.LogError(u.Log, "validation on done legalize", err)
 		return nil, err
 	}
 

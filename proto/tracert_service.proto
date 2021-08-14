@@ -48,4 +48,5 @@ service TracertService {
   rpc LegalizeRating(UintMessage) returns (StringMessage) {}
 
   rpc UserAnswerCreate(UserAnswer) returns (UserAnswer) {}
+  rpc GetTrace(EmptyMessage) returns (TracerList){}
 }
