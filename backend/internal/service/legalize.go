@@ -161,7 +161,7 @@ func (u *AlumniTracertServer) LegalizeList(in *proto.ListInput, stream proto.Tra
 		err = rows.Scan(
 			&pbLegalize.Id, &pbAlumni.Id, &pbAlumni.Name, &pbCertificate.Nim, &pbAlumni.Nik,
 			&pbCertificate.Id, &pbCertificate.NoIjazah, &pbCertificate.MajorStudy, &pbCertificate.GraduationYear,
-			&pbLegalize.Ijazah, &pbLegalize.Transcript, &pbLegalize.IsVerified, &pbLegalize.IsApproved,
+			&pbLegalize.Ijazah, &pbLegalize.Transcript, &pbLegalize.IsOffline, &pbLegalize.IsVerified, &pbLegalize.IsApproved,
 			&verifiedBy, &verifiedAt, &approvedBy, &approvedAt,
 			&pbLegalize.Status, &createdAt, &updatedAt,
 		)

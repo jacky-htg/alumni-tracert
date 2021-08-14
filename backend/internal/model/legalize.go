@@ -58,7 +58,7 @@ func (u *Legalize) ListQuery(ctx context.Context, db *sql.DB, in *proto.ListInpu
 	query := `
 		SELECT l.id, a.id, a.name, c.nim, a.nik, 
 			c.id, c.no_ijazah, c.major_study, c.graduation_year, 
-			l.ijazah, l.transcript, l.is_verified, l.is_approved, 
+			l.ijazah, l.transcript, l.is_offline, l.is_verified, l.is_approved, 
 			l.verified_by, l.verified_at, l.approved_by, l.approved_at, 
 			l.status, l.created, l.modified 
 		FROM legalizes l
@@ -69,7 +69,7 @@ func (u *Legalize) ListQuery(ctx context.Context, db *sql.DB, in *proto.ListInpu
 	paramQueries := []interface{}{}
 
 	if ctx.Value(app.Ctx("user_type")).(uint32) == constant.USERTYPE_ADMIN {
-		where = append(where, "l.status = 1 AND l.is_verified = FALSE AND l.is_approved = FALSE")
+		where = append(where, "((l.status = 1 AND l.is_verified = FALSE AND l.is_approved = FALSE) OR (l.is_offline = TRUE AND l.status <> 4))")
 	} else if ctx.Value(app.Ctx("user_type")).(uint32) == constant.USERTYPE_PEJABAT {
 		where = append(where, "l.status = 2 AND l.is_verified = TRUE AND l.is_approved = FALSE")
 	} else if ctx.Value(app.Ctx("user_type")).(uint32) == constant.USERTYPE_ALUMNI {
@@ -142,7 +142,7 @@ func (u *Legalize) Get(ctx context.Context, db *sql.DB) error {
 	query := `
 		SELECT l.id, a.id, a.name, c.nim, a.nik, 
 			c.no_ijazah, c.major_study, c.graduation_year,
-			l.ijazah, l.transcript, l.is_verified, l.is_approved, 
+			l.ijazah, l.transcript, l.is_offline, l.is_verified, l.is_approved, 
 			l.verified_by, l.verified_at, l.approved_by, l.approved_at, 
 			l.status, l.created, l.modified 
 		FROM legalizes l
@@ -160,7 +160,7 @@ func (u *Legalize) Get(ctx context.Context, db *sql.DB) error {
 	err := row.Scan(
 		&u.Pb.Id, &pbAlumni.Id, &pbAlumni.Name, &pbCertificate.Nim, &pbAlumni.Nik,
 		&pbCertificate.NoIjazah, &pbCertificate.MajorStudy, &pbCertificate.GraduationYear,
-		&u.Pb.Ijazah, &u.Pb.Transcript, &u.Pb.IsVerified, &u.Pb.IsApproved,
+		&u.Pb.Ijazah, &u.Pb.Transcript, &u.Pb.IsOffline, &u.Pb.IsVerified, &u.Pb.IsApproved,
 		&verifiedBy, &verifiedAt, &approvedBy, &approvedAt,
 		&u.Pb.Status, &createdAt, &updatedAt,
 	)
@@ -189,7 +189,7 @@ func (u *Legalize) GetByAlumniId(ctx context.Context, db *sql.DB) (*proto.Legali
 	query := `
 		SELECT l.id, a.id, a.name, c.nim, a.nik, 
 			c.no_ijazah, c.major_study, c.graduation_year, 
-			l.ijazah, l.transcript, l.is_verified, l.is_approved, 
+			l.ijazah, l.transcript, l.is_offline, l.is_verified, l.is_approved, 
 			l.verified_by, l.verified_at, l.approved_by, l.approved_at, 
 			l.status, l.ijazah_signed, l.transcript_signed, l.rating, l.created, l.modified 
 		FROM legalizes l
@@ -220,7 +220,7 @@ func (u *Legalize) GetByAlumniId(ctx context.Context, db *sql.DB) (*proto.Legali
 		err = rows.Scan(
 			&pbLegalize.Id, &pbAlumni.Id, &pbAlumni.Name, &pbCertificate.Nim, &pbAlumni.Nik,
 			&pbCertificate.NoIjazah, &pbCertificate.MajorStudy, &pbCertificate.GraduationYear,
-			&pbLegalize.Ijazah, &pbLegalize.Transcript, &pbLegalize.IsVerified, &pbLegalize.IsApproved,
+			&pbLegalize.Ijazah, &pbLegalize.Transcript, &pbLegalize.IsOffline, &pbLegalize.IsVerified, &pbLegalize.IsApproved,
 			&verifiedBy, &verifiedAt, &approvedBy, &approvedAt,
 			&pbLegalize.Status, &ijazahSigned, &transcriptSigned, &rating, &createdAt, &updatedAt,
 		)
