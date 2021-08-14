@@ -1,13 +1,16 @@
 <script>
+  import { TracertServicePromiseClient } from '../../proto/tracert_service_grpc_web_pb'
   import Sidebar from "../components/Sidebar.svelte";
   import { SIDEBAR_USER, SIDEBAR_ADMIN } from '../helper/path'
   import Cookies from 'js-cookie'
-  import { deps } from "../services";
   import KuisionerService from '../services/question';
   import Button from '../components/Button.svelte';
   import { ListInput } from '../../proto/generic_message_pb';
   import errorServiceHandling from '../helper/error_service';
   import { notifications } from '../helper/toast';
+  import {saveAs} from 'file-saver';
+  import * as excelJS from "exceljs";
+  import moment from 'moment'
 
   let sideBarMenus = SIDEBAR_USER
   if (Cookies.get('usertype') === "3" || Cookies.get('usertype') === "4") {
@@ -15,27 +18,25 @@
   }
 
   async function kuisionerListCall(proto){
-    const alumni = new KuisionerService(deps, proto)
-    return await alumni.resultList()
+    var deps = {
+			proto: {
+				TracertClient: TracertServicePromiseClient
+			}
+		}
+    const kuisioner = new KuisionerService(deps, proto)
+    return await kuisioner.resultList()
 	}
 
   export const fetchDataStream = async () => {
     const listInputProto = new ListInput()
     listInputProto.setSearch('')
-    listInputProto.setLimit(10)
+    listInputProto.setLimit(0)
     listInputProto.setPage(0)
     const stream = await kuisionerListCall(listInputProto);
     return new Promise((resolve, reject) => {
-      let count = 0;
       let data = [];
       stream.on('data', (response) => {
-        // console.log('JEMBUT = ', response.toObject().alumni);
         data = [ ...data, response.toObject().alumni];
-        if(count >= limit-1) {
-          resolve(data);
-        } else {
-          count++;
-        }
       })
       stream.on('status', (status) => {
         if(status.code === 0) {
@@ -44,10 +45,8 @@
       })
       stream.on('end', () => {
         resolve(data);
-        console.log('End stream = ');
       })
       stream.on('error', (e) => {
-        console.log('THIS');
         reject(e);
       })
     })
@@ -58,9 +57,23 @@
     try {
       isLoadingButton = true;
       const result = await fetchDataStream();
+      const workbook = new excelJS.Workbook();
+
+      let sheet = workbook.addWorksheet("Hasil Kuisioner");
+      // title
+      sheet.getRow(1).values = [];
+      // style
+      /* sheet.columns = [
+        { key: "category", width: 30 },
+      ]; */
+      // data
+      sheet.addRows([]);
+      
+      let buffer = await workbook.xlsx.writeBuffer()
+      const blob = new Blob([buffer], { type: "applicationi/xlsx" });
+      saveAs(blob, `Report_Kuisioner_${moment().format('DD/MM/YYYY')}`);
       isLoadingButton = false;
     } catch(e) {
-      console.log('HERE', e);
       isLoadingButton = false;
       errorServiceHandling(e)
       if (Cookies.get('token') == null) {
