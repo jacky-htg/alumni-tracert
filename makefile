@@ -8,16 +8,22 @@ gen:
 build:
 	cd backend && CGO_ENABLED=0 GOOS=linux go build -o alumni server.go && docker build --tag=jackyhtg/alumni:$(TAG) . && docker push jackyhtg/alumni:$(TAG)
 
-build-frontend:
+deploy:
+	ssh rijal /root/bin/anter-api $(TAG)
+
+server:
+	cd backend && go run server.go
+
+install-fe:
+	cd frontend && npm install
+
+build-fe:
 	cd frontend && npm run build
 
-deploy:
+deploy-fe:
 	cd frontend/public && scp -r ./* rijal:/home/smart/public_html/anter_rijalasepnugroho_com/
 
 frontend:
 	cd frontend && npm run dev
 
-server:
-	cd backend && go run server.go
-
-.PHONY: init gen build build-frontend deploy frontend server
+.PHONY: init gen build deploy server install-fe build-fe deploy-fe frontend
