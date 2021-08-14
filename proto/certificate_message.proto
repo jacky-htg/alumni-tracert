@@ -16,3 +16,7 @@ message Certificate {
   string updated = 8;
   Legalize legalize = 9;
 }
+
+message Certificates {
+  repeated Certificate certificate = 1;
+}

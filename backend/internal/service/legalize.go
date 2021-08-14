@@ -55,7 +55,7 @@ func (u *AlumniTracertServer) LegalizeUpload(ctx context.Context, in *proto.Lega
 	return &legalizeModel.Pb, nil
 }
 
-func (u *AlumniTracertServer) LegalizeGetOwn(ctx context.Context, in *proto.EmptyMessage) (*proto.Legalizes, error) {
+func (u *AlumniTracertServer) LegalizeGetOwn(ctx context.Context, in *proto.EmptyMessage) (*proto.Certificates, error) {
 	select {
 	case <-ctx.Done():
 		return nil, util.ContextError(ctx)

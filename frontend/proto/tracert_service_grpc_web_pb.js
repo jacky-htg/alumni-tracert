@@ -1350,13 +1350,13 @@ proto.proto.TracertServicePromiseClient.prototype.legalizeGet =
  * @const
  * @type {!grpc.web.MethodDescriptor<
  *   !proto.proto.EmptyMessage,
- *   !proto.proto.Legalizes>}
+ *   !proto.proto.Certificates>}
  */
 const methodDescriptor_TracertService_LegalizeGetOwn = new grpc.web.MethodDescriptor(
   '/proto.TracertService/LegalizeGetOwn',
   grpc.web.MethodType.UNARY,
   generic_message_pb.EmptyMessage,
-  legalize_message_pb.Legalizes,
+  certificate_message_pb.Certificates,
   /**
    * @param {!proto.proto.EmptyMessage} request
    * @return {!Uint8Array}
@@ -1364,7 +1364,7 @@ const methodDescriptor_TracertService_LegalizeGetOwn = new grpc.web.MethodDescri
   function(request) {
     return request.serializeBinary();
   },
-  legalize_message_pb.Legalizes.deserializeBinary
+  certificate_message_pb.Certificates.deserializeBinary
 );
 
 
@@ -1372,10 +1372,10 @@ const methodDescriptor_TracertService_LegalizeGetOwn = new grpc.web.MethodDescri
  * @const
  * @type {!grpc.web.AbstractClientBase.MethodInfo<
  *   !proto.proto.EmptyMessage,
- *   !proto.proto.Legalizes>}
+ *   !proto.proto.Certificates>}
  */
 const methodInfo_TracertService_LegalizeGetOwn = new grpc.web.AbstractClientBase.MethodInfo(
-  legalize_message_pb.Legalizes,
+  certificate_message_pb.Certificates,
   /**
    * @param {!proto.proto.EmptyMessage} request
    * @return {!Uint8Array}
@@ -1383,7 +1383,7 @@ const methodInfo_TracertService_LegalizeGetOwn = new grpc.web.AbstractClientBase
   function(request) {
     return request.serializeBinary();
   },
-  legalize_message_pb.Legalizes.deserializeBinary
+  certificate_message_pb.Certificates.deserializeBinary
 );
 
 
@@ -1392,9 +1392,9 @@ const methodInfo_TracertService_LegalizeGetOwn = new grpc.web.AbstractClientBase
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @param {function(?grpc.web.Error, ?proto.proto.Legalizes)}
+ * @param {function(?grpc.web.Error, ?proto.proto.Certificates)}
  *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.proto.Legalizes>|undefined}
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.Certificates>|undefined}
  *     The XHR Node Readable Stream
  */
 proto.proto.TracertServiceClient.prototype.legalizeGetOwn =
@@ -1413,7 +1413,7 @@ proto.proto.TracertServiceClient.prototype.legalizeGetOwn =
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @return {!Promise<!proto.proto.Legalizes>}
+ * @return {!Promise<!proto.proto.Certificates>}
  *     Promise that resolves to the response
  */
 proto.proto.TracertServicePromiseClient.prototype.legalizeGetOwn =

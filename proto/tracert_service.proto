@@ -40,7 +40,7 @@ service TracertService {
   rpc LegalizeUpload(Legalize) returns (Legalize) {}
   rpc LegalizeList(ListInput) returns (stream LegalizeListResponse) {}
   rpc LegalizeGet(Legalize) returns (Legalize) {}
-  rpc LegalizeGetOwn(EmptyMessage) returns (Legalizes) {}
+  rpc LegalizeGetOwn(EmptyMessage) returns (Certificates) {}
   rpc LegalizeDone(Legalize) returns (Legalize) {}
   rpc LegalizeVerified(UintMessage) returns (Legalize) {}
   rpc LegalizeRejected(UintMessage) returns (Legalize) {} 

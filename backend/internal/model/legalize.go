@@ -184,17 +184,17 @@ func (u *Legalize) Get(ctx context.Context, db *sql.DB) error {
 	return nil
 }
 
-func (u *Legalize) GetByAlumniId(ctx context.Context, db *sql.DB) (*proto.Legalizes, error) {
-	var list proto.Legalizes
+func (u *Legalize) GetByAlumniId(ctx context.Context, db *sql.DB) (*proto.Certificates, error) {
+	var list proto.Certificates
 	query := `
 		SELECT l.id, a.id, a.name, c.nim, a.nik, 
 			c.no_ijazah, c.major_study, c.graduation_year, 
 			l.ijazah, l.transcript, l.is_offline, l.is_verified, l.is_approved, 
 			l.verified_by, l.verified_at, l.approved_by, l.approved_at, 
 			l.status, l.ijazah_signed, l.transcript_signed, l.rating, l.created, l.modified 
-		FROM legalizes l
-		JOIN certificates c ON l.certificate_id = c.id
+		FROM certificates c
 		JOIN alumni a ON c.alumni_id = a.id
+		LEFT JOIN legalizes l ON l.certificate_id = c.id
 		WHERE a.id = ?
 	`
 
@@ -239,7 +239,9 @@ func (u *Legalize) GetByAlumniId(ctx context.Context, db *sql.DB) (*proto.Legali
 		pbLegalize.TranscriptSigned = transcriptSigned.String
 		pbLegalize.Rating = uint32(rating.Int32)
 
-		list.Legalize = append(list.Legalize, &pbLegalize)
+		pbCertificate.Legalize = &pbLegalize
+
+		list.Certificate = append(list.Certificate, &pbCertificate)
 	}
 
 	if rows.Err() != nil {
