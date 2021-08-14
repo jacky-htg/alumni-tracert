@@ -38,7 +38,7 @@ func (u *Legalize) Upload(ctx context.Context, in *proto.Legalize, db *sql.DB) e
 	var certificate model.Certificate
 	certificate.Pb.Id = in.GetCertificate().GetId()
 	certificate.Pb.AlumniId = alumniId.(uint64)
-	err := certificate.GetByIdAndAlumni()
+	err := certificate.GetByIdAndAlumni(ctx, db)
 	if err != nil {
 		return err
 	}
