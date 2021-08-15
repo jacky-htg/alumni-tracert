@@ -49,6 +49,12 @@ export const SIDEBAR_USER = [
     key: "tambah-ijazah",
   },
   {
+    path: PATH_URL.KUISIONER_FORM,
+    label: "kuesioner",
+    icon: "fa-file-invoice",
+    key: "kuesioner-form",
+  },
+  {
     path: PATH_URL.CDC,
     label: "cdc",
     icon: "fa-chart-line",

@@ -80,7 +80,7 @@
 
       <ul class="flex flex-col list-none md:flex-col md:min-w-full">
         {#each sideBarMenus as menu}
-        {#if menu.key === 'e-legalisir' || menu.key === 'tambah-ijazah'}
+        {#if menu.key === 'e-legalisir' || menu.key === 'tambah-ijazah' || menu.key === 'kuisioner-form'}
           {#if Cookies.get('token') && Cookies.get('usertype') !== "2"}
             <li class="items-center">
               <a
