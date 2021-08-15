@@ -237,16 +237,18 @@
 		<Sidebar active="list-alumni" sideBarMenus={SIDEBAR_ADMIN} pathImage="../" />
 
 		<main class="flex-auto w-full min-w-0 px-20 pt-12 lg:static lg:max-h-full lg:overflow-visible">
-			<div class="flex align-center justify-center">
-				<h1 class="mb-8 text-4xl font-bold">List Alumni</h1>
-				<div class="flex align-center justify-center mb-3 pt-0 ml-6">
-          <input
-            type="text"
-            placeholder="Cari"
-						on:input={onSearch}
-            class="border-0 px-3 py-1 h-10 border border-solid border-gray-200 placeholder-gray-300 text-gray-600 bg-white rounded text-base leading-snug shadow-none outline-none focus:outline-none w-full font-normal"
-          />
-        </div>
+			<div class="flex justify-between items-center mb-8">
+				<div class="flex items-center">
+					<h1 class="text-4xl font-bold">List Alumni</h1>
+					<div class="flex align-center justify-center pt-0 ml-6">
+						<input
+							type="text"
+							placeholder="Cari"
+							on:input={onSearch}
+							class="border-0 px-3 py-1 h-10 border border-solid border-gray-200 placeholder-gray-300 text-gray-600 bg-white rounded text-base leading-snug shadow-none outline-none focus:outline-none w-full font-normal"
+						/>
+					</div>
+				</div>
 				<div class="ml-4">
 					<Button
 						on:click={onDownloadExcell}
