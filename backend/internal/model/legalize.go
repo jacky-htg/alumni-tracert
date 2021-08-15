@@ -39,7 +39,7 @@ func (u *Legalize) Upsert(ctx context.Context, db *sql.DB) error {
 	defer stmt.Close()
 
 	_, err = stmt.ExecContext(ctx,
-		u.Pb.Certificate.Id,
+		u.Pb.CertificateId,
 		u.Pb.Ijazah,
 		u.Pb.Transcript,
 		u.Pb.IsOffline,
@@ -62,7 +62,7 @@ func (u *Legalize) ListQuery(ctx context.Context, db *sql.DB, in *proto.ListInpu
 			l.verified_by, l.verified_at, l.approved_by, l.approved_at, 
 			l.status, l.created, l.modified 
 		FROM legalizes l
-		JOIN certificate c ON l.certificate_id = c.id
+		JOIN certificates c ON l.certificate_id = c.id
 		JOIN alumni a ON c.alumni_id = a.id
 	`
 	where := []string{}
@@ -88,7 +88,7 @@ func (u *Legalize) ListQuery(ctx context.Context, db *sql.DB, in *proto.ListInpu
 	{
 		qCount := `
 			SELECT COUNT(*) FROM legalizes l 
-			JOIN certificate c ON l.certificate_id = c.id
+			JOIN certificates c ON l.certificate_id = c.id
 			JOIN alumni a ON c.alumni_id = a.id
 		`
 		if len(where) > 0 {
@@ -146,7 +146,7 @@ func (u *Legalize) Get(ctx context.Context, db *sql.DB) error {
 			l.verified_by, l.verified_at, l.approved_by, l.approved_at, 
 			l.status, l.created, l.modified 
 		FROM legalizes l
-		JOIN certificate c ON l.certificate_id = c.id
+		JOIN certificates c ON l.certificate_id = c.id
 		JOIN alumni a ON c.alumni_id = a.id
 		WHERE l.id = ?
 	`
@@ -178,27 +178,27 @@ func (u *Legalize) Get(ctx context.Context, db *sql.DB) error {
 	u.Pb.VerifiedBy = uint64(verifiedBy.Int64)
 	u.Pb.ApprovedAt = approvedAt.String
 	u.Pb.ApprovedBy = uint64(approvedBy.Int64)
-	u.Pb.Alumni = &pbAlumni
-	u.Pb.Certificate = &pbCertificate
+	u.Pb.AlumniId = pbAlumni.Id
+	u.Pb.CertificateId = pbCertificate.Id
 
 	return nil
 }
 
-func (u *Legalize) GetByAlumniId(ctx context.Context, db *sql.DB) (*proto.Legalizes, error) {
-	var list proto.Legalizes
+func (u *Legalize) GetByAlumniId(ctx context.Context, db *sql.DB) (*proto.Certificates, error) {
+	var list proto.Certificates
 	query := `
 		SELECT l.id, a.id, a.name, c.nim, a.nik, 
 			c.no_ijazah, c.major_study, c.graduation_year, 
 			l.ijazah, l.transcript, l.is_offline, l.is_verified, l.is_approved, 
 			l.verified_by, l.verified_at, l.approved_by, l.approved_at, 
 			l.status, l.ijazah_signed, l.transcript_signed, l.rating, l.created, l.modified 
-		FROM legalizes l
-		JOIN certificate c ON l.certificate_id = c.id
+		FROM certificates c
 		JOIN alumni a ON c.alumni_id = a.id
+		LEFT JOIN legalizes l ON l.certificate_id = c.id
 		WHERE a.id = ?
 	`
 
-	rows, err := db.QueryContext(ctx, query, u.Pb.Alumni.Id)
+	rows, err := db.QueryContext(ctx, query, u.Pb.AlumniId)
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -211,26 +211,35 @@ func (u *Legalize) GetByAlumniId(ctx context.Context, db *sql.DB) (*proto.Legali
 		}
 
 		var pbLegalize proto.Legalize
-		var createdAt, updatedAt time.Time
+		var createdAt, updatedAt sql.NullTime
 		var pbAlumni proto.Alumni
 		var pbCertificate proto.Certificate
 		var verifiedBy, approvedBy sql.NullInt64
-		var rating sql.NullInt32
-		var verifiedAt, approvedAt, ijazahSigned, transcriptSigned sql.NullString
+		var rating, statusLegalize sql.NullInt32
+		var verifiedAt, approvedAt, ijazah, transcript, ijazahSigned, transcriptSigned sql.NullString
+		var id sql.NullInt64
+		var isOffline, isVerified, isApproved sql.NullBool
 		err = rows.Scan(
-			&pbLegalize.Id, &pbAlumni.Id, &pbAlumni.Name, &pbCertificate.Nim, &pbAlumni.Nik,
+			&id, &pbAlumni.Id, &pbAlumni.Name, &pbCertificate.Nim, &pbAlumni.Nik,
 			&pbCertificate.NoIjazah, &pbCertificate.MajorStudy, &pbCertificate.GraduationYear,
-			&pbLegalize.Ijazah, &pbLegalize.Transcript, &pbLegalize.IsOffline, &pbLegalize.IsVerified, &pbLegalize.IsApproved,
+			&ijazah, &transcript, &isOffline, &isVerified, &isApproved,
 			&verifiedBy, &verifiedAt, &approvedBy, &approvedAt,
-			&pbLegalize.Status, &ijazahSigned, &transcriptSigned, &rating, &createdAt, &updatedAt,
+			&statusLegalize, &ijazahSigned, &transcriptSigned, &rating, &createdAt, &updatedAt,
 		)
 
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "scan data: %v", err)
 		}
 
-		pbLegalize.Created = createdAt.String()
-		pbLegalize.Updated = updatedAt.String()
+		pbLegalize.Id = uint64(id.Int64)
+		pbLegalize.Ijazah = ijazah.String
+		pbLegalize.Transcript = transcript.String
+		pbLegalize.IsOffline = isOffline.Bool
+		pbLegalize.IsVerified = isVerified.Bool
+		pbLegalize.IsApproved = isApproved.Bool
+		pbLegalize.Status = uint32(statusLegalize.Int32)
+		pbLegalize.Created = createdAt.Time.String()
+		pbLegalize.Updated = updatedAt.Time.String()
 		pbLegalize.VerifiedAt = verifiedAt.String
 		pbLegalize.VerifiedBy = uint64(verifiedBy.Int64)
 		pbLegalize.ApprovedAt = approvedAt.String
@@ -239,7 +248,9 @@ func (u *Legalize) GetByAlumniId(ctx context.Context, db *sql.DB) (*proto.Legali
 		pbLegalize.TranscriptSigned = transcriptSigned.String
 		pbLegalize.Rating = uint32(rating.Int32)
 
-		list.Legalize = append(list.Legalize, &pbLegalize)
+		pbCertificate.Legalize = &pbLegalize
+
+		list.Certificate = append(list.Certificate, &pbCertificate)
 	}
 
 	if rows.Err() != nil {

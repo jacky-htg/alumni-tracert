@@ -2,6 +2,7 @@
   import KuisionerNoOpening from '../components/KuisionerNoOpening.svelte'
   import { Alumni } from "../../proto/alumni_message_pb"
 	import { User, AlumniRegistrationInput } from "../../proto/user_message_pb"
+  import { Certificate } from '../../proto/certificate_message_pb'
 	import { TracertServicePromiseClient } from '../../proto/tracert_service_grpc_web_pb'
   import alumniService from '../services/alumni'
   import { notifications } from '../helper/toast'
@@ -12,6 +13,7 @@
   const userProto = new User()
   const alumniProto = new Alumni()
   const alumniRegistrationProto = new AlumniRegistrationInput()
+  const certificateProto = new Certificate()
     
   const changeName = (event) => {
     alumniProto.setName(event.currentTarget.value)
@@ -19,7 +21,7 @@
   }
 
   const changeNim = (event) => {
-    alumniProto.setNim(event.currentTarget.value)
+    certificateProto.setNim(event.currentTarget.value)
   }
 
   const changeNik = (event) => {
@@ -35,15 +37,15 @@
   }
 
   const changeJurusan = (event) => {
-    alumniProto.setMajorStudy(event.currentTarget.value)
+    certificateProto.setMajorStudy(event.currentTarget.value)
   }
 
   const changeGraduationYear = (event) => {
-    alumniProto.setGraduationYear(event.currentTarget.value)
+    certificateProto.setGraduationYear(event.currentTarget.value)
   }
 
   const changeNoIjazah = (event) => {
-    alumniProto.setNoIjazah(event.currentTarget.value)
+    certificateProto.setNoIjazah(event.currentTarget.value)
   }
 
   const changePhone = (event) => {
@@ -64,6 +66,7 @@
     userProto.setUserType(1) // 1 = alumni
     alumniRegistrationProto.setUser(userProto)
     alumniRegistrationProto.setAlumni(alumniProto)
+    alumniRegistrationProto.setCertificate(certificateProto)
     
 		const alumni = new alumniService(deps, alumniRegistrationProto)
     return await alumni.registration()

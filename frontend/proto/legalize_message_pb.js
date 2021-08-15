@@ -12,10 +12,6 @@ var jspb = require('google-protobuf');
 var goog = jspb;
 var global = Function('return this')();
 
-var alumni_message_pb = require('./alumni_message_pb.js');
-goog.object.extend(proto, alumni_message_pb);
-var certificate_message_pb = require('./certificate_message_pb.js');
-goog.object.extend(proto, certificate_message_pb);
 var generic_message_pb = require('./generic_message_pb.js');
 goog.object.extend(proto, generic_message_pb);
 goog.exportSymbol('proto.proto.Legalize', null, global);
@@ -117,8 +113,8 @@ proto.proto.Legalize.prototype.toObject = function(opt_includeInstance) {
 proto.proto.Legalize.toObject = function(includeInstance, msg) {
   var f, obj = {
     id: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    alumni: (f = msg.getAlumni()) && alumni_message_pb.Alumni.toObject(includeInstance, f),
-    certificate: (f = msg.getCertificate()) && certificate_message_pb.Certificate.toObject(includeInstance, f),
+    alumniId: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    certificateId: jspb.Message.getFieldWithDefault(msg, 3, 0),
     ijazah: jspb.Message.getFieldWithDefault(msg, 4, ""),
     transcript: jspb.Message.getFieldWithDefault(msg, 5, ""),
     isOffline: jspb.Message.getBooleanFieldWithDefault(msg, 6, false),
@@ -175,14 +171,12 @@ proto.proto.Legalize.deserializeBinaryFromReader = function(msg, reader) {
       msg.setId(value);
       break;
     case 2:
-      var value = new alumni_message_pb.Alumni;
-      reader.readMessage(value,alumni_message_pb.Alumni.deserializeBinaryFromReader);
-      msg.setAlumni(value);
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setAlumniId(value);
       break;
     case 3:
-      var value = new certificate_message_pb.Certificate;
-      reader.readMessage(value,certificate_message_pb.Certificate.deserializeBinaryFromReader);
-      msg.setCertificate(value);
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setCertificateId(value);
       break;
     case 4:
       var value = /** @type {string} */ (reader.readString());
@@ -280,20 +274,18 @@ proto.proto.Legalize.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getAlumni();
-  if (f != null) {
-    writer.writeMessage(
+  f = message.getAlumniId();
+  if (f !== 0) {
+    writer.writeUint64(
       2,
-      f,
-      alumni_message_pb.Alumni.serializeBinaryToWriter
+      f
     );
   }
-  f = message.getCertificate();
-  if (f != null) {
-    writer.writeMessage(
+  f = message.getCertificateId();
+  if (f !== 0) {
+    writer.writeUint64(
       3,
-      f,
-      certificate_message_pb.Certificate.serializeBinaryToWriter
+      f
     );
   }
   f = message.getIjazah();
@@ -423,76 +415,38 @@ proto.proto.Legalize.prototype.setId = function(value) {
 
 
 /**
- * optional Alumni alumni = 2;
- * @return {?proto.proto.Alumni}
+ * optional uint64 alumni_id = 2;
+ * @return {number}
  */
-proto.proto.Legalize.prototype.getAlumni = function() {
-  return /** @type{?proto.proto.Alumni} */ (
-    jspb.Message.getWrapperField(this, alumni_message_pb.Alumni, 2));
+proto.proto.Legalize.prototype.getAlumniId = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
 /**
- * @param {?proto.proto.Alumni|undefined} value
- * @return {!proto.proto.Legalize} returns this
-*/
-proto.proto.Legalize.prototype.setAlumni = function(value) {
-  return jspb.Message.setWrapperField(this, 2, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
+ * @param {number} value
  * @return {!proto.proto.Legalize} returns this
  */
-proto.proto.Legalize.prototype.clearAlumni = function() {
-  return this.setAlumni(undefined);
+proto.proto.Legalize.prototype.setAlumniId = function(value) {
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
 /**
- * Returns whether this field is set.
- * @return {boolean}
+ * optional uint64 certificate_id = 3;
+ * @return {number}
  */
-proto.proto.Legalize.prototype.hasAlumni = function() {
-  return jspb.Message.getField(this, 2) != null;
+proto.proto.Legalize.prototype.getCertificateId = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
 /**
- * optional Certificate certificate = 3;
- * @return {?proto.proto.Certificate}
- */
-proto.proto.Legalize.prototype.getCertificate = function() {
-  return /** @type{?proto.proto.Certificate} */ (
-    jspb.Message.getWrapperField(this, certificate_message_pb.Certificate, 3));
-};
-
-
-/**
- * @param {?proto.proto.Certificate|undefined} value
- * @return {!proto.proto.Legalize} returns this
-*/
-proto.proto.Legalize.prototype.setCertificate = function(value) {
-  return jspb.Message.setWrapperField(this, 3, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
+ * @param {number} value
  * @return {!proto.proto.Legalize} returns this
  */
-proto.proto.Legalize.prototype.clearCertificate = function() {
-  return this.setCertificate(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.proto.Legalize.prototype.hasCertificate = function() {
-  return jspb.Message.getField(this, 3) != null;
+proto.proto.Legalize.prototype.setCertificateId = function(value) {
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 

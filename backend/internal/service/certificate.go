@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 
-	"tracert/internal/model"
 	"tracert/internal/pkg/app"
 	"tracert/internal/pkg/util"
 	"tracert/proto"
@@ -19,17 +18,9 @@ func (u *AlumniTracertServer) CertificateCreate(ctx context.Context, in *proto.C
 	default:
 	}
 
-	ctx, err := util.GetMetadata(ctx)
+	ctx, err := GetUserLogin(ctx, u.Db)
 	if err != nil {
-		util.LogError(u.Log, "Get metadata on create certificate", err)
-		return nil, err
-	}
-
-	var userModel model.User
-	userModel.Pb.Token = ctx.Value(app.Ctx("token")).(string)
-	err = userModel.GetUserLogin(ctx, u.Db)
-	if err != nil {
-		util.LogError(u.Log, "Get user login", err)
+		util.LogError(u.Log, "Get user login on create certificate", err)
 		return nil, err
 	}
 
@@ -39,6 +30,8 @@ func (u *AlumniTracertServer) CertificateCreate(ctx context.Context, in *proto.C
 		util.LogError(u.Log, "begin tx create certificate", err)
 		return nil, status.Error(codes.Internal, "Failed to create and begin transaction : "+err.Error())
 	}
+
+	in.AlumniId = ctx.Value(app.Ctx("alumni_id")).(uint64)
 
 	certificate, err := u.certificateCreateHelper(ctx, in, tx)
 	if err != nil {

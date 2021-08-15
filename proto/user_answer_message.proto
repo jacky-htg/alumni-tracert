@@ -3,10 +3,32 @@ syntax = "proto3";
 package proto;
 option go_package = ".;proto";
 
-message UserAnswer {
+message Tracer {
   uint64 id = 1;
   uint64 user_id = 2;
+  string created = 3;
+}
+message UserAnswer {
+  uint64 id = 1;
+  uint64 tracer_id = 2;
   uint64 question_id = 3;
   string answer = 4;
   string created = 5;
+}
+
+message AlumniKuisioner {
+  uint64 id = 1;
+  string name = 2;
+  string nik = 3;
+  repeated Answer answer = 4;
+  string created = 5;
+}
+
+message Answer {
+  string question = 1;
+  string answer = 2;
+}
+
+message TracerList {
+  repeated AlumniKuisioner answer = 1;
 }
