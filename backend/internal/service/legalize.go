@@ -46,6 +46,7 @@ func (u *AlumniTracertServer) LegalizeUpload(ctx context.Context, in *proto.Lega
 	legalizeModel.Pb.CertificateId = in.CertificateId
 	legalizeModel.Pb.Ijazah = in.Ijazah
 	legalizeModel.Pb.Transcript = in.Transcript
+	legalizeModel.Pb.IsOffline = in.IsOffline
 
 	err = legalizeModel.Upsert(ctx, u.Db)
 	if err != nil {
