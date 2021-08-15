@@ -182,46 +182,76 @@
 		<main class="flex-auto w-full min-w-0 px-20 pt-12 lg:static lg:max-h-full lg:overflow-visible">
 			
 			<h1 class="mb-12 text-4xl font-bold">E-Legalisir</h1>
-      
+      <p class="w-3/4 mb-4 text-xl text-gray-500">Anda memiliki <span class='text-black'>{ijazahList.length}</span> ijazah yang telah didaftarkan</p>
+      {#if ijazahList.length > 0}
+      <p class="w-3/4 mb-8 text-xl text-gray-500">Silahkan unggah dokumen yang diperlukan berupa ijazah dan transkrip nilai Anda untuk dapat kami proses</p>
+      {/if}
+
       <div class="ijazah-wrapper">
         {#each ijazahList as ijazah, idx}
-          <div class="izajah-card">
-            {#if  myLegalize.getId()}
+          <div class="izajah-card rounded-md bg-white shadow p-6 mb-6">
+            <p class="w-3/4 text-m text-gray-500">
+              Jurusan: 
+              <span class="font-bold text-black">
+                {ijazah.getMajorStudy()}
+              </span>
+            </p>
+            <p class="w-3/4 text-m text-gray-500">
+              Tahun Kelulusan: 
+              <span class="font-bold text-black">
+                {ijazah.getGraduationYear()}
+              </span>
+            </p>
+            <p class="w-3/4 text-m text-gray-500">
+              NIM: 
+              <span class="font-bold text-black">
+                {ijazah.getNim()}
+              </span>
+            </p>
+            <p class="w-3/4 mb-8 text-m text-gray-500">
+              No. Ijazah: 
+              <span class="font-bold text-black">
+                {ijazah.getNoIjazah()}
+              </span>
+            </p>
+            
+
+            {#if  ijazah.getLegalize().getId()}
               <p class="text-xl text-gray-500">Anda telah mengajukan e-legalisir dengan status saat ini:</p>
-              {#if myLegalize.getStatus() === 0}
+              {#if ijazah.getLegalize().getStatus() === 0}
                 <div class="my-8">
                   <p class="mb-4 text-4xl font-semibold text-red-500">DITOLAK</p>
                   <p class="w-3/4 text-xl">Silahkan ajukan e-legalisir ulang, atau hubungi admin untuk info lebih lanjut</p>
                 </div>
-              {:else if myLegalize.getStatus() === 1}
+              {:else if ijazah.getLegalize().getStatus() === 1}
                 <div class="my-8">
                   <p class="my-4 text-4xl font-semibold text-yellow-700">SUBMITTED</p>
                   <p class="w-3/4 text-xl">Dokumen sedang dalam proses pengecekan, mohon menunggu proses verifikasi</p>
                 </div>
-              {:else if myLegalize.getStatus() === 2}
+              {:else if ijazah.getLegalize().getStatus() === 2}
                 <div class="my-8">
                   <p class="my-4 text-4xl font-semibold text-blue-500">DIVERIFIKASI</p>
                   <p class="w-3/4 text-xl">Dokumen sedang dalam tahap verifikasi, mohon menunggu proses tanda tangan dokumen</p>
                 </div>
-                {:else if myLegalize.getStatus() === 3}
+                {:else if ijazah.getLegalize().getStatus() === 3}
                 <div class="my-8">
                   <p class="my-4 text-4xl font-semibold text-green-700">DISETUJUI</p>
                   <p class="w-3/4 text-xl">Dokumen telah diverifikasi dan disetujui, silahkan untuk mengunduh dokumen ijazah atau transkrip nilai yang sudah disetujui melalui tombol dibawah ini</p>
                 </div>
 
                 <div class="flex">
-                  <a href="{myLegalize.getIjazahSigned()}" class="flex items-center justify-center px-6 py-2 mr-4 text-base font-medium text-green-900 border border-transparent rounded-md bg-green-50 w-max-full hover:bg-white hover:border-green-300 md:text-lg">
+                  <a href="{ijazah.getLegalize().getIjazahSigned()}" class="flex items-center justify-center px-6 py-2 mr-4 text-base font-medium text-green-900 border border-transparent rounded-md bg-green-50 w-max-full hover:bg-white hover:border-green-300 md:text-lg">
                     <i class="mr-4 fas fa-download"></i>
                     Download Legalisir Ijazah
                   </a>
 
-                  <a href="{myLegalize.getTranscriptSigned()}" class="flex items-center justify-center px-6 py-2 text-base font-medium text-green-900 border border-transparent rounded-md bg-green-50 w-max-full hover:bg-white hover:border-green-300 md:text-lg ">
+                  <a href="{ijazah.getLegalize().getTranscriptSigned()}" class="flex items-center justify-center px-6 py-2 text-base font-medium text-green-900 border border-transparent rounded-md bg-green-50 w-max-full hover:bg-white hover:border-green-300 md:text-lg ">
                     <i class="mr-4 fas fa-download"></i>
                     Download Legalisir Transkrip
                   </a> 
                 </div>
             
-                {#if !myLegalize.getRating() && !hideRate}
+                {#if !ijazah.getLegalize().getRating() && !hideRate}
                   <hr class="my-12 md:min-w-full" />
               
                   <div id="formRating">
@@ -242,36 +272,37 @@
               {/if}
             {/if}
 
-            {#if !myLegalize.getId() || myLegalize.getStatus() === 0 }
-
-            <p class="w-3/4 mb-8 text-xl text-gray-500">Silahkan unggah dokumen yang diperlukan berupa ijazah dan transkrip nilai Anda untuk dapat kami proses</p>
-
-            <div class="mb-12">
-              <label for="ijazah" class="block mb-4 text-base font-medium text-gray-700">
-                Upload ijazah
-              </label>
-              <Upload
-                on:drop={uploadSimpleFile}
-                on:delete={onDeleteFile}
-                name="ijazah"
-                id="ijazah"
-                isLoading={state.isLoadingIjazah}
-                file={filePath.ijazah}
-              />
-            </div>
-
-            <div class="mb-12">
-              <label for="transcript" class="block mb-4 text-base font-medium text-gray-700">
-                Upload transkrip nilai
-              </label>
-              <Upload
-                on:drop={uploadSimpleFile}
-                on:delete={onDeleteFile}
-                name="transcript"
-                id="transcript"
-                isLoading={state.isLoadingTranskrip}
-                file={filePath.transcript}
-              />
+            {#if !ijazah.getLegalize().getId() || ijazah.getLegalize().getStatus() === 0 }
+            
+            <div class="flex justify-around items-center">
+              <div class="mb-12 w-2/5">
+                <label for="ijazah" class="block mb-4 text-base font-medium text-gray-700">
+                  Upload ijazah
+                </label>
+                <Upload
+                  on:drop={uploadSimpleFile}
+                  on:delete={onDeleteFile}
+                  name="ijazah"
+                  id="ijazah"
+                  isLoading={state.isLoadingIjazah}
+                  file={filePath.ijazah}
+                />
+              </div>
+  
+              <div class="mb-12 w-2/5">
+                <label for="transcript" class="block mb-4 text-base font-medium text-gray-700">
+                  Upload transkrip nilai
+                </label>
+                <Upload
+                  on:drop={uploadSimpleFile}
+                  on:delete={onDeleteFile}
+                  name="transcript"
+                  id="transcript"
+                  isLoading={state.isLoadingTranskrip}
+                  file={filePath.transcript}
+                />
+              </div>
+              
             </div>
             <div class="px-4 py-3 mt-10 text-right bg-gray-50 sm:px-6">
               <button on:click={legalisir} class="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
