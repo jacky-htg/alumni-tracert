@@ -79,7 +79,9 @@
 			isLoadingTable = true;
 			await fetchData();
 			isLoadingTable = false;
-			isLastPage = false;
+			if(alumniList.length < limit) {
+				isLastPage = true;
+			}
     } catch(e) {
 			onError(e);
     }
