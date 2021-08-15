@@ -9,6 +9,13 @@
   import { Images } from '../helper/images'
   import { notifications } from '../helper/toast';
   import Cookies from 'js-cookie'
+  import { onMount } from 'svelte'
+
+  onMount(() => {
+    if(Cookies.get('token')) {
+      navigate(PATH_URL.DASHBOARD, { replace: true })
+    }
+  })
   let isLoading = false;
 
   async function loginCall(username, password){
@@ -42,13 +49,13 @@
       isLoading = true
       const user = await loginCall(state.username, state.password)
       
-      Cookies.set('token', user.getToken())
+      await Cookies.set('token', user.getToken())
       Cookies.set('usertype', user.getUserType())
       Cookies.set('userid', user.getId())
       Cookies.set('username', user.getName())
       isLoading = false;
 
-      navigate(PATH_URL.DASHBOARD, { replace: true })
+      navigate(PATH_URL.DASHBOARD, { replace: false })
     } catch(e) {
       isLoading = false;
       notifications.danger(e.message)

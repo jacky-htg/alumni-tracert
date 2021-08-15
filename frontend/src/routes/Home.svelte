@@ -2,10 +2,14 @@
   import { Images } from '../helper/images'
   import Cookies from 'js-cookie'
   import { PATH_URL } from '../helper/path'
+  import { navigate } from 'svelte-routing'
+  import { onMount } from 'svelte'
   
-  if (!(Cookies.get('token') == null)) {
-    location = PATH_URL.DASHBOARD  
-  }
+  onMount(() => {
+    if(Cookies.get('token')) {
+      navigate(PATH_URL.DASHBOARD, { replace: true })
+    }
+  })
   
   // let src = 'images/poltekkes-medan.jpeg'
 </script>

@@ -40,7 +40,6 @@
 			const alumniResp = await alumniListCall(alumniProto);
       alumni = alumniResp.toObject();
       isLoadingPage = false;
-      console.log('ALUMNI = ', alumniResp.toObject());
     } catch(e) {
       isLoadingPage = false;
       errorServiceHandling(e)
@@ -70,27 +69,51 @@
       </h1>
       <p class="text-sm text-blue-400">{alumni.phone}</p>
       <div class="mt-4">
-        <h3 class="text-lg font-bold">Study</h3>
-        <p class="text-sm text-gray-900">{alumni.majorStudy}</p>
+        <h3 class="text-lg font-bold">NIK</h3>
+        <p class="text-sm text-gray-900">{alumni.nik}</p>
       </div>
-      <div class="grid grid-cols-2 gap-4 mt-6">
-        <div>
-          <h3 class="text-lg font-bold">NIK</h3>
-          <p class="text-sm text-gray-900">{alumni.nik}</p>
-          <h3 class="text-lg font-bold mt-4">TTL</h3>
-          <p class="text-sm text-gray-900">{`${alumni.placeOfBirth}`}</p>
-          <p class="text-sm text-gray-900">{moment(alumni.dateOfBirth || moment()).format('DD/MM/YYYY')}</p>
-        </div>
-        <div>
-          <h3 class="text-lg font-bold">NIM</h3>
-          <p class="text-sm text-gray-900">{alumni.nim}</p>
-          <h3 class="text-lg font-bold mt-4">Lulus</h3>
-          <p class="text-sm text-gray-900">{alumni.graduationYear}</p>
-        </div>
-      </div>
+      <h3 class="text-lg font-bold mt-4">TTL</h3>
+      <p class="text-sm text-gray-900">{`${alumni.placeOfBirth}`}</p>
+      <p class="text-sm text-gray-900">{moment(alumni.dateOfBirth || moment()).format('DD/MM/YYYY')}</p>
       <div class="mt-4">
-        <h3 class="text-lg font-bold">No. Ijazah</h3>
-        <p class="text-sm text-gray-900">{alumni.noIjazah}</p>
+        <h1 class="text-2xl font-extrabold tracking-tight text-gray-900 sm:text-2xl md:text-2xl">
+          <span class="block xl:inline">Daftar Ijazah:</span>
+        </h1>
+        <div class="mt-4 overflow-hidden border-b border-gray-200 shadow sm:rounded-lg">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                  No. Ijazah
+                </th>
+                <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                  Studi
+                </th>
+                <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                  NIM
+                </th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              {#each alumni.certificatesList as certificate}
+              <tr class="legalisir-row">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-gray-900">
+                    {certificate.noIjazah}
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-900">{certificate.majorStudy}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-900">{certificate.nim}</div>
+                </td>
+              </tr>
+              {/each}
+              <!-- More people... -->
+            </tbody>
+          </table>
+        </div>
       </div>
       {/if}
     </main>
