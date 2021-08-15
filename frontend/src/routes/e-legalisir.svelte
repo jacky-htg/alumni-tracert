@@ -67,7 +67,6 @@
 			})
 			legalisirStream.on('end', () => {
 				resolve(data);
-				console.log('End stream = ');
 			})
 			legalisirStream.on('error', (e) => {
 				reject(e);
@@ -310,7 +309,7 @@
 														<Button isLoading={isLoadingReject} on:click={() => onReject(legalist.id)} className="mr-2" bgColor="bg-red-500" bgHoverColor="bg-red-400" size="small">Reject</Button>
 														<Button isLoading={isLoadingAccept} on:click={() => onAccept(legalist.id)} className="mr-2" bgColor="bg-green-500" bgHoverColor="bg-green-400" size="small">Verify</Button>
 													{:else if legalist.status === 2}
-														<Button isLoading={isLoadingAccept} on:click={() => onDone(legalist.id)} className="mr-2" bgColor="bg-green-500" bgHoverColor="bg-green-400" size="small">Done</Button>
+														<Button isLoading={isLoadingApproved} on:click={() => onDone(legalist.id)} className="mr-2" bgColor="bg-green-500" bgHoverColor="bg-green-400" size="small">Done</Button>
 													{/if}
 												{/if}
 												<Button on:click={() => onViewDetail(legalist.id)} size="small" bgColor="bg-gray-400" bgHoverColor="bg-gray-300">View</Button>

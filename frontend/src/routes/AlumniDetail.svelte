@@ -16,7 +16,7 @@
   let alumni = {}
   let isLoadingPage = true;
 
-  async function alumniListCall(proto){
+  async function alumniCall(proto){
     var deps = {
 			proto: {
 				TracertClient: TracertServicePromiseClient
@@ -34,10 +34,9 @@
       if(!urlParams.has('id')) {
         navigate(PATH_URL.LIST_ALUMNI, { replace: true })
       }
-      console.log(urlParams.get('id'));
       const alumniProto = new Alumni()
       alumniProto.setId(urlParams.get('id'))
-			const alumniResp = await alumniListCall(alumniProto);
+			const alumniResp = await alumniCall(alumniProto);
       alumni = alumniResp.toObject();
       isLoadingPage = false;
     } catch(e) {
