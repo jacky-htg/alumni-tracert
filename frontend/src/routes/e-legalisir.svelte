@@ -80,7 +80,9 @@
 			isLoadingTable = true;
 			await fetchData();
 			isLoadingTable = false;
-			isLastPage = false;
+			if(legalisirList.length < limit) {
+				isLastPage = true;
+			}
     } catch(e) {
 			onError(e);
     }
@@ -89,13 +91,30 @@
 	const getStatus = (status) => {
 		switch(status) {
 			case 0:
-				return 'rejected';
+				return 'Rejected';
 			case 1:
-				return 'submit';
+				return 'Submit';
 			case 2:
-				return 'verified';
+				return 'Verified';
+			case 3:
+				return 'Approved';
 			default:
-				return 'approved'
+				return '-'
+		}
+	}
+
+	const getColoStatus = (status) => {
+		switch(status) {
+			case 0:
+				return 'text-red-500';
+			case 1:
+				return 'text-blue-500';
+			case 2:
+				return 'text-green-500';
+			case 3:
+				return 'text-green-600';
+			default:
+				return 'text-gray-900'
 		}
 	}
 
@@ -154,7 +173,23 @@
 			
 			const legalizeService = new LegalizeService(deps, legalizeProto)
 			await legalizeService.approve()
-			updateStatusList(id, 4)
+			updateStatusList(id, 3)
+			isLoadingApproved = false;
+		} catch(e) {
+			isLoadingApproved = false;
+			onError(e)
+		}
+	}
+
+	const onDone = async (id) => {
+		try {
+			isLoadingApproved = true;
+			const legalizeProto = new Legalize()
+			legalizeProto.setId(id)
+			
+			const legalizeService = new LegalizeService(deps, legalizeProto)
+			await legalizeService.done()
+			updateStatusList(id, 3)
 			isLoadingApproved = false;
 		} catch(e) {
 			isLoadingApproved = false;
@@ -233,10 +268,10 @@
 								<thead class="bg-gray-50">
 									<tr>
 										<th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-											Nama
+											Id
 										</th>
 										<th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-											NIK
+											Pengambilan
 										</th>
 										<th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
 											Status
@@ -250,19 +285,19 @@
 									{#each legalisirList as legalist}
 									<tr class="legalisir-row">
 										<td class="px-6 py-4 whitespace-nowrap">
-											<div class="flex items-center">
-												<div class="ml-4">
-													<div class="text-sm font-medium text-gray-900">
-														{legalist.alumni.name}
-													</div>
-												</div>
+											<div class="text-sm font-medium text-gray-900">
+												{legalist.id}
 											</div>
 										</td>
 										<td class="px-6 py-4 whitespace-nowrap">
-											<div class="text-sm text-gray-900">{legalist.alumni.nik}</div>
+											{#if legalist.isOffline}
+											<div class="text-sm text-gray-400">offline</div>
+											{:else}
+											<div class="text-sm text-green-400">online</div>
+											{/if}
 										</td>
 										<td class="px-6 py-4 whitespace-nowrap">
-											<div class="text-sm text-gray-900">{@html getStatus(legalist.status)}</div>
+											<div class={`text-sm ${getColoStatus(legalist.status)}`}>{@html getStatus(legalist.status)}</div>
 										</td>
 										<td class="px-6 py-4 whitespace-nowrap">
 											<div class="flex items-center justify-end">
@@ -274,6 +309,8 @@
 													{#if legalist.status === 1}
 														<Button isLoading={isLoadingReject} on:click={() => onReject(legalist.id)} className="mr-2" bgColor="bg-red-500" bgHoverColor="bg-red-400" size="small">Reject</Button>
 														<Button isLoading={isLoadingAccept} on:click={() => onAccept(legalist.id)} className="mr-2" bgColor="bg-green-500" bgHoverColor="bg-green-400" size="small">Verify</Button>
+													{:else if legalist.status === 2}
+														<Button isLoading={isLoadingAccept} on:click={() => onDone(legalist.id)} className="mr-2" bgColor="bg-green-500" bgHoverColor="bg-green-400" size="small">Done</Button>
 													{/if}
 												{/if}
 												<Button on:click={() => onViewDetail(legalist.id)} size="small" bgColor="bg-gray-400" bgHoverColor="bg-gray-300">View</Button>
