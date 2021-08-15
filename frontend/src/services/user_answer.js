@@ -11,4 +11,7 @@ export default class extends Tracert{
           return userAnswer
       })
   }
+  list() {
+    return this.client.getTrace(this.req, {'token':Cookies.get('token')});
+  }
 }
