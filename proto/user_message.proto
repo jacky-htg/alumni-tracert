@@ -7,6 +7,7 @@ import "alumni_message.proto";
 import "alumni_appraiser_message.proto";
 import "user_answer_message.proto";
 import "generic_message.proto";
+import "certificate_message.proto";
 
 message User {
   uint64 id = 1;
@@ -40,4 +41,5 @@ message LoginInput {
 message AlumniRegistrationInput {
   Alumni alumni = 1;
   User user = 2;
+  Certificate certificate = 3;
 }

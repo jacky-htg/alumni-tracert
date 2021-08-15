@@ -42,7 +42,8 @@ func (u *AlumniTracertServer) LegalizeUpload(ctx context.Context, in *proto.Lega
 	}
 
 	var legalizeModel model.Legalize
-	legalizeModel.Pb.Alumni = &proto.Alumni{Id: ctx.Value(app.Ctx("alumni_id")).(uint64)}
+	legalizeModel.Pb.AlumniId = ctx.Value(app.Ctx("alumni_id")).(uint64)
+	legalizeModel.Pb.CertificateId = in.CertificateId
 	legalizeModel.Pb.Ijazah = in.Ijazah
 	legalizeModel.Pb.Transcript = in.Transcript
 
@@ -54,7 +55,7 @@ func (u *AlumniTracertServer) LegalizeUpload(ctx context.Context, in *proto.Lega
 	return &legalizeModel.Pb, nil
 }
 
-func (u *AlumniTracertServer) LegalizeGetOwn(ctx context.Context, in *proto.EmptyMessage) (*proto.Legalize, error) {
+func (u *AlumniTracertServer) LegalizeGetOwn(ctx context.Context, in *proto.EmptyMessage) (*proto.Certificates, error) {
 	select {
 	case <-ctx.Done():
 		return nil, util.ContextError(ctx)
@@ -68,9 +69,9 @@ func (u *AlumniTracertServer) LegalizeGetOwn(ctx context.Context, in *proto.Empt
 	}
 
 	var legalizeModel model.Legalize
-	legalizeModel.Pb.Alumni = &proto.Alumni{Id: ctx.Value(app.Ctx("alumni_id")).(uint64)}
+	legalizeModel.Pb.AlumniId = ctx.Value(app.Ctx("alumni_id")).(uint64)
 
-	err = legalizeModel.GetByAlumniId(ctx, u.Db)
+	legalizes, err := legalizeModel.GetByAlumniId(ctx, u.Db)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +79,7 @@ func (u *AlumniTracertServer) LegalizeGetOwn(ctx context.Context, in *proto.Empt
 	legalizeModel.Pb.IjazahSigned = "https://" + os.Getenv("OSS_BUCKET_DOCUMENT") + "." + os.Getenv("OSS_ENDPOINT") + "/" + legalizeModel.Pb.IjazahSigned
 	legalizeModel.Pb.TranscriptSigned = "https://" + os.Getenv("OSS_BUCKET_DOCUMENT") + "." + os.Getenv("OSS_ENDPOINT") + "/" + legalizeModel.Pb.TranscriptSigned
 
-	return &legalizeModel.Pb, nil
+	return legalizes, nil
 }
 
 func (u *AlumniTracertServer) LegalizeRating(ctx context.Context, in *proto.UintMessage) (*proto.StringMessage, error) {
@@ -95,7 +96,7 @@ func (u *AlumniTracertServer) LegalizeRating(ctx context.Context, in *proto.Uint
 	}
 
 	var legalizeValidate validation.Legalize
-	legalizeValidate.Model.Pb.Alumni = &proto.Alumni{Id: ctx.Value(app.Ctx("alumni_id")).(uint64)}
+	legalizeValidate.Model.Pb.AlumniId = ctx.Value(app.Ctx("alumni_id")).(uint64)
 	if err := legalizeValidate.Rating(ctx, in, u.Db); err != nil {
 		util.LogError(u.Log, "validation on rate legalize", err)
 		return nil, err
@@ -154,11 +155,13 @@ func (u *AlumniTracertServer) LegalizeList(in *proto.ListInput, stream proto.Tra
 		var createdAt, updatedAt time.Time
 		var pbLegalize proto.Legalize
 		var pbAlumni proto.Alumni
+		var pbCertificate proto.Certificate
 		var verifiedAt, approvedAt sql.NullString
 		var verifiedBy, approvedBy sql.NullInt64
 		err = rows.Scan(
-			&pbLegalize.Id, &pbAlumni.Id, &pbAlumni.Name, &pbAlumni.Nim, &pbAlumni.Nik, &pbAlumni.NoIjazah,
-			&pbLegalize.Ijazah, &pbLegalize.Transcript, &pbLegalize.IsVerified, &pbLegalize.IsApproved,
+			&pbLegalize.Id, &pbAlumni.Id, &pbAlumni.Name, &pbCertificate.Nim, &pbAlumni.Nik,
+			&pbCertificate.Id, &pbCertificate.NoIjazah, &pbCertificate.MajorStudy, &pbCertificate.GraduationYear,
+			&pbLegalize.Ijazah, &pbLegalize.Transcript, &pbLegalize.IsOffline, &pbLegalize.IsVerified, &pbLegalize.IsApproved,
 			&verifiedBy, &verifiedAt, &approvedBy, &approvedAt,
 			&pbLegalize.Status, &createdAt, &updatedAt,
 		)
@@ -169,11 +172,12 @@ func (u *AlumniTracertServer) LegalizeList(in *proto.ListInput, stream proto.Tra
 
 		pbLegalize.Created = createdAt.String()
 		pbLegalize.Updated = updatedAt.String()
-		pbLegalize.Alumni = &pbAlumni
+		pbLegalize.AlumniId = pbAlumni.Id
 		pbLegalize.VerifiedAt = verifiedAt.String
 		pbLegalize.VerifiedBy = uint64(verifiedBy.Int64)
 		pbLegalize.ApprovedAt = approvedAt.String
 		pbLegalize.ApprovedBy = uint64(approvedBy.Int64)
+		pbLegalize.CertificateId = pbCertificate.Id
 
 		res := &proto.LegalizeListResponse{
 			ListInput: listResponse,
@@ -212,7 +216,7 @@ func (u *AlumniTracertServer) LegalizeGet(ctx context.Context, in *proto.Legaliz
 	}
 
 	if ctx.Value(app.Ctx("user_type")).(uint32) == constant.USERTYPE_APPRAISER ||
-		(ctx.Value(app.Ctx("user_type")).(uint32) == constant.USERTYPE_ALUMNI && ctx.Value(app.Ctx("alumni_id")).(uint64) != legalizeModel.Pb.Alumni.Id) {
+		(ctx.Value(app.Ctx("user_type")).(uint32) == constant.USERTYPE_ALUMNI && ctx.Value(app.Ctx("alumni_id")).(uint64) != legalizeModel.Pb.AlumniId) {
 		util.LogError(u.Log, "invalid access", err)
 		return nil, status.Errorf(codes.PermissionDenied, "can not get legalize")
 	}
@@ -272,6 +276,34 @@ func (u *AlumniTracertServer) LegalizeRejected(ctx context.Context, in *proto.Ui
 	legalizeModel.Pb.Id = in.Data
 	if err := legalizeModel.Rejected(ctx, u.Db); err != nil {
 		util.LogError(u.Log, "rejected Legalize", err)
+		return nil, err
+	}
+
+	return &legalizeModel.Pb, nil
+}
+
+func (u *AlumniTracertServer) LegalizeDone(ctx context.Context, in *proto.Legalize) (*proto.Legalize, error) {
+	select {
+	case <-ctx.Done():
+		return nil, util.ContextError(ctx)
+	default:
+	}
+
+	ctx, err := GetUserLogin(ctx, u.Db)
+	if err != nil {
+		util.LogError(u.Log, "Get user login on done legalize", err)
+		return nil, err
+	}
+
+	if err := new(validation.Legalize).Done(ctx, in, u.Db); err != nil {
+		util.LogError(u.Log, "validation on done legalize", err)
+		return nil, err
+	}
+
+	var legalizeModel model.Legalize
+	legalizeModel.Pb.ApprovedBy = ctx.Value(app.Ctx("user_id")).(uint64)
+	if err := legalizeModel.Done(ctx, u.Db); err != nil {
+		util.LogError(u.Log, "Done Legalize", err)
 		return nil, err
 	}
 

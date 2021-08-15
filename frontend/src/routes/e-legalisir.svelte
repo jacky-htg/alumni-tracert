@@ -52,7 +52,8 @@
 			let count = 0;
 			let data = [];
 			legalisirStream.on('data', (response) => {
-				data = [ ...data, response.toObject().alumni];
+				data = [ ...data, response.toObject().legalize];
+				legalisirList = [ ...legalisirList, response.toObject().legalize]
 				if(count >= limit-1) {
 					resolve(data);
 				} else {
@@ -77,7 +78,7 @@
 	onMount(async () => {
 		try {
 			isLoadingTable = true;
-			legalisirList = await fetchData();
+			await fetchData();
 			isLoadingTable = false;
 			isLastPage = false;
     } catch(e) {
@@ -165,7 +166,7 @@
 		try {
 			page++;
 			isLoadingTable = true;
-			legalisirList = await fetchData();
+			await fetchData();
 			isLoadingTable = false;
 			if(legalisirList.length < limit) {
 				isLastPage = true;
@@ -179,7 +180,7 @@
 		try {
 			page--;
 			isLoadingTable = true;
-			legalisirList = await fetchData();
+			await fetchData();
 			isLoadingTable = false;
 			isLastPage = false;
 		} catch(e) {
@@ -194,7 +195,7 @@
 				page = 0;
 				search = value;
 				isLoadingTable = true;
-				legalisirList = await fetchData();
+				await fetchData();
 				isLoadingTable = false;
 				if(legalisirList.length < limit) {
 					isLastPage = true;
@@ -235,7 +236,7 @@
 											Nama
 										</th>
 										<th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-											NIM
+											NIK
 										</th>
 										<th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
 											Status
@@ -258,7 +259,7 @@
 											</div>
 										</td>
 										<td class="px-6 py-4 whitespace-nowrap">
-											<div class="text-sm text-gray-900">{legalist.alumni.nim}</div>
+											<div class="text-sm text-gray-900">{legalist.alumni.nik}</div>
 										</td>
 										<td class="px-6 py-4 whitespace-nowrap">
 											<div class="text-sm text-gray-900">{@html getStatus(legalist.status)}</div>

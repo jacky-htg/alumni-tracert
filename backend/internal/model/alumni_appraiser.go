@@ -111,8 +111,8 @@ func (u *AlumniAppraiser) ListQuery(ctx context.Context, db *sql.DB, in *proto.L
 func (u *AlumniAppraiser) Get(ctx context.Context, db *sql.DB) error {
 	query := `
 	SELECT alumni_appraisers.id, alumni_appraisers.user_id, alumni_appraisers.name, alumni_appraisers.instansi,
-	alumni_appraisers.position, alumni_appraisers.alumni_id, alumni.name, alumni.nim, alumni.nik, alumni.place_of_birth,
-	alumni.date_of_birth, alumni.major_study, alumni.graduation_year, alumni.no_ijazah, alumni.phone, 
+	alumni_appraisers.position, alumni_appraisers.alumni_id, alumni.name, alumni.nik, alumni.place_of_birth,
+	alumni.date_of_birth, alumni.phone, 
 	alumni_appraisers.alumni_position, alumni_appraisers.created, alumni_appraisers.modified 
 	FROM alumni_appraisers
 	JOIN alumni ON alumni_appraisers.alumni_id = alumni.id
@@ -124,8 +124,8 @@ func (u *AlumniAppraiser) Get(ctx context.Context, db *sql.DB) error {
 	var pbAlumni proto.Alumni
 	err := row.Scan(
 		&u.Pb.Id, &u.Pb.UserId, &u.Pb.Name, &u.Pb.Instansi,
-		&u.Pb.Position, &pbAlumni.Id, &pbAlumni.Name, &pbAlumni.Nim, &pbAlumni.Nik, &pbAlumni.PlaceOfBirth,
-		&pbAlumni.DateOfBirth, &pbAlumni.MajorStudy, &pbAlumni.GraduationYear, &pbAlumni.NoIjazah, &pbAlumni.Phone,
+		&u.Pb.Position, &pbAlumni.Id, &pbAlumni.Name, &pbAlumni.Nik, &pbAlumni.PlaceOfBirth,
+		&pbAlumni.DateOfBirth, &pbAlumni.Phone,
 		&u.Pb.AlumniPosition, &createdAt, &updatedAt)
 	if err == sql.ErrNoRows {
 		return status.Errorf(codes.NotFound, "not found: %v", err)

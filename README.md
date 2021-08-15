@@ -9,6 +9,7 @@ trace alumni and their work.
 - make init
 - make gen
 - make server
+- make install-fe
 - make frontend
 
 # License 

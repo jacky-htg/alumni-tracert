@@ -25,13 +25,76 @@ const (
 // of the legacy proto package is being used.
 const _ = proto.ProtoPackageIsVersion4
 
+type Tracer struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Id      uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	UserId  uint64 `protobuf:"varint,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Created string `protobuf:"bytes,3,opt,name=created,proto3" json:"created,omitempty"`
+}
+
+func (x *Tracer) Reset() {
+	*x = Tracer{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_user_answer_message_proto_msgTypes[0]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Tracer) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Tracer) ProtoMessage() {}
+
+func (x *Tracer) ProtoReflect() protoreflect.Message {
+	mi := &file_user_answer_message_proto_msgTypes[0]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Tracer.ProtoReflect.Descriptor instead.
+func (*Tracer) Descriptor() ([]byte, []int) {
+	return file_user_answer_message_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *Tracer) GetId() uint64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *Tracer) GetUserId() uint64 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
+func (x *Tracer) GetCreated() string {
+	if x != nil {
+		return x.Created
+	}
+	return ""
+}
+
 type UserAnswer struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
 	Id         uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	UserId     uint64 `protobuf:"varint,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	TracerId   uint64 `protobuf:"varint,2,opt,name=tracer_id,json=tracerId,proto3" json:"tracer_id,omitempty"`
 	QuestionId uint64 `protobuf:"varint,3,opt,name=question_id,json=questionId,proto3" json:"question_id,omitempty"`
 	Answer     string `protobuf:"bytes,4,opt,name=answer,proto3" json:"answer,omitempty"`
 	Created    string `protobuf:"bytes,5,opt,name=created,proto3" json:"created,omitempty"`
@@ -40,7 +103,7 @@ type UserAnswer struct {
 func (x *UserAnswer) Reset() {
 	*x = UserAnswer{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_user_answer_message_proto_msgTypes[0]
+		mi := &file_user_answer_message_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -53,7 +116,7 @@ func (x *UserAnswer) String() string {
 func (*UserAnswer) ProtoMessage() {}
 
 func (x *UserAnswer) ProtoReflect() protoreflect.Message {
-	mi := &file_user_answer_message_proto_msgTypes[0]
+	mi := &file_user_answer_message_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -66,7 +129,7 @@ func (x *UserAnswer) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserAnswer.ProtoReflect.Descriptor instead.
 func (*UserAnswer) Descriptor() ([]byte, []int) {
-	return file_user_answer_message_proto_rawDescGZIP(), []int{0}
+	return file_user_answer_message_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *UserAnswer) GetId() uint64 {
@@ -76,9 +139,9 @@ func (x *UserAnswer) GetId() uint64 {
 	return 0
 }
 
-func (x *UserAnswer) GetUserId() uint64 {
+func (x *UserAnswer) GetTracerId() uint64 {
 	if x != nil {
-		return x.UserId
+		return x.TracerId
 	}
 	return 0
 }
@@ -104,21 +167,224 @@ func (x *UserAnswer) GetCreated() string {
 	return ""
 }
 
+type AlumniKuisioner struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Id      uint64    `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name    string    `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Nik     string    `protobuf:"bytes,3,opt,name=nik,proto3" json:"nik,omitempty"`
+	Answer  []*Answer `protobuf:"bytes,4,rep,name=answer,proto3" json:"answer,omitempty"`
+	Created string    `protobuf:"bytes,5,opt,name=created,proto3" json:"created,omitempty"`
+}
+
+func (x *AlumniKuisioner) Reset() {
+	*x = AlumniKuisioner{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_user_answer_message_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *AlumniKuisioner) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AlumniKuisioner) ProtoMessage() {}
+
+func (x *AlumniKuisioner) ProtoReflect() protoreflect.Message {
+	mi := &file_user_answer_message_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AlumniKuisioner.ProtoReflect.Descriptor instead.
+func (*AlumniKuisioner) Descriptor() ([]byte, []int) {
+	return file_user_answer_message_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *AlumniKuisioner) GetId() uint64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *AlumniKuisioner) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *AlumniKuisioner) GetNik() string {
+	if x != nil {
+		return x.Nik
+	}
+	return ""
+}
+
+func (x *AlumniKuisioner) GetAnswer() []*Answer {
+	if x != nil {
+		return x.Answer
+	}
+	return nil
+}
+
+func (x *AlumniKuisioner) GetCreated() string {
+	if x != nil {
+		return x.Created
+	}
+	return ""
+}
+
+type Answer struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Question string `protobuf:"bytes,1,opt,name=question,proto3" json:"question,omitempty"`
+	Answer   string `protobuf:"bytes,2,opt,name=answer,proto3" json:"answer,omitempty"`
+}
+
+func (x *Answer) Reset() {
+	*x = Answer{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_user_answer_message_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Answer) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Answer) ProtoMessage() {}
+
+func (x *Answer) ProtoReflect() protoreflect.Message {
+	mi := &file_user_answer_message_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Answer.ProtoReflect.Descriptor instead.
+func (*Answer) Descriptor() ([]byte, []int) {
+	return file_user_answer_message_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *Answer) GetQuestion() string {
+	if x != nil {
+		return x.Question
+	}
+	return ""
+}
+
+func (x *Answer) GetAnswer() string {
+	if x != nil {
+		return x.Answer
+	}
+	return ""
+}
+
+type TracerList struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Answer []*AlumniKuisioner `protobuf:"bytes,1,rep,name=answer,proto3" json:"answer,omitempty"`
+}
+
+func (x *TracerList) Reset() {
+	*x = TracerList{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_user_answer_message_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *TracerList) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TracerList) ProtoMessage() {}
+
+func (x *TracerList) ProtoReflect() protoreflect.Message {
+	mi := &file_user_answer_message_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TracerList.ProtoReflect.Descriptor instead.
+func (*TracerList) Descriptor() ([]byte, []int) {
+	return file_user_answer_message_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *TracerList) GetAnswer() []*AlumniKuisioner {
+	if x != nil {
+		return x.Answer
+	}
+	return nil
+}
+
 var File_user_answer_message_proto protoreflect.FileDescriptor
 
 var file_user_answer_message_proto_rawDesc = []byte{
 	0x0a, 0x19, 0x75, 0x73, 0x65, 0x72, 0x5f, 0x61, 0x6e, 0x73, 0x77, 0x65, 0x72, 0x5f, 0x6d, 0x65,
 	0x73, 0x73, 0x61, 0x67, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x05, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x22, 0x88, 0x01, 0x0a, 0x0a, 0x55, 0x73, 0x65, 0x72, 0x41, 0x6e, 0x73, 0x77, 0x65,
-	0x72, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x02, 0x69,
-	0x64, 0x12, 0x17, 0x0a, 0x07, 0x75, 0x73, 0x65, 0x72, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01,
-	0x28, 0x04, 0x52, 0x06, 0x75, 0x73, 0x65, 0x72, 0x49, 0x64, 0x12, 0x1f, 0x0a, 0x0b, 0x71, 0x75,
-	0x65, 0x73, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52,
-	0x0a, 0x71, 0x75, 0x65, 0x73, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x16, 0x0a, 0x06, 0x61,
-	0x6e, 0x73, 0x77, 0x65, 0x72, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x61, 0x6e, 0x73,
-	0x77, 0x65, 0x72, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x18, 0x05,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x42, 0x09, 0x5a,
-	0x07, 0x2e, 0x3b, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x74, 0x6f, 0x22, 0x4b, 0x0a, 0x06, 0x54, 0x72, 0x61, 0x63, 0x65, 0x72, 0x12, 0x0e, 0x0a, 0x02,
+	0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x02, 0x69, 0x64, 0x12, 0x17, 0x0a, 0x07,
+	0x75, 0x73, 0x65, 0x72, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x75,
+	0x73, 0x65, 0x72, 0x49, 0x64, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64,
+	0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x22,
+	0x8c, 0x01, 0x0a, 0x0a, 0x55, 0x73, 0x65, 0x72, 0x41, 0x6e, 0x73, 0x77, 0x65, 0x72, 0x12, 0x0e,
+	0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x02, 0x69, 0x64, 0x12, 0x1b,
+	0x0a, 0x09, 0x74, 0x72, 0x61, 0x63, 0x65, 0x72, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x04, 0x52, 0x08, 0x74, 0x72, 0x61, 0x63, 0x65, 0x72, 0x49, 0x64, 0x12, 0x1f, 0x0a, 0x0b, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04,
+	0x52, 0x0a, 0x71, 0x75, 0x65, 0x73, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x16, 0x0a, 0x06,
+	0x61, 0x6e, 0x73, 0x77, 0x65, 0x72, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x61, 0x6e,
+	0x73, 0x77, 0x65, 0x72, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x18,
+	0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x22, 0x88,
+	0x01, 0x0a, 0x0f, 0x41, 0x6c, 0x75, 0x6d, 0x6e, 0x69, 0x4b, 0x75, 0x69, 0x73, 0x69, 0x6f, 0x6e,
+	0x65, 0x72, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x02,
+	0x69, 0x64, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x10, 0x0a, 0x03, 0x6e, 0x69, 0x6b, 0x18, 0x03, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x03, 0x6e, 0x69, 0x6b, 0x12, 0x25, 0x0a, 0x06, 0x61, 0x6e, 0x73, 0x77,
+	0x65, 0x72, 0x18, 0x04, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0d, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x2e, 0x41, 0x6e, 0x73, 0x77, 0x65, 0x72, 0x52, 0x06, 0x61, 0x6e, 0x73, 0x77, 0x65, 0x72, 0x12,
+	0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x22, 0x3c, 0x0a, 0x06, 0x41, 0x6e, 0x73,
+	0x77, 0x65, 0x72, 0x12, 0x1a, 0x0a, 0x08, 0x71, 0x75, 0x65, 0x73, 0x74, 0x69, 0x6f, 0x6e, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x71, 0x75, 0x65, 0x73, 0x74, 0x69, 0x6f, 0x6e, 0x12,
+	0x16, 0x0a, 0x06, 0x61, 0x6e, 0x73, 0x77, 0x65, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x06, 0x61, 0x6e, 0x73, 0x77, 0x65, 0x72, 0x22, 0x3c, 0x0a, 0x0a, 0x54, 0x72, 0x61, 0x63, 0x65,
+	0x72, 0x4c, 0x69, 0x73, 0x74, 0x12, 0x2e, 0x0a, 0x06, 0x61, 0x6e, 0x73, 0x77, 0x65, 0x72, 0x18,
+	0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x41, 0x6c,
+	0x75, 0x6d, 0x6e, 0x69, 0x4b, 0x75, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x65, 0x72, 0x52, 0x06, 0x61,
+	0x6e, 0x73, 0x77, 0x65, 0x72, 0x42, 0x09, 0x5a, 0x07, 0x2e, 0x3b, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -133,16 +399,22 @@ func file_user_answer_message_proto_rawDescGZIP() []byte {
 	return file_user_answer_message_proto_rawDescData
 }
 
-var file_user_answer_message_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_user_answer_message_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_user_answer_message_proto_goTypes = []interface{}{
-	(*UserAnswer)(nil), // 0: proto.UserAnswer
+	(*Tracer)(nil),          // 0: proto.Tracer
+	(*UserAnswer)(nil),      // 1: proto.UserAnswer
+	(*AlumniKuisioner)(nil), // 2: proto.AlumniKuisioner
+	(*Answer)(nil),          // 3: proto.Answer
+	(*TracerList)(nil),      // 4: proto.TracerList
 }
 var file_user_answer_message_proto_depIdxs = []int32{
-	0, // [0:0] is the sub-list for method output_type
-	0, // [0:0] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	3, // 0: proto.AlumniKuisioner.answer:type_name -> proto.Answer
+	2, // 1: proto.TracerList.answer:type_name -> proto.AlumniKuisioner
+	2, // [2:2] is the sub-list for method output_type
+	2, // [2:2] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_user_answer_message_proto_init() }
@@ -152,7 +424,55 @@ func file_user_answer_message_proto_init() {
 	}
 	if !protoimpl.UnsafeEnabled {
 		file_user_answer_message_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Tracer); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_user_answer_message_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*UserAnswer); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_user_answer_message_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*AlumniKuisioner); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_user_answer_message_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Answer); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_user_answer_message_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*TracerList); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -170,7 +490,7 @@ func file_user_answer_message_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_user_answer_message_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   1,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

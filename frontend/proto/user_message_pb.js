@@ -20,6 +20,8 @@ var user_answer_message_pb = require('./user_answer_message_pb.js');
 goog.object.extend(proto, user_answer_message_pb);
 var generic_message_pb = require('./generic_message_pb.js');
 goog.object.extend(proto, generic_message_pb);
+var certificate_message_pb = require('./certificate_message_pb.js');
+goog.object.extend(proto, certificate_message_pb);
 goog.exportSymbol('proto.proto.AlumniRegistrationInput', null, global);
 goog.exportSymbol('proto.proto.ChangePassword', null, global);
 goog.exportSymbol('proto.proto.LoginInput', null, global);
@@ -1187,7 +1189,8 @@ proto.proto.AlumniRegistrationInput.prototype.toObject = function(opt_includeIns
 proto.proto.AlumniRegistrationInput.toObject = function(includeInstance, msg) {
   var f, obj = {
     alumni: (f = msg.getAlumni()) && alumni_message_pb.Alumni.toObject(includeInstance, f),
-    user: (f = msg.getUser()) && proto.proto.User.toObject(includeInstance, f)
+    user: (f = msg.getUser()) && proto.proto.User.toObject(includeInstance, f),
+    certificate: (f = msg.getCertificate()) && certificate_message_pb.Certificate.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -1234,6 +1237,11 @@ proto.proto.AlumniRegistrationInput.deserializeBinaryFromReader = function(msg, 
       reader.readMessage(value,proto.proto.User.deserializeBinaryFromReader);
       msg.setUser(value);
       break;
+    case 3:
+      var value = new certificate_message_pb.Certificate;
+      reader.readMessage(value,certificate_message_pb.Certificate.deserializeBinaryFromReader);
+      msg.setCertificate(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -1277,6 +1285,14 @@ proto.proto.AlumniRegistrationInput.serializeBinaryToWriter = function(message, 
       2,
       f,
       proto.proto.User.serializeBinaryToWriter
+    );
+  }
+  f = message.getCertificate();
+  if (f != null) {
+    writer.writeMessage(
+      3,
+      f,
+      certificate_message_pb.Certificate.serializeBinaryToWriter
     );
   }
 };
@@ -1353,6 +1369,43 @@ proto.proto.AlumniRegistrationInput.prototype.clearUser = function() {
  */
 proto.proto.AlumniRegistrationInput.prototype.hasUser = function() {
   return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * optional Certificate certificate = 3;
+ * @return {?proto.proto.Certificate}
+ */
+proto.proto.AlumniRegistrationInput.prototype.getCertificate = function() {
+  return /** @type{?proto.proto.Certificate} */ (
+    jspb.Message.getWrapperField(this, certificate_message_pb.Certificate, 3));
+};
+
+
+/**
+ * @param {?proto.proto.Certificate|undefined} value
+ * @return {!proto.proto.AlumniRegistrationInput} returns this
+*/
+proto.proto.AlumniRegistrationInput.prototype.setCertificate = function(value) {
+  return jspb.Message.setWrapperField(this, 3, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.proto.AlumniRegistrationInput} returns this
+ */
+proto.proto.AlumniRegistrationInput.prototype.clearCertificate = function() {
+  return this.setCertificate(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.proto.AlumniRegistrationInput.prototype.hasCertificate = function() {
+  return jspb.Message.getField(this, 3) != null;
 };
 
 

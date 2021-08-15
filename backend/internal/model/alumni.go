@@ -23,7 +23,7 @@ func (u *Alumni) Create(ctx context.Context, db *sql.Tx) error {
 	default:
 	}
 
-	query := `INSERT INTO alumni (user_id, name, nim, nik, place_of_birth, date_of_birth, major_study, graduation_year, no_ijazah, phone) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+	query := `INSERT INTO alumni (user_id, name, nik, place_of_birth, date_of_birth, phone) VALUES (?, ?, ?, ?, ?, ?)`
 
 	stmt, err := db.PrepareContext(ctx, query)
 	if err != nil {
@@ -31,27 +31,30 @@ func (u *Alumni) Create(ctx context.Context, db *sql.Tx) error {
 	}
 	defer stmt.Close()
 
-	_, err = stmt.ExecContext(ctx,
+	res, err := stmt.ExecContext(ctx,
 		u.Pb.UserId,
 		u.Pb.Name,
-		u.Pb.Nim,
 		u.Pb.Nik,
 		u.Pb.PlaceOfBirth,
 		u.Pb.DateOfBirth,
-		u.Pb.MajorStudy,
-		u.Pb.GraduationYear,
-		u.Pb.NoIjazah,
 		u.Pb.Phone,
 	)
 	if err != nil {
 		return status.Errorf(codes.Internal, "Exec insert: %v", err)
 	}
 
+	id, err := res.LastInsertId()
+	if err != nil {
+		return status.Errorf(codes.Internal, "get result id: %v", err)
+	}
+
+	u.Pb.Id = uint64(id)
+
 	return nil
 }
 
 func (u *Alumni) ListQuery(ctx context.Context, db *sql.DB, in *proto.ListInput) (string, []interface{}, *proto.ListInput, error) {
-	query := `SELECT id, user_id, name, nim, nik, place_of_birth, date_of_birth, major_study, graduation_year, no_ijazah, phone, created, updated FROM alumni`
+	query := `SELECT id, user_id, name, nik, place_of_birth, date_of_birth, phone, created, updated FROM alumni`
 	where := []string{}
 	paramQueries := []interface{}{}
 
@@ -60,9 +63,7 @@ func (u *Alumni) ListQuery(ctx context.Context, db *sql.DB, in *proto.ListInput)
 		paramQueries = append(paramQueries, "%"+in.Search+"%")
 		paramQueries = append(paramQueries, "%"+in.Search+"%")
 		paramQueries = append(paramQueries, "%"+in.Search+"%")
-		paramQueries = append(paramQueries, "%"+in.Search+"%")
-		paramQueries = append(paramQueries, "%"+in.Search+"%")
-		where = append(where, `(name LIKE ? OR nim LIKE ? OR nik LIKE ? OR place_of_birth LIKE ? OR no_ijazah LIKE ? OR phone LIKE ?)`)
+		where = append(where, `(name LIKE ? OR nik LIKE ? OR place_of_birth LIKE ? OR phone LIKE ?)`)
 	}
 
 	{
@@ -83,7 +84,7 @@ func (u *Alumni) ListQuery(ctx context.Context, db *sql.DB, in *proto.ListInput)
 		query += ` WHERE ` + strings.Join(where, " AND ")
 	}
 
-	if len(in.OrderBy) == 0 || !(in.OrderBy == "name" || in.OrderBy == "nim" || in.OrderBy == "nik" || in.OrderBy == "no_iajazah" || in.OrderBy == "phone") {
+	if len(in.OrderBy) == 0 || !(in.OrderBy == "name" || in.OrderBy == "nik" || in.OrderBy == "phone") {
 		if in == nil {
 			in = &proto.ListInput{OrderBy: "created"}
 		} else {
@@ -117,7 +118,7 @@ func (u *Alumni) ListQuery(ctx context.Context, db *sql.DB, in *proto.ListInput)
 
 func (u *Alumni) Get(ctx context.Context, db *sql.DB) error {
 	query := `
-		SELECT id, user_id, name, nim, nik, place_of_birth, date_of_birth, major_study, graduation_year, no_ijazah, phone, created, updated 
+		SELECT id, user_id, name, nik, place_of_birth, date_of_birth, phone, created, updated 
 		FROM alumni
 		WHERE id = ?
 	`
@@ -125,8 +126,8 @@ func (u *Alumni) Get(ctx context.Context, db *sql.DB) error {
 	row := db.QueryRowContext(ctx, query, u.Pb.Id)
 	var createdAt, updatedAt time.Time
 	err := row.Scan(
-		&u.Pb.Id, &u.Pb.UserId, &u.Pb.Name, &u.Pb.Nim, &u.Pb.Nik, &u.Pb.PlaceOfBirth, &u.Pb.DateOfBirth,
-		&u.Pb.MajorStudy, &u.Pb.GraduationYear, &u.Pb.NoIjazah, &u.Pb.Phone, &createdAt, &updatedAt,
+		&u.Pb.Id, &u.Pb.UserId, &u.Pb.Name, &u.Pb.Nik, &u.Pb.PlaceOfBirth, &u.Pb.DateOfBirth,
+		&u.Pb.Phone, &createdAt, &updatedAt,
 	)
 	if err == sql.ErrNoRows {
 		return status.Errorf(codes.NotFound, "not found: %v", err)
@@ -138,6 +139,15 @@ func (u *Alumni) Get(ctx context.Context, db *sql.DB) error {
 
 	u.Pb.Created = createdAt.String()
 	u.Pb.Updated = updatedAt.String()
+
+	var certificateModel Certificate
+	certificateModel.Pb.AlumniId = u.Pb.Id
+	certificates, err := certificateModel.GetByAlumni(ctx, db)
+	if err != nil {
+		return err
+	}
+
+	u.Pb.Certificates = certificates
 
 	return nil
 }
