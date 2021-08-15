@@ -303,6 +303,7 @@ func (u *AlumniTracertServer) LegalizeDone(ctx context.Context, in *proto.Legali
 
 	var legalizeModel model.Legalize
 	legalizeModel.Pb.ApprovedBy = ctx.Value(app.Ctx("user_id")).(uint64)
+	legalizeModel.Pb.Id = in.Id
 	if err := legalizeModel.Done(ctx, u.Db); err != nil {
 		util.LogError(u.Log, "Done Legalize", err)
 		return nil, err
