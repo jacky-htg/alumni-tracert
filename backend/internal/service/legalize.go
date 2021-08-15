@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"image/png"
 	"io"
 	"net/http"
 	"os"
@@ -18,6 +19,8 @@ import (
 	"tracert/internal/validation"
 	"tracert/proto"
 
+	"github.com/boombuler/barcode"
+	"github.com/boombuler/barcode/qr"
 	"github.com/signintech/gopdf"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -83,7 +86,7 @@ func (u *AlumniTracertServer) LegalizeGetOwn(ctx context.Context, in *proto.Empt
 	return legalizes, nil
 }
 
-func (u *AlumniTracertServer) LegalizeRating(ctx context.Context, in *proto.UintMessage) (*proto.StringMessage, error) {
+func (u *AlumniTracertServer) LegalizeRating(ctx context.Context, in *proto.Legalize) (*proto.StringMessage, error) {
 	select {
 	case <-ctx.Done():
 		return nil, util.ContextError(ctx)
@@ -97,17 +100,14 @@ func (u *AlumniTracertServer) LegalizeRating(ctx context.Context, in *proto.Uint
 	}
 
 	var legalizeValidate validation.Legalize
-	legalizeValidate.Model.Pb.AlumniId = ctx.Value(app.Ctx("alumni_id")).(uint64)
-	if err := legalizeValidate.Rating(ctx, in, u.Db); err != nil {
+	legalizeValidate.Model.Pb.Id = in.Id
+	legalizeValidate.Model.Pb.Rating = in.Rating
+	if err := legalizeValidate.Rating(ctx, u.Db); err != nil {
 		util.LogError(u.Log, "validation on rate legalize", err)
 		return nil, err
 	}
 
-	var legalizeModel model.Legalize
-	legalizeModel.Pb.Id = legalizeValidate.Model.Pb.Id
-	legalizeModel.Pb.Rating = uint32(in.Data)
-
-	err = legalizeModel.Rating(ctx, u.Db)
+	err = legalizeValidate.Model.Rating(ctx, u.Db)
 	if err != nil {
 		return nil, err
 	}
@@ -341,8 +341,15 @@ func (u *AlumniTracertServer) LegalizeApproved(ctx context.Context, in *proto.Ui
 	transcriptLocalFileName := fmt.Sprintf("%d-", tUnix) + "transcript-" + legalizeStringId
 	transcriptSignedUrl := "transcript/" + fmt.Sprintf("%d-", tUnix) + legalizeStringId
 
-	signPdf(legalizeValidate.Model.Pb.Ijazah, ijazahLocalFileName)
-	signPdf(legalizeValidate.Model.Pb.Transcript, transcriptLocalFileName)
+	err = signPdf(legalizeValidate.Model.Pb.Ijazah, ijazahLocalFileName)
+	if err != nil {
+		return nil, err
+	}
+
+	err = signPdf(legalizeValidate.Model.Pb.Transcript, transcriptLocalFileName)
+	if err != nil {
+		return nil, err
+	}
 
 	oss.UploadLocalFile(os.Getenv("OSS_BUCKET_DOCUMENT"), ijazahSignedUrl, ijazahLocalFileName)
 	oss.UploadLocalFile(os.Getenv("OSS_BUCKET_DOCUMENT"), transcriptSignedUrl, transcriptLocalFileName)
@@ -362,7 +369,7 @@ func (u *AlumniTracertServer) LegalizeApproved(ctx context.Context, in *proto.Ui
 	return &legalizeModel.Pb, nil
 }
 
-func signPdf(url string, name string) {
+func signPdf(url string, name string) error {
 
 	pdf := gopdf.GoPdf{}
 	pdf.Start(gopdf.Config{PageSize: *gopdf.PageSizeA4})
@@ -379,7 +386,13 @@ func signPdf(url string, name string) {
 
 	pdf.Image("./stempel-sign.png", 75, 75, nil) //print image
 
+	if err := createQrCode(name); err != nil {
+		return err
+	}
+	pdf.Image(name+".png", 75, 75, nil) //print image
+
 	pdf.WritePdf(name)
+	return nil
 }
 
 func downloadFile(filepath string, url string) error {
@@ -401,4 +414,30 @@ func downloadFile(filepath string, url string) error {
 	// Write the body to file
 	_, err = io.Copy(out, resp.Body)
 	return err
+}
+
+func createQrCode(str string) error {
+	// Create the barcode
+	qrCode, err := qr.Encode(str, qr.M, qr.Auto)
+	if err != nil {
+		return status.Error(codes.Internal, err.Error())
+	}
+
+	// Scale the barcode to 200x200 pixels
+	qrCode, err = barcode.Scale(qrCode, 200, 200)
+	if err != nil {
+		return status.Error(codes.Internal, err.Error())
+	}
+
+	// create the output file
+	file, err := os.Create(str + ".png")
+	if err != nil {
+		return status.Error(codes.Internal, err.Error())
+	}
+	defer file.Close()
+
+	// encode the barcode as png
+	png.Encode(file, qrCode)
+
+	return nil
 }

@@ -166,8 +166,8 @@ func (u *Legalize) Approved(ctx context.Context, in *proto.UintMessage, db *sql.
 	return nil
 }
 
-func (u *Legalize) Rating(ctx context.Context, in *proto.UintMessage, db *sql.DB) error {
-	if in.Data < 1 || in.Data > 5 {
+func (u *Legalize) Rating(ctx context.Context, db *sql.DB) error {
+	if u.Model.Pb.Rating < 1 || u.Model.Pb.Rating > 5 {
 		return status.Error(codes.InvalidArgument, "Please supply valid Rating")
 	}
 
