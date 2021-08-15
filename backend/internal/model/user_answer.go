@@ -51,17 +51,22 @@ func (u *UserAnswer) List(ctx context.Context, db *sql.DB) (*proto.TracerList, e
 	var out proto.TracerList
 
 	query := `
-		select tracer.name, tracer.nik, questions.title, user_answers.answer, tracer.created 
+	select alumni.name, alumni.nik, tracers. created, questions.title, user_answers.answer 
+	FROM (
+		select tracer.id, MAX(user_answers.id) answer_id
 		FROM (
-			select MAX(tracers.id) id, alumni.name, alumni.nik, MAX(tracers.created) created
+			select MAX(tracers.id) id
 			from tracers 
-			join users on tracers.user_id = users.id
-			join alumni on users.id = alumni.user_id
-			group by tracers.user_id
+			group by user_id
 		) as tracer
 		join user_answers on tracer.id = user_answers.tracer_id
-		join questions on user_answers.question_id = questions.id
-		order by tracer.nik 
+		GROUP BY user_answers.tracer_id, user_answers.question_id
+	) as answer
+	join user_answers on answer.answer_id = user_answers.id
+	join questions on user_answers.question_id=questions.id
+	join tracers on answer.id = tracers.id
+	join users on tracers.user_id = users.id
+	join alumni on users.id = alumni.user_id 
 	`
 	rows, err := db.QueryContext(ctx, query)
 	if err != nil {
@@ -78,14 +83,15 @@ func (u *UserAnswer) List(ctx context.Context, db *sql.DB) (*proto.TracerList, e
 		var pbAnswer proto.Answer
 		var name, nik, created string
 		err = rows.Scan(
-			&name, &nik, &pbAnswer.Question, &pbAnswer.Answer, &created,
+			&name, &nik, &created, &pbAnswer.Question, &pbAnswer.Answer,
 		)
 
 		if alumni.Nik != nik {
+			println("cool", alumni.Nik, nik)
 			if len(alumni.Nik) > 0 {
 				out.Answer = append(out.Answer, &alumni)
 			}
-			alumni := proto.AlumniKuisioner{}
+			alumni = proto.AlumniKuisioner{}
 			alumni.Name = name
 			alumni.Nik = nik
 			alumni.Created = created
