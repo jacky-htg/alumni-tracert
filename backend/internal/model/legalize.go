@@ -187,7 +187,7 @@ func (u *Legalize) Get(ctx context.Context, db *sql.DB) error {
 func (u *Legalize) GetByAlumniId(ctx context.Context, db *sql.DB) (*proto.Certificates, error) {
 	var list proto.Certificates
 	query := `
-		SELECT l.id, a.id, a.name, c.nim, a.nik, 
+		SELECT l.id, a.id, a.name, c.id, c.nim, a.nik, 
 			c.no_ijazah, c.major_study, c.graduation_year, 
 			l.ijazah, l.transcript, l.is_offline, l.is_verified, l.is_approved, 
 			l.verified_by, l.verified_at, l.approved_by, l.approved_at, 
@@ -220,7 +220,7 @@ func (u *Legalize) GetByAlumniId(ctx context.Context, db *sql.DB) (*proto.Certif
 		var id sql.NullInt64
 		var isOffline, isVerified, isApproved sql.NullBool
 		err = rows.Scan(
-			&id, &pbAlumni.Id, &pbAlumni.Name, &pbCertificate.Nim, &pbAlumni.Nik,
+			&id, &pbAlumni.Id, &pbAlumni.Name, &pbCertificate.Id, &pbCertificate.Nim, &pbAlumni.Nik,
 			&pbCertificate.NoIjazah, &pbCertificate.MajorStudy, &pbCertificate.GraduationYear,
 			&ijazah, &transcript, &isOffline, &isVerified, &isApproved,
 			&verifiedBy, &verifiedAt, &approvedBy, &approvedAt,
