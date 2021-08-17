@@ -10,6 +10,7 @@
   import { notifications } from '../helper/toast';
   import Cookies from 'js-cookie'
   import { onMount } from 'svelte'
+  import { token } from '../stores/token.js';
 
   onMount(() => {
     if(Cookies.get('token')) {
@@ -53,6 +54,8 @@
       Cookies.set('usertype', user.getUserType())
       Cookies.set('userid', user.getId())
       Cookies.set('username', user.getName())
+      localStorage.setItem('token', user.getToken());
+      token.set(localStorage.getItem('token'));
       isLoading = false;
 
       navigate(PATH_URL.DASHBOARD, { replace: false })
