@@ -22,7 +22,7 @@ func (u *Certificate) Create(ctx context.Context, db *sql.Tx) error {
 	default:
 	}
 
-	query := `INSERT INTO certificates (alumni_id, nim, no_ijazah, major_study, graduation_year) VALUES (?, ?, ?, ?, ?)`
+	query := `INSERT INTO certificates (alumni_id, nim, no_ijazah, major_study, entry_year, graduation_year) VALUES (?, ?, ?, ?, ?, ?)`
 
 	stmt, err := db.PrepareContext(ctx, query)
 	if err != nil {
@@ -35,6 +35,7 @@ func (u *Certificate) Create(ctx context.Context, db *sql.Tx) error {
 		u.Pb.Nim,
 		u.Pb.NoIjazah,
 		u.Pb.MajorStudy,
+		u.Pb.EntryYear,
 		u.Pb.GraduationYear,
 	)
 	if err != nil {
@@ -57,7 +58,7 @@ func (u *Certificate) GetByIdAndAlumni(ctx context.Context, db *sql.DB) error {
 func (u *Certificate) GetByAlumni(ctx context.Context, db *sql.DB) ([]*proto.Certificate, error) {
 	var list []*proto.Certificate
 	query := `
-		SELECT id, nim, no_ijazah, major_study, graduation_year, created, updated 
+		SELECT id, nim, no_ijazah, major_study, entry_year, graduation_year, created, updated 
 		FROM certificates 
 		WHERE alumni_id = ?
 	`
@@ -77,8 +78,8 @@ func (u *Certificate) GetByAlumni(ctx context.Context, db *sql.DB) ([]*proto.Cer
 		var pbCertificate proto.Certificate
 		var createdAt, updatedAt time.Time
 		err = rows.Scan(
-			&pbCertificate.Id, &pbCertificate.Nim, &pbCertificate.NoIjazah,
-			&pbCertificate.MajorStudy, &pbCertificate.GraduationYear, &createdAt, &updatedAt,
+			&pbCertificate.Id, &pbCertificate.Nim, &pbCertificate.NoIjazah, &pbCertificate.MajorStudy,
+			&pbCertificate.EntryYear, &pbCertificate.GraduationYear, &createdAt, &updatedAt,
 		)
 		if err != nil {
 			return list, status.Errorf(codes.Internal, "scan data: %v", err)

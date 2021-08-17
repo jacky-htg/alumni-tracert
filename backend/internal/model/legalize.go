@@ -11,6 +11,7 @@ import (
 	"tracert/internal/pkg/util"
 	"tracert/proto"
 
+	"github.com/google/uuid"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -26,12 +27,47 @@ func (u *Legalize) Upsert(ctx context.Context, db *sql.DB) error {
 	default:
 	}
 
-	query := `
-		INSERT INTO legalizes (certificate_id, ijazah, transcript, is_offline, status) 
-		VALUES (?, ?, ?, ?, 1)
-		ON DUPLICATE KEY UPDATE
-		ijazah = ?, transcript = ?, is_offline = ?, status = 1, is_verified = false, is_approved = false, created = NOW(), modified = NOW()
-	`
+	err := u.GetByCerificateId(ctx, db)
+	if err != nil && err != sql.ErrNoRows {
+		return status.Errorf(codes.Internal, err.Error())
+	}
+
+	var paramQueries []interface{}
+	var query string
+	if err == sql.ErrNoRows {
+		query = `
+			INSERT INTO legalizes (id, certificate_id, ijazah, transcript, is_offline, status) 
+			VALUES (?, ?, ?, ?, ?, 1)
+		`
+		paramQueries = append(
+			paramQueries,
+			uuid.New().String(),
+			u.Pb.CertificateId,
+			u.Pb.Ijazah,
+			u.Pb.Transcript,
+			u.Pb.IsOffline,
+		)
+	} else {
+		query = `
+			UPADTE legalizes
+			SET ijazah = ?, 
+				transcript = ?, 
+				is_offline = ?, 
+				status = 1, 
+				is_verified = false, 
+				is_approved = false, 
+				created = NOW(), 
+				modified = NOW()
+			WHERE id = ?
+		`
+		paramQueries = append(
+			paramQueries,
+			u.Pb.Ijazah,
+			u.Pb.Transcript,
+			u.Pb.IsOffline,
+			u.Pb.Id,
+		)
+	}
 
 	stmt, err := db.PrepareContext(ctx, query)
 	if err != nil {
@@ -39,15 +75,7 @@ func (u *Legalize) Upsert(ctx context.Context, db *sql.DB) error {
 	}
 	defer stmt.Close()
 
-	_, err = stmt.ExecContext(ctx,
-		u.Pb.CertificateId,
-		u.Pb.Ijazah,
-		u.Pb.Transcript,
-		u.Pb.IsOffline,
-		u.Pb.Ijazah,
-		u.Pb.Transcript,
-		u.Pb.IsOffline,
-	)
+	_, err = stmt.ExecContext(ctx, paramQueries...)
 	if err != nil {
 		return status.Errorf(codes.Internal, "Exec insert: %v", err)
 	}
@@ -70,7 +98,7 @@ func (u *Legalize) ListQuery(ctx context.Context, db *sql.DB, in *proto.ListInpu
 	paramQueries := []interface{}{}
 
 	if ctx.Value(app.Ctx("user_type")).(uint32) == constant.USERTYPE_ADMIN {
-		where = append(where, "((l.status = 1 AND l.is_verified = FALSE AND l.is_approved = FALSE) OR (l.is_offline = TRUE AND l.status <> 4))")
+		where = append(where, "((l.status = 1 AND l.is_verified = FALSE AND l.is_approved = FALSE) OR (l.is_offline = TRUE AND l.status <> 3))")
 	} else if ctx.Value(app.Ctx("user_type")).(uint32) == constant.USERTYPE_PEJABAT {
 		where = append(where, "l.status = 2 AND l.is_verified = TRUE AND l.is_approved = FALSE")
 	} else if ctx.Value(app.Ctx("user_type")).(uint32) == constant.USERTYPE_ALUMNI {
@@ -140,6 +168,7 @@ func (u *Legalize) ListQuery(ctx context.Context, db *sql.DB, in *proto.ListInpu
 }
 
 func (u *Legalize) Get(ctx context.Context, db *sql.DB) error {
+	println("asjasj", u.Pb.Id)
 	query := `
 		SELECT l.id, a.id, a.name, c.nim, a.nik, 
 			c.no_ijazah, c.major_study, c.graduation_year,
@@ -181,8 +210,15 @@ func (u *Legalize) Get(ctx context.Context, db *sql.DB) error {
 	u.Pb.ApprovedBy = uint64(approvedBy.Int64)
 	u.Pb.AlumniId = pbAlumni.Id
 	u.Pb.CertificateId = pbCertificate.Id
+	u.Pb.Ijazah = "https://" + os.Getenv("OSS_BUCKET_DOCUMENT") + "." + os.Getenv("OSS_ENDPOINT") + "/" + u.Pb.Ijazah
+	u.Pb.Transcript = "https://" + os.Getenv("OSS_BUCKET_DOCUMENT") + "." + os.Getenv("OSS_ENDPOINT") + "/" + u.Pb.Transcript
 
 	return nil
+}
+
+func (u *Legalize) GetByCerificateId(ctx context.Context, db *sql.DB) error {
+	row := db.QueryRowContext(ctx, `SELECT id FROM legalizes WHERE certificate_id = ?`, u.Pb.CertificateId)
+	return row.Scan(&u.Pb.Id)
 }
 
 func (u *Legalize) GetByAlumniId(ctx context.Context, db *sql.DB) (*proto.Certificates, error) {
@@ -218,7 +254,7 @@ func (u *Legalize) GetByAlumniId(ctx context.Context, db *sql.DB) (*proto.Certif
 		var verifiedBy, approvedBy sql.NullInt64
 		var rating, statusLegalize sql.NullInt32
 		var verifiedAt, approvedAt, ijazah, transcript, ijazahSigned, transcriptSigned sql.NullString
-		var id sql.NullInt64
+		var id sql.NullString
 		var isOffline, isVerified, isApproved sql.NullBool
 		err = rows.Scan(
 			&id, &pbAlumni.Id, &pbAlumni.Name, &pbCertificate.Id, &pbCertificate.Nim, &pbAlumni.Nik,
@@ -232,7 +268,7 @@ func (u *Legalize) GetByAlumniId(ctx context.Context, db *sql.DB) (*proto.Certif
 			return nil, status.Errorf(codes.Internal, "scan data: %v", err)
 		}
 
-		pbLegalize.Id = uint64(id.Int64)
+		pbLegalize.Id = id.String
 		pbLegalize.Ijazah = ijazah.String
 		pbLegalize.Transcript = transcript.String
 		pbLegalize.IsOffline = isOffline.Bool

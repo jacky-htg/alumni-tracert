@@ -46,8 +46,8 @@ func (u *Legalize) Upload(ctx context.Context, in *proto.Legalize, db *sql.DB) e
 	return nil
 }
 
-func (u *Legalize) Rejected(ctx context.Context, in *proto.UintMessage, db *sql.DB) error {
-	if in.Data <= 0 {
+func (u *Legalize) Rejected(ctx context.Context, in *proto.StringMessage, db *sql.DB) error {
+	if len(in.Data) <= 0 {
 		return status.Error(codes.InvalidArgument, "Please supply valid ID")
 	}
 
@@ -76,7 +76,7 @@ func (u *Legalize) Rejected(ctx context.Context, in *proto.UintMessage, db *sql.
 }
 
 func (u *Legalize) Done(ctx context.Context, in *proto.Legalize, db *sql.DB) error {
-	if in.Id <= 0 {
+	if len(in.Id) <= 0 {
 		return status.Error(codes.InvalidArgument, "Please supply valid ID")
 	}
 
@@ -108,8 +108,8 @@ func (u *Legalize) Done(ctx context.Context, in *proto.Legalize, db *sql.DB) err
 	return nil
 }
 
-func (u *Legalize) Verified(ctx context.Context, in *proto.UintMessage, db *sql.DB) error {
-	if in.Data <= 0 {
+func (u *Legalize) Verified(ctx context.Context, in *proto.StringMessage, db *sql.DB) error {
+	if len(in.Data) <= 0 {
 		return status.Error(codes.InvalidArgument, "Please supply valid ID")
 	}
 
@@ -137,8 +137,8 @@ func (u *Legalize) Verified(ctx context.Context, in *proto.UintMessage, db *sql.
 	return nil
 }
 
-func (u *Legalize) Approved(ctx context.Context, in *proto.UintMessage, db *sql.DB) error {
-	if in.Data <= 0 {
+func (u *Legalize) Approved(ctx context.Context, in *proto.StringMessage, db *sql.DB) error {
+	if len(in.Data) <= 0 {
 		return status.Error(codes.InvalidArgument, "Please supply valid ID")
 	}
 

@@ -112,7 +112,7 @@ proto.proto.Legalize.prototype.toObject = function(opt_includeInstance) {
  */
 proto.proto.Legalize.toObject = function(includeInstance, msg) {
   var f, obj = {
-    id: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    id: jspb.Message.getFieldWithDefault(msg, 1, ""),
     alumniId: jspb.Message.getFieldWithDefault(msg, 2, 0),
     certificateId: jspb.Message.getFieldWithDefault(msg, 3, 0),
     ijazah: jspb.Message.getFieldWithDefault(msg, 4, ""),
@@ -167,7 +167,7 @@ proto.proto.Legalize.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {string} */ (reader.readString());
       msg.setId(value);
       break;
     case 2:
@@ -268,8 +268,8 @@ proto.proto.Legalize.prototype.serializeBinary = function() {
 proto.proto.Legalize.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getId();
-  if (f !== 0) {
-    writer.writeUint64(
+  if (f.length > 0) {
+    writer.writeString(
       1,
       f
     );
@@ -397,20 +397,20 @@ proto.proto.Legalize.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional uint64 id = 1;
- * @return {number}
+ * optional string id = 1;
+ * @return {string}
  */
 proto.proto.Legalize.prototype.getId = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
- * @param {number} value
+ * @param {string} value
  * @return {!proto.proto.Legalize} returns this
  */
 proto.proto.Legalize.prototype.setId = function(value) {
-  return jspb.Message.setProto3IntField(this, 1, value);
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 

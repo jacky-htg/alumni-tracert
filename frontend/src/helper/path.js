@@ -44,13 +44,13 @@ export const SIDEBAR_USER = [
   },
   {
     path: PATH_URL.IJAZAH,
-    label: "tambah-ijazah",
+    label: "tambah ijazah",
     icon: "fa-file-invoice",
     key: "tambah-ijazah",
   },
   {
     path: PATH_URL.KUISIONER_FORM,
-    label: "kuesioner",
+    label: "isi kuesioner",
     icon: "fa-file-invoice",
     key: "kuesioner-form",
   },

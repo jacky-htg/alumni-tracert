@@ -20,6 +20,9 @@ func (u *Certificate) Create(ctx context.Context, in *proto.Certificate) error {
 	if len(in.MajorStudy) == 0 {
 		return status.Error(codes.InvalidArgument, "Please supply valid major study")
 	}
+	if in.EntryYear <= 0 {
+		return status.Error(codes.InvalidArgument, "Please supply valid entry year")
+	}
 	if in.GraduationYear <= 0 {
 		return status.Error(codes.InvalidArgument, "Please supply valid graduation year")
 	}

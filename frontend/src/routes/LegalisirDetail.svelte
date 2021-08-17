@@ -35,7 +35,7 @@
     return await alumni.get()
 	}
   const urlParams = new URLSearchParams(window.location.search);
-  let id = Number(urlParams.get('id') || 0);
+  let id = urlParams.get('id') || "";
   const usertype = Cookies.get('usertype');
   onMount(async () => {
 		try {
@@ -139,12 +139,12 @@
 	}
 
   const onDownloadIjazah = () => {
-    const signedUrl = legalizeProtoResp.getIjazahSigned();
+    const signedUrl = legalizeProtoResp.getIjazah();
     window.open(signedUrl,'_blank');
   }
 
   const onDownloadTranskrip = () => {
-    const signedUrl = legalizeProtoResp.getTranscriptSigned();
+    const signedUrl = legalizeProtoResp.getTranscript();
     window.open(signedUrl,'_blank');
   }
 

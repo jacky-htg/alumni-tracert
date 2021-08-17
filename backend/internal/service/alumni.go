@@ -251,6 +251,7 @@ func (u *AlumniTracertServer) certificateCreateHelper(ctx context.Context, in *p
 	certificateModel.Pb.Nim = in.Nim
 	certificateModel.Pb.NoIjazah = in.NoIjazah
 	certificateModel.Pb.MajorStudy = in.MajorStudy
+	certificateModel.Pb.EntryYear = in.EntryYear
 	certificateModel.Pb.GraduationYear = in.GraduationYear
 
 	err := certificateModel.Create(ctx, tx)

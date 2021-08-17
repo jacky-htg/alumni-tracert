@@ -1509,16 +1509,16 @@ proto.proto.TracertServicePromiseClient.prototype.legalizeDone =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
- *   !proto.proto.UintMessage,
+ *   !proto.proto.StringMessage,
  *   !proto.proto.Legalize>}
  */
 const methodDescriptor_TracertService_LegalizeVerified = new grpc.web.MethodDescriptor(
   '/proto.TracertService/LegalizeVerified',
   grpc.web.MethodType.UNARY,
-  generic_message_pb.UintMessage,
+  generic_message_pb.StringMessage,
   legalize_message_pb.Legalize,
   /**
-   * @param {!proto.proto.UintMessage} request
+   * @param {!proto.proto.StringMessage} request
    * @return {!Uint8Array}
    */
   function(request) {
@@ -1531,13 +1531,13 @@ const methodDescriptor_TracertService_LegalizeVerified = new grpc.web.MethodDesc
 /**
  * @const
  * @type {!grpc.web.AbstractClientBase.MethodInfo<
- *   !proto.proto.UintMessage,
+ *   !proto.proto.StringMessage,
  *   !proto.proto.Legalize>}
  */
 const methodInfo_TracertService_LegalizeVerified = new grpc.web.AbstractClientBase.MethodInfo(
   legalize_message_pb.Legalize,
   /**
-   * @param {!proto.proto.UintMessage} request
+   * @param {!proto.proto.StringMessage} request
    * @return {!Uint8Array}
    */
   function(request) {
@@ -1548,7 +1548,7 @@ const methodInfo_TracertService_LegalizeVerified = new grpc.web.AbstractClientBa
 
 
 /**
- * @param {!proto.proto.UintMessage} request The
+ * @param {!proto.proto.StringMessage} request The
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
@@ -1569,7 +1569,7 @@ proto.proto.TracertServiceClient.prototype.legalizeVerified =
 
 
 /**
- * @param {!proto.proto.UintMessage} request The
+ * @param {!proto.proto.StringMessage} request The
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
@@ -1589,16 +1589,16 @@ proto.proto.TracertServicePromiseClient.prototype.legalizeVerified =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
- *   !proto.proto.UintMessage,
+ *   !proto.proto.StringMessage,
  *   !proto.proto.Legalize>}
  */
 const methodDescriptor_TracertService_LegalizeRejected = new grpc.web.MethodDescriptor(
   '/proto.TracertService/LegalizeRejected',
   grpc.web.MethodType.UNARY,
-  generic_message_pb.UintMessage,
+  generic_message_pb.StringMessage,
   legalize_message_pb.Legalize,
   /**
-   * @param {!proto.proto.UintMessage} request
+   * @param {!proto.proto.StringMessage} request
    * @return {!Uint8Array}
    */
   function(request) {
@@ -1611,13 +1611,13 @@ const methodDescriptor_TracertService_LegalizeRejected = new grpc.web.MethodDesc
 /**
  * @const
  * @type {!grpc.web.AbstractClientBase.MethodInfo<
- *   !proto.proto.UintMessage,
+ *   !proto.proto.StringMessage,
  *   !proto.proto.Legalize>}
  */
 const methodInfo_TracertService_LegalizeRejected = new grpc.web.AbstractClientBase.MethodInfo(
   legalize_message_pb.Legalize,
   /**
-   * @param {!proto.proto.UintMessage} request
+   * @param {!proto.proto.StringMessage} request
    * @return {!Uint8Array}
    */
   function(request) {
@@ -1628,7 +1628,7 @@ const methodInfo_TracertService_LegalizeRejected = new grpc.web.AbstractClientBa
 
 
 /**
- * @param {!proto.proto.UintMessage} request The
+ * @param {!proto.proto.StringMessage} request The
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
@@ -1649,7 +1649,7 @@ proto.proto.TracertServiceClient.prototype.legalizeRejected =
 
 
 /**
- * @param {!proto.proto.UintMessage} request The
+ * @param {!proto.proto.StringMessage} request The
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
@@ -1669,16 +1669,16 @@ proto.proto.TracertServicePromiseClient.prototype.legalizeRejected =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
- *   !proto.proto.UintMessage,
+ *   !proto.proto.StringMessage,
  *   !proto.proto.Legalize>}
  */
 const methodDescriptor_TracertService_LegalizeApproved = new grpc.web.MethodDescriptor(
   '/proto.TracertService/LegalizeApproved',
   grpc.web.MethodType.UNARY,
-  generic_message_pb.UintMessage,
+  generic_message_pb.StringMessage,
   legalize_message_pb.Legalize,
   /**
-   * @param {!proto.proto.UintMessage} request
+   * @param {!proto.proto.StringMessage} request
    * @return {!Uint8Array}
    */
   function(request) {
@@ -1691,13 +1691,13 @@ const methodDescriptor_TracertService_LegalizeApproved = new grpc.web.MethodDesc
 /**
  * @const
  * @type {!grpc.web.AbstractClientBase.MethodInfo<
- *   !proto.proto.UintMessage,
+ *   !proto.proto.StringMessage,
  *   !proto.proto.Legalize>}
  */
 const methodInfo_TracertService_LegalizeApproved = new grpc.web.AbstractClientBase.MethodInfo(
   legalize_message_pb.Legalize,
   /**
-   * @param {!proto.proto.UintMessage} request
+   * @param {!proto.proto.StringMessage} request
    * @return {!Uint8Array}
    */
   function(request) {
@@ -1708,7 +1708,7 @@ const methodInfo_TracertService_LegalizeApproved = new grpc.web.AbstractClientBa
 
 
 /**
- * @param {!proto.proto.UintMessage} request The
+ * @param {!proto.proto.StringMessage} request The
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
@@ -1729,7 +1729,7 @@ proto.proto.TracertServiceClient.prototype.legalizeApproved =
 
 
 /**
- * @param {!proto.proto.UintMessage} request The
+ * @param {!proto.proto.StringMessage} request The
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
