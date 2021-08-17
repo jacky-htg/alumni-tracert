@@ -137,6 +137,27 @@ func (u *Legalize) Verified(ctx context.Context, in *proto.StringMessage, db *sq
 	return nil
 }
 
+func (u *Legalize) Check(ctx context.Context, in *proto.StringMessage, db *sql.DB) error {
+	if len(in.Data) <= 0 {
+		return status.Error(codes.InvalidArgument, "Please supply valid ID")
+	}
+
+	u.Model.Pb.Id = in.Data
+	if err := u.Model.Get(ctx, db); err != nil {
+		return err
+	}
+
+	if u.Model.Pb.Status != uint32(constant.LEGALIZE_STATUS_APPROVED) {
+		return status.Error(codes.InvalidArgument, "Invalid Certificate")
+	}
+
+	if u.Model.Pb.IsOffline {
+		return status.Error(codes.InvalidArgument, "Invalid Certificate")
+	}
+
+	return nil
+}
+
 func (u *Legalize) Approved(ctx context.Context, in *proto.StringMessage, db *sql.DB) error {
 	if len(in.Data) <= 0 {
 		return status.Error(codes.InvalidArgument, "Please supply valid ID")

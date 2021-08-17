@@ -305,6 +305,23 @@ func (u *AlumniTracertServer) LegalizeDone(ctx context.Context, in *proto.Legali
 	return &legalizeModel.Pb, nil
 }
 
+func (u *AlumniTracertServer) LegalizeCheck(ctx context.Context, in *proto.StringMessage) (*proto.Legalize, error) {
+	select {
+	case <-ctx.Done():
+		return nil, util.ContextError(ctx)
+	default:
+	}
+
+	var legalizeValidate validation.Legalize
+	err := legalizeValidate.Check(ctx, in, u.Db)
+	if err != nil {
+		util.LogError(u.Log, "validation on check legalize", err)
+		return nil, err
+	}
+
+	return &legalizeValidate.Model.Pb, nil
+}
+
 func (u *AlumniTracertServer) LegalizeApproved(ctx context.Context, in *proto.StringMessage) (*proto.Legalize, error) {
 	select {
 	case <-ctx.Done():
@@ -365,10 +382,6 @@ func signPdf(fileType string, pathUrl string, sUnix string, id string) error {
 
 	pdf.AddPage()
 
-	/*pdf := gopdf.GoPdf{}
-	pdf.Start(gopdf.Config{PageSize: *gopdf.PageSizeA4})
-	pdf.AddPage() */
-
 	resp, err := http.Get(pathUrl)
 	if err != nil {
 		return status.Error(codes.Internal, err.Error())
@@ -401,14 +414,4 @@ func signPdf(fileType string, pathUrl string, sUnix string, id string) error {
 
 	return pdf.OutputFileAndClose(fileType + "-" + sUnix + "-" + id + ".pdf")
 
-	/* pdf.Image("./"+fileType+"-"+sUnix+"-"+id+".jpeg", 0, 0, nil)
-	pdf.Image("./stempel-sign.png", 75, 75, nil) //print image
-
-	if err := util.CreateQrCode(fileType, id); err != nil {
-		return err
-	}
-	pdf.Image("./qrCode-"+fileType+"-"+id+".jpg", 0, 75, nil) //print image
-
-	pdf.WritePdf(fileType + "-" + sUnix + "-" + id + ".pdf")
-	return nil */
 }

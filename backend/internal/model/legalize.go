@@ -173,7 +173,7 @@ func (u *Legalize) Get(ctx context.Context, db *sql.DB) error {
 			c.no_ijazah, c.major_study, c.graduation_year,
 			l.ijazah, l.transcript, l.is_offline, l.is_verified, l.is_approved, 
 			l.verified_by, l.verified_at, l.approved_by, l.approved_at, 
-			l.status, l.created, l.modified 
+			l.status, l.ijazah_signed, l.transcript_signed, l.created, l.modified 
 		FROM legalizes l
 		JOIN certificates c ON l.certificate_id = c.id
 		JOIN alumni a ON c.alumni_id = a.id
@@ -185,13 +185,13 @@ func (u *Legalize) Get(ctx context.Context, db *sql.DB) error {
 	var pbAlumni proto.Alumni
 	var pbCertificate proto.Certificate
 	var verifiedBy, approvedBy sql.NullInt64
-	var verifiedAt, approvedAt sql.NullString
+	var verifiedAt, approvedAt, ijazahSigned, transcriptSigned sql.NullString
 	err := row.Scan(
 		&u.Pb.Id, &pbAlumni.Id, &pbAlumni.Name, &pbCertificate.Nim, &pbAlumni.Nik,
 		&pbCertificate.NoIjazah, &pbCertificate.MajorStudy, &pbCertificate.GraduationYear,
 		&u.Pb.Ijazah, &u.Pb.Transcript, &u.Pb.IsOffline, &u.Pb.IsVerified, &u.Pb.IsApproved,
 		&verifiedBy, &verifiedAt, &approvedBy, &approvedAt,
-		&u.Pb.Status, &createdAt, &updatedAt,
+		&u.Pb.Status, &ijazahSigned, &transcriptSigned, &createdAt, &updatedAt,
 	)
 	if err == sql.ErrNoRows {
 		return status.Errorf(codes.NotFound, "not found: %v", err)
@@ -212,6 +212,13 @@ func (u *Legalize) Get(ctx context.Context, db *sql.DB) error {
 	u.Pb.Ijazah = "https://" + os.Getenv("OSS_BUCKET_DOCUMENT") + "." + os.Getenv("OSS_ENDPOINT") + "/" + u.Pb.Ijazah
 	u.Pb.Transcript = "https://" + os.Getenv("OSS_BUCKET_DOCUMENT") + "." + os.Getenv("OSS_ENDPOINT") + "/" + u.Pb.Transcript
 
+	if len(ijazahSigned.String) > 0 {
+		u.Pb.IjazahSigned = "https://" + os.Getenv("OSS_BUCKET_DOCUMENT") + "." + os.Getenv("OSS_ENDPOINT") + "/" + ijazahSigned.String
+	}
+
+	if len(transcriptSigned.String) > 0 {
+		u.Pb.TranscriptSigned = "https://" + os.Getenv("OSS_BUCKET_DOCUMENT") + "." + os.Getenv("OSS_ENDPOINT") + "/" + transcriptSigned.String
+	}
 	return nil
 }
 
