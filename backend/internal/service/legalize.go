@@ -77,9 +77,6 @@ func (u *AlumniTracertServer) LegalizeGetOwn(ctx context.Context, in *proto.Empt
 		return nil, err
 	}
 
-	legalizeModel.Pb.IjazahSigned = "https://" + os.Getenv("OSS_BUCKET_DOCUMENT") + "." + os.Getenv("OSS_ENDPOINT") + "/" + legalizeModel.Pb.IjazahSigned
-	legalizeModel.Pb.TranscriptSigned = "https://" + os.Getenv("OSS_BUCKET_DOCUMENT") + "." + os.Getenv("OSS_ENDPOINT") + "/" + legalizeModel.Pb.TranscriptSigned
-
 	return legalizes, nil
 }
 

@@ -3,6 +3,7 @@ package model
 import (
 	"context"
 	"database/sql"
+	"os"
 	"strings"
 	"time"
 	"tracert/internal/constant"
@@ -244,8 +245,8 @@ func (u *Legalize) GetByAlumniId(ctx context.Context, db *sql.DB) (*proto.Certif
 		pbLegalize.VerifiedBy = uint64(verifiedBy.Int64)
 		pbLegalize.ApprovedAt = approvedAt.String
 		pbLegalize.ApprovedBy = uint64(approvedBy.Int64)
-		pbLegalize.IjazahSigned = ijazahSigned.String
-		pbLegalize.TranscriptSigned = transcriptSigned.String
+		pbLegalize.IjazahSigned = "https://" + os.Getenv("OSS_BUCKET_DOCUMENT") + "." + os.Getenv("OSS_ENDPOINT") + "/" + ijazahSigned.String
+		pbLegalize.TranscriptSigned = "https://" + os.Getenv("OSS_BUCKET_DOCUMENT") + "." + os.Getenv("OSS_ENDPOINT") + "/" + transcriptSigned.String
 		pbLegalize.Rating = uint32(rating.Int32)
 
 		pbCertificate.Legalize = &pbLegalize
