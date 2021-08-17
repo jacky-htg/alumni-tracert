@@ -8,6 +8,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 	"tracert/internal/model"
 	"tracert/internal/pkg/oss"
@@ -51,14 +52,28 @@ func (u *Upload) UploadHandler(resp http.ResponseWriter, req *http.Request) {
 
 	file := uploadedFile.file
 	// header := uploadedFile.fileHeader
-	// fileType := uploadedFile.fileType
+	fileType := uploadedFile.fileType
+	aFileType := strings.Split(fileType, "/")
+	if len(aFileType) <= 1 || aFileType[0] != "image" {
+		err = fmt.Errorf("file yang diupload harus image png/jpg/jpeg")
+		resp.WriteHeader(http.StatusBadRequest)
+		resp.Write([]byte(err.Error()))
+		return
+	}
+
+	if !(aFileType[1] == "jpeg" || aFileType[1] == "png") {
+		err = fmt.Errorf("file yang diupload harus image png/jpg/jpeg")
+		resp.WriteHeader(http.StatusBadRequest)
+		resp.Write([]byte(err.Error()))
+		return
+	}
 
 	var userModel model.User
 	userModel.Pb.Token = token
 	userModel.GetUserLogin(req.Context(), u.Db)
 
 	tUnix := time.Now().Unix()
-	fileName := req.FormValue("module") + fmt.Sprintf("/%d-", tUnix) + strconv.Itoa(int(userModel.Pb.Id)) + ".pdf"
+	fileName := req.FormValue("module") + fmt.Sprintf("/%d-", tUnix) + strconv.Itoa(int(userModel.Pb.Id)) + "." + aFileType[1]
 
 	err = oss.UploadDocument(fileName, file)
 	if err != nil {

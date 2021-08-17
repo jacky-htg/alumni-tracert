@@ -14,4 +14,9 @@ export default class extends Tracert{
   list() {
     return this.client.getTrace(this.req, {'token':Cookies.get('token')});
   }
+  tracer (){
+      return this.client.tracerCreate(this.req, {'token':Cookies.get('token')}).then(createdTracer=>{
+          return createdTracer
+      })
+  }
 }

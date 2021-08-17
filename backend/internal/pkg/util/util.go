@@ -3,11 +3,17 @@ package util
 import (
 	"context"
 	"errors"
+	"image/jpeg"
+	"io"
 	"math/rand"
+	"net/http"
+	"os"
 	"regexp"
 	"time"
 	"tracert/internal/pkg/app"
 
+	"github.com/boombuler/barcode"
+	"github.com/boombuler/barcode/qr"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -101,4 +107,51 @@ func LogError(log *logrus.Entry, message string, err error) {
 		err = errors.New(st.Message())
 	}
 	log.Errorf(message+" %s", err)
+}
+
+func CreateQrCode(certificate string, id string) error {
+	// Create the barcode
+	qrCode, err := qr.Encode("https://anter.poltekkes-medan.ac.id/"+certificate+"/"+id, qr.M, qr.Auto)
+	if err != nil {
+		return status.Error(codes.Internal, err.Error())
+	}
+
+	// Scale the barcode to 200x200 pixels
+	qrCode, err = barcode.Scale(qrCode, 200, 200)
+	if err != nil {
+		return status.Error(codes.Internal, err.Error())
+	}
+
+	// create the output file
+	file, err := os.Create("qrCode-" + certificate + "-" + id + ".jpg")
+	if err != nil {
+		return status.Error(codes.Internal, err.Error())
+	}
+	defer file.Close()
+
+	// encode the barcode as png
+	jpeg.Encode(file, qrCode, nil)
+
+	return nil
+}
+
+func DownloadFile(filepath string, url string) error {
+
+	// Get the data
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	// Create the file
+	out, err := os.Create(filepath)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+
+	// Write the body to file
+	_, err = io.Copy(out, resp.Body)
+	return err
 }

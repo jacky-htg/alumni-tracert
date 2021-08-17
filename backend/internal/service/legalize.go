@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"io"
 	"net/http"
 	"os"
 	"strconv"
@@ -13,6 +12,7 @@ import (
 	"tracert/internal/constant"
 	"tracert/internal/model"
 	"tracert/internal/pkg/app"
+	"tracert/internal/pkg/myimage"
 	"tracert/internal/pkg/oss"
 	"tracert/internal/pkg/util"
 	"tracert/internal/validation"
@@ -46,6 +46,7 @@ func (u *AlumniTracertServer) LegalizeUpload(ctx context.Context, in *proto.Lega
 	legalizeModel.Pb.CertificateId = in.CertificateId
 	legalizeModel.Pb.Ijazah = in.Ijazah
 	legalizeModel.Pb.Transcript = in.Transcript
+	legalizeModel.Pb.IsOffline = in.IsOffline
 
 	err = legalizeModel.Upsert(ctx, u.Db)
 	if err != nil {
@@ -76,13 +77,10 @@ func (u *AlumniTracertServer) LegalizeGetOwn(ctx context.Context, in *proto.Empt
 		return nil, err
 	}
 
-	legalizeModel.Pb.IjazahSigned = "https://" + os.Getenv("OSS_BUCKET_DOCUMENT") + "." + os.Getenv("OSS_ENDPOINT") + "/" + legalizeModel.Pb.IjazahSigned
-	legalizeModel.Pb.TranscriptSigned = "https://" + os.Getenv("OSS_BUCKET_DOCUMENT") + "." + os.Getenv("OSS_ENDPOINT") + "/" + legalizeModel.Pb.TranscriptSigned
-
 	return legalizes, nil
 }
 
-func (u *AlumniTracertServer) LegalizeRating(ctx context.Context, in *proto.UintMessage) (*proto.StringMessage, error) {
+func (u *AlumniTracertServer) LegalizeRating(ctx context.Context, in *proto.Legalize) (*proto.StringMessage, error) {
 	select {
 	case <-ctx.Done():
 		return nil, util.ContextError(ctx)
@@ -96,17 +94,14 @@ func (u *AlumniTracertServer) LegalizeRating(ctx context.Context, in *proto.Uint
 	}
 
 	var legalizeValidate validation.Legalize
-	legalizeValidate.Model.Pb.AlumniId = ctx.Value(app.Ctx("alumni_id")).(uint64)
-	if err := legalizeValidate.Rating(ctx, in, u.Db); err != nil {
+	legalizeValidate.Model.Pb.Id = in.Id
+	legalizeValidate.Model.Pb.Rating = in.Rating
+	if err := legalizeValidate.Rating(ctx, u.Db); err != nil {
 		util.LogError(u.Log, "validation on rate legalize", err)
 		return nil, err
 	}
 
-	var legalizeModel model.Legalize
-	legalizeModel.Pb.Id = legalizeValidate.Model.Pb.Id
-	legalizeModel.Pb.Rating = uint32(in.Data)
-
-	err = legalizeModel.Rating(ctx, u.Db)
+	err = legalizeValidate.Model.Rating(ctx, u.Db)
 	if err != nil {
 		return nil, err
 	}
@@ -302,6 +297,7 @@ func (u *AlumniTracertServer) LegalizeDone(ctx context.Context, in *proto.Legali
 
 	var legalizeModel model.Legalize
 	legalizeModel.Pb.ApprovedBy = ctx.Value(app.Ctx("user_id")).(uint64)
+	legalizeModel.Pb.Id = in.Id
 	if err := legalizeModel.Done(ctx, u.Db); err != nil {
 		util.LogError(u.Log, "Done Legalize", err)
 		return nil, err
@@ -330,73 +326,67 @@ func (u *AlumniTracertServer) LegalizeApproved(ctx context.Context, in *proto.Ui
 		return nil, err
 	}
 
-	tUnix := time.Now().Unix()
-	legalizeStringId := strconv.Itoa(int(legalizeValidate.Model.Pb.Id)) + ".pdf"
+	sUnix := fmt.Sprintf("%d", time.Now().Unix())
+	idStr := strconv.Itoa(int(legalizeValidate.Model.Pb.Id))
+	pdfName := sUnix + "-" + idStr + ".pdf"
 
-	ijazahLocalFileName := fmt.Sprintf("%d-", tUnix) + "ijazah-" + legalizeStringId
-	ijazahSignedUrl := "ijazah/" + fmt.Sprintf("%d-", tUnix) + legalizeStringId
-
-	transcriptLocalFileName := fmt.Sprintf("%d-", tUnix) + "transcript-" + legalizeStringId
-	transcriptSignedUrl := "transcript/" + fmt.Sprintf("%d-", tUnix) + legalizeStringId
-
-	signPdf(legalizeValidate.Model.Pb.Ijazah, ijazahLocalFileName)
-	signPdf(legalizeValidate.Model.Pb.Transcript, transcriptLocalFileName)
-
-	oss.UploadLocalFile(os.Getenv("OSS_BUCKET_DOCUMENT"), ijazahSignedUrl, ijazahLocalFileName)
-	oss.UploadLocalFile(os.Getenv("OSS_BUCKET_DOCUMENT"), transcriptSignedUrl, transcriptLocalFileName)
+	for fileType, path := range map[string]string{
+		"ijazah":     legalizeValidate.Model.Pb.Ijazah,
+		"transcript": legalizeValidate.Model.Pb.Transcript,
+	} {
+		err = signPdf(fileType, path, sUnix, idStr)
+		if err != nil {
+			return nil, err
+		}
+		oss.UploadLocalFile(os.Getenv("OSS_BUCKET_DOCUMENT"), fileType+"/"+pdfName, fileType+"-"+pdfName)
+		os.Remove(fileType + "-" + pdfName)
+		os.Remove(fileType + "-" + sUnix + "-" + idStr + ".jpeg")
+		os.Remove("qrCode-" + fileType + "-" + idStr + ".jpg")
+	}
 
 	var legalizeModel model.Legalize
 	legalizeModel.Pb.ApprovedBy = ctx.Value(app.Ctx("user_id")).(uint64)
 	legalizeModel.Pb.Id = in.Data
-	legalizeModel.Pb.IjazahSigned = ijazahSignedUrl
-	legalizeModel.Pb.TranscriptSigned = transcriptSignedUrl
+	legalizeModel.Pb.IjazahSigned = "ijazah/" + pdfName
+	legalizeModel.Pb.TranscriptSigned = "transcript/" + pdfName
 	if err := legalizeModel.Approved(ctx, u.Db); err != nil {
 		util.LogError(u.Log, "Approved Legalize", err)
 		return nil, err
 	}
 
-	os.Remove(ijazahLocalFileName)
-	os.Remove(transcriptLocalFileName)
 	return &legalizeModel.Pb, nil
 }
 
-func signPdf(url string, name string) {
+func signPdf(fileType string, pathUrl string, sUnix string, id string) error {
 
 	pdf := gopdf.GoPdf{}
 	pdf.Start(gopdf.Config{PageSize: *gopdf.PageSizeA4})
 	pdf.AddPage()
 
-	fileUrl := "https://bpodt-staging.oss-ap-southeast-5.aliyuncs.com/" + url
-	downloadFile(name, fileUrl)
-
-	// Import page 1
-	tpl1 := pdf.ImportPage(name, 1, "/MediaBox")
-
-	// Draw pdf onto page
-	pdf.UseImportedTemplate(tpl1, 0, 0, 595, 0)
-
-	pdf.Image("./stempel-sign.png", 75, 75, nil) //print image
-
-	pdf.WritePdf(name)
-}
-
-func downloadFile(filepath string, url string) error {
-
-	// Get the data
-	resp, err := http.Get(url)
+	fileUrl := "https://" + os.Getenv("OSS_BUCKET_DOCUMENT") + "." + os.Getenv("OSS_ENDPOINT") + "/" + pathUrl
+	resp, err := http.Get(fileUrl)
 	if err != nil {
-		return err
+		return status.Error(codes.Internal, err.Error())
 	}
 	defer resp.Body.Close()
 
-	// Create the file
-	out, err := os.Create(filepath)
+	img, err := myimage.ToGray(resp.Body)
 	if err != nil {
+		return status.Error(codes.Internal, err.Error())
+	}
+	err = myimage.SaveToFile(img, "jpeg", fileType+"-"+sUnix+"-"+id)
+	if err != nil {
+		return status.Error(codes.Internal, err.Error())
+	}
+
+	pdf.Image("./"+fileType+"-"+sUnix+"-"+id+".jpeg", 0, 0, nil)
+	pdf.Image("./stempel-sign.png", 75, 75, nil) //print image
+
+	if err := util.CreateQrCode(fileType, id); err != nil {
 		return err
 	}
-	defer out.Close()
+	pdf.Image("./qrCode-"+fileType+"-"+id+".jpg", 0, 75, nil) //print image
 
-	// Write the body to file
-	_, err = io.Copy(out, resp.Body)
-	return err
+	pdf.WritePdf(fileType + "-" + sUnix + "-" + id + ".pdf")
+	return nil
 }

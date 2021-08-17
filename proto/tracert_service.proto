@@ -45,7 +45,7 @@ service TracertService {
   rpc LegalizeVerified(UintMessage) returns (Legalize) {}
   rpc LegalizeRejected(UintMessage) returns (Legalize) {} 
   rpc LegalizeApproved(UintMessage) returns (Legalize) {}
-  rpc LegalizeRating(UintMessage) returns (StringMessage) {}
+  rpc LegalizeRating(Legalize) returns (StringMessage) {}
 
   rpc UserAnswerCreate(UserAnswer) returns (UserAnswer) {}
   rpc TracerCreate(Tracer) returns (Tracer) {}
