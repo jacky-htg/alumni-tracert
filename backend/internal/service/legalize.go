@@ -336,6 +336,7 @@ func (u *AlumniTracertServer) LegalizeApproved(ctx context.Context, in *proto.St
 		if err != nil {
 			return nil, err
 		}
+
 		oss.UploadLocalFile(os.Getenv("OSS_BUCKET_DOCUMENT"), fileType+"/"+pdfName, fileType+"-"+pdfName)
 		os.Remove(fileType + "-" + pdfName)
 		os.Remove(fileType + "-" + sUnix + "-" + legalizeValidate.Model.Pb.Id + ".jpeg")
@@ -368,8 +369,7 @@ func signPdf(fileType string, pathUrl string, sUnix string, id string) error {
 	pdf.Start(gopdf.Config{PageSize: *gopdf.PageSizeA4})
 	pdf.AddPage() */
 
-	fileUrl := "https://" + os.Getenv("OSS_BUCKET_DOCUMENT") + "." + os.Getenv("OSS_ENDPOINT") + "/" + pathUrl
-	resp, err := http.Get(fileUrl)
+	resp, err := http.Get(pathUrl)
 	if err != nil {
 		return status.Error(codes.Internal, err.Error())
 	}
@@ -389,9 +389,15 @@ func signPdf(fileType string, pathUrl string, sUnix string, id string) error {
 		return err
 	}
 
-	pdf.Image("./"+fileType+"-"+sUnix+"-"+id+".jpeg", 0, 0, 100, 0, false, "", 0, "")
-	pdf.Image("./stempel-sign.png", 75, 75, 100, 0, false, "", 0, "")
-	pdf.Image("./qrCode-"+fileType+"-"+id+".jpg", 0, 75, 100, 0, false, "", 0, "")
+	if fileType == "ijazah" {
+		pdf.Image("./"+fileType+"-"+sUnix+"-"+id+".jpeg", 0, 0, 290, 0, false, "", 0, "")
+		pdf.Image("./stempel-sign.png", 44, 15, 75, 0, false, "", 0, "")
+		pdf.Image("./qrCode-"+fileType+"-"+id+".jpg", 10, 15, 35, 0, false, "", 0, "")
+	} else {
+		pdf.Image("./"+fileType+"-"+sUnix+"-"+id+".jpeg", 0, 0, 205, 0, false, "", 0, "")
+		pdf.Image("./stempel-sign.png", 44, 220, 75, 0, false, "", 0, "")
+		pdf.Image("./qrCode-"+fileType+"-"+id+".jpg", 10, 220, 35, 0, false, "", 0, "")
+	}
 
 	return pdf.OutputFileAndClose(fileType + "-" + sUnix + "-" + id + ".pdf")
 

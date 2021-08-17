@@ -37,6 +37,7 @@ service TracertService {
   rpc UserGet(User) returns (User) {}
   /* rpc UserUpdate(User) returns (User) {} */
 
+  rpc LegalizeCheck(StringMessage) returns (Legalize) {}
   rpc LegalizeUpload(Legalize) returns (Legalize) {}
   rpc LegalizeList(ListInput) returns (stream LegalizeListResponse) {}
   rpc LegalizeGet(Legalize) returns (Legalize) {}

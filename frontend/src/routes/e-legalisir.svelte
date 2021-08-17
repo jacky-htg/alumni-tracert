@@ -308,7 +308,7 @@
 													{#if legalist.status === 1}
 														<Button isLoading={isLoadingReject} on:click={() => onReject(legalist.id)} className="mr-2" bgColor="bg-red-500" bgHoverColor="bg-red-400" size="small">Reject</Button>
 														<Button isLoading={isLoadingAccept} on:click={() => onAccept(legalist.id)} className="mr-2" bgColor="bg-green-500" bgHoverColor="bg-green-400" size="small">Verify</Button>
-													{:else if legalist.status === 2}
+													{:else if legalist.status === 2 && legalist.isOffline}
 														<Button isLoading={isLoadingApproved} on:click={() => onDone(legalist.id)} className="mr-2" bgColor="bg-green-500" bgHoverColor="bg-green-400" size="small">Done</Button>
 													{/if}
 												{/if}

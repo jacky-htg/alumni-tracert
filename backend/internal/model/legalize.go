@@ -49,7 +49,7 @@ func (u *Legalize) Upsert(ctx context.Context, db *sql.DB) error {
 		)
 	} else {
 		query = `
-			UPADTE legalizes
+			UPDATE legalizes
 			SET ijazah = ?, 
 				transcript = ?, 
 				is_offline = ?, 
@@ -168,7 +168,6 @@ func (u *Legalize) ListQuery(ctx context.Context, db *sql.DB, in *proto.ListInpu
 }
 
 func (u *Legalize) Get(ctx context.Context, db *sql.DB) error {
-	println("asjasj", u.Pb.Id)
 	query := `
 		SELECT l.id, a.id, a.name, c.nim, a.nik, 
 			c.no_ijazah, c.major_study, c.graduation_year,
@@ -281,8 +280,12 @@ func (u *Legalize) GetByAlumniId(ctx context.Context, db *sql.DB) (*proto.Certif
 		pbLegalize.VerifiedBy = uint64(verifiedBy.Int64)
 		pbLegalize.ApprovedAt = approvedAt.String
 		pbLegalize.ApprovedBy = uint64(approvedBy.Int64)
-		pbLegalize.IjazahSigned = "https://" + os.Getenv("OSS_BUCKET_DOCUMENT") + "." + os.Getenv("OSS_ENDPOINT") + "/" + ijazahSigned.String
-		pbLegalize.TranscriptSigned = "https://" + os.Getenv("OSS_BUCKET_DOCUMENT") + "." + os.Getenv("OSS_ENDPOINT") + "/" + transcriptSigned.String
+		if len(ijazahSigned.String) > 0 {
+			pbLegalize.IjazahSigned = "https://" + os.Getenv("OSS_BUCKET_DOCUMENT") + "." + os.Getenv("OSS_ENDPOINT") + "/" + ijazahSigned.String
+		}
+		if len(transcriptSigned.String) > 0 {
+			pbLegalize.TranscriptSigned = "https://" + os.Getenv("OSS_BUCKET_DOCUMENT") + "." + os.Getenv("OSS_ENDPOINT") + "/" + transcriptSigned.String
+		}
 		pbLegalize.Rating = uint32(rating.Int32)
 
 		pbCertificate.Legalize = &pbLegalize

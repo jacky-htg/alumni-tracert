@@ -16,14 +16,12 @@ func UploadBase64(bucketName string, name string, file string) error {
 	// Create an OSSClient instance.
 	client, err := oss.New(os.Getenv("OSS_ENDPOINT"), os.Getenv("OSS_ACCESS_KEY_ID"), os.Getenv("OSS_ACCESS_KEY_SECRET"))
 	if err != nil {
-		println("err in NZeW", err.Error())
 		return err
 	}
 
 	// Obtain the bucket.
 	bucket, err := client.Bucket(bucketName)
 	if err != nil {
-		println("err in bucket", err.Error())
 		return err
 	}
 
@@ -41,8 +39,6 @@ func UploadBase64(bucketName string, name string, file string) error {
 	//obj, err := base64.StdEncoding.DecodeString(file[i+1:])
 	obj, err := base64.StdEncoding.DecodeString(file[strings.IndexByte(file, ',')+1:])
 	if err != nil {
-		println("err in decode", err.Error())
-
 		return err
 	}
 

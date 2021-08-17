@@ -300,12 +300,12 @@
 
                 {#if !ijazah.proto.getLegalize().getIsOffline()}
                 <div class="flex">
-                  <a href="{ijazah.proto.getLegalize().getIjazahSigned()}" class="flex items-center justify-center px-6 py-2 mr-4 text-base font-medium text-green-900 border border-transparent rounded-md bg-green-50 w-max-full hover:bg-white hover:border-green-300 md:text-lg">
+                  <a target="_new" href="{ijazah.proto.getLegalize().getIjazahSigned()}" class="flex items-center justify-center px-6 py-2 mr-4 text-base font-medium text-green-900 border border-transparent rounded-md bg-green-50 w-max-full hover:bg-white hover:border-green-300 md:text-lg">
                     <i class="mr-4 fas fa-download"></i>
                     Download Legalisir Ijazah
                   </a>
 
-                  <a href="{ijazah.proto.getLegalize().getTranscriptSigned()}" class="flex items-center justify-center px-6 py-2 text-base font-medium text-green-900 border border-transparent rounded-md bg-green-50 w-max-full hover:bg-white hover:border-green-300 md:text-lg ">
+                  <a target="_new" href="{ijazah.proto.getLegalize().getTranscriptSigned()}" class="flex items-center justify-center px-6 py-2 text-base font-medium text-green-900 border border-transparent rounded-md bg-green-50 w-max-full hover:bg-white hover:border-green-300 md:text-lg ">
                     <i class="mr-4 fas fa-download"></i>
                     Download Legalisir Transkrip
                   </a> 
