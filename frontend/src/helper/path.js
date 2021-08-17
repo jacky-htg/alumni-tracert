@@ -5,7 +5,7 @@ export const PATH_URL = {
   KUISIONER: "/kuisioner",
   IJAZAH: "/tambah-ijazah",
   UPLOAD_IJAZAH: "/e-legalisir",
-  DOWNLOAD_IJAZAH: "/download",
+  QR_LANDING_PAGE: "/ijazah/:id",
   ALUMNI_REGISTRATION: "/alumni-registration",
   APPRAISER_REGISTRATION: "/appraiser-registration",
   KUISIONER_FORM: "/kuisioner-form",
