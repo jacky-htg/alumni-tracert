@@ -4,8 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"image/png"
-	"io"
 	"net/http"
 	"os"
 	"strconv"
@@ -14,13 +12,12 @@ import (
 	"tracert/internal/constant"
 	"tracert/internal/model"
 	"tracert/internal/pkg/app"
+	"tracert/internal/pkg/myimage"
 	"tracert/internal/pkg/oss"
 	"tracert/internal/pkg/util"
 	"tracert/internal/validation"
 	"tracert/proto"
 
-	"github.com/boombuler/barcode"
-	"github.com/boombuler/barcode/qr"
 	"github.com/signintech/gopdf"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -332,112 +329,67 @@ func (u *AlumniTracertServer) LegalizeApproved(ctx context.Context, in *proto.Ui
 		return nil, err
 	}
 
-	tUnix := time.Now().Unix()
-	legalizeStringId := strconv.Itoa(int(legalizeValidate.Model.Pb.Id)) + ".pdf"
+	sUnix := fmt.Sprintf("%d", time.Now().Unix())
+	idStr := strconv.Itoa(int(legalizeValidate.Model.Pb.Id))
+	pdfName := sUnix + "-" + idStr + ".pdf"
 
-	ijazahLocalFileName := fmt.Sprintf("%d-", tUnix) + "ijazah-" + legalizeStringId
-	ijazahSignedUrl := "ijazah/" + fmt.Sprintf("%d-", tUnix) + legalizeStringId
-
-	transcriptLocalFileName := fmt.Sprintf("%d-", tUnix) + "transcript-" + legalizeStringId
-	transcriptSignedUrl := "transcript/" + fmt.Sprintf("%d-", tUnix) + legalizeStringId
-
-	err = signPdf(legalizeValidate.Model.Pb.Ijazah, ijazahLocalFileName)
-	if err != nil {
-		return nil, err
+	for fileType, path := range map[string]string{
+		"ijazah":     legalizeValidate.Model.Pb.Ijazah,
+		"transcript": legalizeValidate.Model.Pb.Transcript,
+	} {
+		err = signPdf(fileType, path, sUnix, idStr)
+		if err != nil {
+			return nil, err
+		}
+		oss.UploadLocalFile(os.Getenv("OSS_BUCKET_DOCUMENT"), fileType+"/"+pdfName, fileType+"-"+pdfName)
+		os.Remove(fileType + "-" + pdfName)
+		os.Remove(fileType + "-" + sUnix + "-" + idStr + ".jpeg")
+		os.Remove("qrCode-" + fileType + "-" + idStr + ".jpg")
 	}
-
-	err = signPdf(legalizeValidate.Model.Pb.Transcript, transcriptLocalFileName)
-	if err != nil {
-		return nil, err
-	}
-
-	oss.UploadLocalFile(os.Getenv("OSS_BUCKET_DOCUMENT"), ijazahSignedUrl, ijazahLocalFileName)
-	oss.UploadLocalFile(os.Getenv("OSS_BUCKET_DOCUMENT"), transcriptSignedUrl, transcriptLocalFileName)
 
 	var legalizeModel model.Legalize
 	legalizeModel.Pb.ApprovedBy = ctx.Value(app.Ctx("user_id")).(uint64)
 	legalizeModel.Pb.Id = in.Data
-	legalizeModel.Pb.IjazahSigned = ijazahSignedUrl
-	legalizeModel.Pb.TranscriptSigned = transcriptSignedUrl
+	legalizeModel.Pb.IjazahSigned = "ijazah/" + pdfName
+	legalizeModel.Pb.TranscriptSigned = "transcript/" + pdfName
 	if err := legalizeModel.Approved(ctx, u.Db); err != nil {
 		util.LogError(u.Log, "Approved Legalize", err)
 		return nil, err
 	}
 
-	os.Remove(ijazahLocalFileName)
-	os.Remove(transcriptLocalFileName)
 	return &legalizeModel.Pb, nil
 }
 
-func signPdf(url string, name string) error {
+func signPdf(fileType string, pathUrl string, sUnix string, id string) error {
 
 	pdf := gopdf.GoPdf{}
 	pdf.Start(gopdf.Config{PageSize: *gopdf.PageSizeA4})
 	pdf.AddPage()
 
-	fileUrl := "https://bpodt-staging.oss-ap-southeast-5.aliyuncs.com/" + url
-	downloadFile(name, fileUrl)
-
-	// Import page 1
-	tpl1 := pdf.ImportPage(name, 1, "/MediaBox")
-
-	// Draw pdf onto page
-	pdf.UseImportedTemplate(tpl1, 0, 0, 595, 0)
-
-	pdf.Image("./stempel-sign.png", 75, 75, nil) //print image
-
-	if err := createQrCode(name); err != nil {
-		return err
-	}
-	pdf.Image(name+".png", 75, 75, nil) //print image
-
-	pdf.WritePdf(name)
-	return nil
-}
-
-func downloadFile(filepath string, url string) error {
-
-	// Get the data
-	resp, err := http.Get(url)
+	fileUrl := "https://" + os.Getenv("OSS_BUCKET_DOCUMENT") + "." + os.Getenv("OSS_ENDPOINT") + "/" + pathUrl
+	resp, err := http.Get(fileUrl)
 	if err != nil {
-		return err
+		return status.Error(codes.Internal, err.Error())
 	}
 	defer resp.Body.Close()
 
-	// Create the file
-	out, err := os.Create(filepath)
+	img, err := myimage.ToGray(resp.Body)
 	if err != nil {
+		return status.Error(codes.Internal, err.Error())
+	}
+	err = myimage.SaveToFile(img, "jpeg", fileType+"-"+sUnix+"-"+id)
+	if err != nil {
+		return status.Error(codes.Internal, err.Error())
+	}
+
+	pdf.Image("./"+fileType+"-"+sUnix+"-"+id+".jpeg", 0, 0, nil)
+	pdf.Image("./stempel-sign.png", 75, 75, nil) //print image
+
+	if err := util.CreateQrCode(fileType, id); err != nil {
 		return err
 	}
-	defer out.Close()
+	pdf.Image("./qrCode-"+fileType+"-"+id+".jpg", 0, 75, nil) //print image
 
-	// Write the body to file
-	_, err = io.Copy(out, resp.Body)
-	return err
-}
-
-func createQrCode(str string) error {
-	// Create the barcode
-	qrCode, err := qr.Encode(str, qr.M, qr.Auto)
-	if err != nil {
-		return status.Error(codes.Internal, err.Error())
-	}
-
-	// Scale the barcode to 200x200 pixels
-	qrCode, err = barcode.Scale(qrCode, 200, 200)
-	if err != nil {
-		return status.Error(codes.Internal, err.Error())
-	}
-
-	// create the output file
-	file, err := os.Create(str + ".png")
-	if err != nil {
-		return status.Error(codes.Internal, err.Error())
-	}
-	defer file.Close()
-
-	// encode the barcode as png
-	png.Encode(file, qrCode)
-
+	pdf.WritePdf(fileType + "-" + sUnix + "-" + id + ".pdf")
 	return nil
 }
