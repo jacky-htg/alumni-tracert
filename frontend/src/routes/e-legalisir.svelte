@@ -51,6 +51,7 @@
 		return new Promise((resolve, reject) => {
 			let count = 0;
 			let data = [];
+			legalisirList = [];
 			legalisirStream.on('data', (response) => {
 				data = [ ...data, response.toObject().legalize];
 				legalisirList = [ ...legalisirList, response.toObject().legalize]

@@ -42,6 +42,7 @@
 		return new Promise((resolve, reject) => {
 			let count = 0;
 			let data = [];
+			alumniList = [];
 			alumniStream.on('data', (response) => {
 				alumniList = [ ...alumniList, response.toObject().alumni];
 				data = [ ...data, response.toObject().alumni];
