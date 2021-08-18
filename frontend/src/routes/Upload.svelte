@@ -347,6 +347,7 @@
                   id="ijazah"
                   isLoading={ijazahList[idx].legalize.state.isLoadingIjazah}
                   file={ijazahList[idx].legalize.filePath.ijazah}
+                  accept={["image/png", "image/jpeg"]}
                 />
               </div>
   
@@ -361,6 +362,7 @@
                   id="transcript"
                   isLoading={ijazahList[idx].legalize.state.isLoadingTranskrip}
                   file={ijazahList[idx].legalize.filePath.transcript}
+                  accept={["image/png", "image/jpeg"]}
                 />
               </div>
               
