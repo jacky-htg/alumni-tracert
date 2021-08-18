@@ -44,7 +44,7 @@ service TracertService {
   rpc LegalizeGetOwn(EmptyMessage) returns (Certificates) {}
   rpc LegalizeDone(Legalize) returns (Legalize) {}
   rpc LegalizeVerified(StringMessage) returns (Legalize) {}
-  rpc LegalizeRejected(StringMessage) returns (Legalize) {} 
+  rpc LegalizeRejected(Legalize) returns (Legalize) {} 
   rpc LegalizeApproved(StringMessage) returns (Legalize) {}
   rpc LegalizeRating(Legalize) returns (StringMessage) {}
 

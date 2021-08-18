@@ -128,8 +128,9 @@ proto.proto.Legalize.toObject = function(includeInstance, msg) {
     transcriptSigned: jspb.Message.getFieldWithDefault(msg, 14, ""),
     status: jspb.Message.getFieldWithDefault(msg, 15, 0),
     rating: jspb.Message.getFieldWithDefault(msg, 16, 0),
-    created: jspb.Message.getFieldWithDefault(msg, 17, ""),
-    updated: jspb.Message.getFieldWithDefault(msg, 18, "")
+    rejectedReason: jspb.Message.getFieldWithDefault(msg, 17, ""),
+    created: jspb.Message.getFieldWithDefault(msg, 18, ""),
+    updated: jspb.Message.getFieldWithDefault(msg, 19, "")
   };
 
   if (includeInstance) {
@@ -232,9 +233,13 @@ proto.proto.Legalize.deserializeBinaryFromReader = function(msg, reader) {
       break;
     case 17:
       var value = /** @type {string} */ (reader.readString());
-      msg.setCreated(value);
+      msg.setRejectedReason(value);
       break;
     case 18:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setCreated(value);
+      break;
+    case 19:
       var value = /** @type {string} */ (reader.readString());
       msg.setUpdated(value);
       break;
@@ -379,17 +384,24 @@ proto.proto.Legalize.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getCreated();
+  f = message.getRejectedReason();
   if (f.length > 0) {
     writer.writeString(
       17,
       f
     );
   }
-  f = message.getUpdated();
+  f = message.getCreated();
   if (f.length > 0) {
     writer.writeString(
       18,
+      f
+    );
+  }
+  f = message.getUpdated();
+  if (f.length > 0) {
+    writer.writeString(
+      19,
       f
     );
   }
@@ -685,10 +697,10 @@ proto.proto.Legalize.prototype.setRating = function(value) {
 
 
 /**
- * optional string created = 17;
+ * optional string rejected_reason = 17;
  * @return {string}
  */
-proto.proto.Legalize.prototype.getCreated = function() {
+proto.proto.Legalize.prototype.getRejectedReason = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 17, ""));
 };
 
@@ -697,16 +709,16 @@ proto.proto.Legalize.prototype.getCreated = function() {
  * @param {string} value
  * @return {!proto.proto.Legalize} returns this
  */
-proto.proto.Legalize.prototype.setCreated = function(value) {
+proto.proto.Legalize.prototype.setRejectedReason = function(value) {
   return jspb.Message.setProto3StringField(this, 17, value);
 };
 
 
 /**
- * optional string updated = 18;
+ * optional string created = 18;
  * @return {string}
  */
-proto.proto.Legalize.prototype.getUpdated = function() {
+proto.proto.Legalize.prototype.getCreated = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 18, ""));
 };
 
@@ -715,8 +727,26 @@ proto.proto.Legalize.prototype.getUpdated = function() {
  * @param {string} value
  * @return {!proto.proto.Legalize} returns this
  */
-proto.proto.Legalize.prototype.setUpdated = function(value) {
+proto.proto.Legalize.prototype.setCreated = function(value) {
   return jspb.Message.setProto3StringField(this, 18, value);
+};
+
+
+/**
+ * optional string updated = 19;
+ * @return {string}
+ */
+proto.proto.Legalize.prototype.getUpdated = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 19, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.Legalize} returns this
+ */
+proto.proto.Legalize.prototype.setUpdated = function(value) {
+  return jspb.Message.setProto3StringField(this, 19, value);
 };
 
 

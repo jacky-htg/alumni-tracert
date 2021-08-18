@@ -150,14 +150,14 @@ func (u *AlumniTracertServer) LegalizeList(in *proto.ListInput, stream proto.Tra
 		var pbLegalize proto.Legalize
 		var pbAlumni proto.Alumni
 		var pbCertificate proto.Certificate
-		var verifiedAt, approvedAt sql.NullString
+		var verifiedAt, approvedAt, rejectedReason sql.NullString
 		var verifiedBy, approvedBy sql.NullInt64
 		err = rows.Scan(
 			&pbLegalize.Id, &pbAlumni.Id, &pbAlumni.Name, &pbCertificate.Nim, &pbAlumni.Nik,
 			&pbCertificate.Id, &pbCertificate.NoIjazah, &pbCertificate.MajorStudy, &pbCertificate.GraduationYear,
 			&pbLegalize.Ijazah, &pbLegalize.Transcript, &pbLegalize.IsOffline, &pbLegalize.IsVerified, &pbLegalize.IsApproved,
 			&verifiedBy, &verifiedAt, &approvedBy, &approvedAt,
-			&pbLegalize.Status, &createdAt, &updatedAt,
+			&pbLegalize.Status, &rejectedReason, &createdAt, &updatedAt,
 		)
 		if err != nil {
 			util.LogError(u.Log, "scan on looping list ijazah", err)
@@ -172,6 +172,7 @@ func (u *AlumniTracertServer) LegalizeList(in *proto.ListInput, stream proto.Tra
 		pbLegalize.ApprovedAt = approvedAt.String
 		pbLegalize.ApprovedBy = uint64(approvedBy.Int64)
 		pbLegalize.CertificateId = pbCertificate.Id
+		pbLegalize.RejectedReason = rejectedReason.String
 
 		res := &proto.LegalizeListResponse{
 			ListInput: listResponse,
@@ -247,7 +248,7 @@ func (u *AlumniTracertServer) LegalizeVerified(ctx context.Context, in *proto.St
 	return &legalizeModel.Pb, nil
 }
 
-func (u *AlumniTracertServer) LegalizeRejected(ctx context.Context, in *proto.StringMessage) (*proto.Legalize, error) {
+func (u *AlumniTracertServer) LegalizeRejected(ctx context.Context, in *proto.Legalize) (*proto.Legalize, error) {
 	select {
 	case <-ctx.Done():
 		return nil, util.ContextError(ctx)
@@ -267,7 +268,8 @@ func (u *AlumniTracertServer) LegalizeRejected(ctx context.Context, in *proto.St
 
 	var legalizeModel model.Legalize
 	legalizeModel.Pb.VerifiedBy = ctx.Value(app.Ctx("user_id")).(uint64)
-	legalizeModel.Pb.Id = in.Data
+	legalizeModel.Pb.Id = in.Id
+	legalizeModel.Pb.RejectedReason = in.RejectedReason
 	if err := legalizeModel.Rejected(ctx, u.Db); err != nil {
 		util.LogError(u.Log, "rejected Legalize", err)
 		return nil, err

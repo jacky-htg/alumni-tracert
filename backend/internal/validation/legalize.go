@@ -46,8 +46,8 @@ func (u *Legalize) Upload(ctx context.Context, in *proto.Legalize, db *sql.DB) e
 	return nil
 }
 
-func (u *Legalize) Rejected(ctx context.Context, in *proto.StringMessage, db *sql.DB) error {
-	if len(in.Data) <= 0 {
+func (u *Legalize) Rejected(ctx context.Context, in *proto.Legalize, db *sql.DB) error {
+	if len(in.Id) <= 0 {
 		return status.Error(codes.InvalidArgument, "Please supply valid ID")
 	}
 
@@ -55,7 +55,7 @@ func (u *Legalize) Rejected(ctx context.Context, in *proto.StringMessage, db *sq
 		return status.Error(codes.PermissionDenied, "You can not verified this document")
 	}
 
-	u.Model.Pb.Id = in.Data
+	u.Model.Pb.Id = in.Id
 	if err := u.Model.Get(ctx, db); err != nil {
 		return err
 	}

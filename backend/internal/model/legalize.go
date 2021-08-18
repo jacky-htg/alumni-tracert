@@ -89,7 +89,7 @@ func (u *Legalize) ListQuery(ctx context.Context, db *sql.DB, in *proto.ListInpu
 			c.id, c.no_ijazah, c.major_study, c.graduation_year, 
 			l.ijazah, l.transcript, l.is_offline, l.is_verified, l.is_approved, 
 			l.verified_by, l.verified_at, l.approved_by, l.approved_at, 
-			l.status, l.created, l.modified 
+			l.status, l.rejected_reason, l.created, l.modified 
 		FROM legalizes l
 		JOIN certificates c ON l.certificate_id = c.id
 		JOIN alumni a ON c.alumni_id = a.id
@@ -173,7 +173,7 @@ func (u *Legalize) Get(ctx context.Context, db *sql.DB) error {
 			c.no_ijazah, c.major_study, c.graduation_year,
 			l.ijazah, l.transcript, l.is_offline, l.is_verified, l.is_approved, 
 			l.verified_by, l.verified_at, l.approved_by, l.approved_at, 
-			l.status, l.ijazah_signed, l.transcript_signed, l.created, l.modified 
+			l.status, l.ijazah_signed, l.transcript_signed, l.rejected_reason, l.created, l.modified 
 		FROM legalizes l
 		JOIN certificates c ON l.certificate_id = c.id
 		JOIN alumni a ON c.alumni_id = a.id
@@ -185,13 +185,13 @@ func (u *Legalize) Get(ctx context.Context, db *sql.DB) error {
 	var pbAlumni proto.Alumni
 	var pbCertificate proto.Certificate
 	var verifiedBy, approvedBy sql.NullInt64
-	var verifiedAt, approvedAt, ijazahSigned, transcriptSigned sql.NullString
+	var verifiedAt, approvedAt, ijazahSigned, transcriptSigned, rejectedReason sql.NullString
 	err := row.Scan(
 		&u.Pb.Id, &pbAlumni.Id, &pbAlumni.Name, &pbCertificate.Nim, &pbAlumni.Nik,
 		&pbCertificate.NoIjazah, &pbCertificate.MajorStudy, &pbCertificate.GraduationYear,
 		&u.Pb.Ijazah, &u.Pb.Transcript, &u.Pb.IsOffline, &u.Pb.IsVerified, &u.Pb.IsApproved,
 		&verifiedBy, &verifiedAt, &approvedBy, &approvedAt,
-		&u.Pb.Status, &ijazahSigned, &transcriptSigned, &createdAt, &updatedAt,
+		&u.Pb.Status, &ijazahSigned, &transcriptSigned, &rejectedReason, &createdAt, &updatedAt,
 	)
 	if err == sql.ErrNoRows {
 		return status.Errorf(codes.NotFound, "not found: %v", err)
@@ -219,6 +219,9 @@ func (u *Legalize) Get(ctx context.Context, db *sql.DB) error {
 	if len(transcriptSigned.String) > 0 {
 		u.Pb.TranscriptSigned = "https://" + os.Getenv("OSS_BUCKET_DOCUMENT") + "." + os.Getenv("OSS_ENDPOINT") + "/" + transcriptSigned.String
 	}
+
+	u.Pb.RejectedReason = rejectedReason.String
+
 	return nil
 }
 
@@ -234,7 +237,7 @@ func (u *Legalize) GetByAlumniId(ctx context.Context, db *sql.DB) (*proto.Certif
 			c.no_ijazah, c.major_study, c.graduation_year, 
 			l.ijazah, l.transcript, l.is_offline, l.is_verified, l.is_approved, 
 			l.verified_by, l.verified_at, l.approved_by, l.approved_at, 
-			l.status, l.ijazah_signed, l.transcript_signed, l.rating, l.created, l.modified 
+			l.status, l.ijazah_signed, l.transcript_signed, l.rating, l.rejected_reason, l.created, l.modified 
 		FROM certificates c
 		JOIN alumni a ON c.alumni_id = a.id
 		LEFT JOIN legalizes l ON l.certificate_id = c.id
@@ -259,7 +262,7 @@ func (u *Legalize) GetByAlumniId(ctx context.Context, db *sql.DB) (*proto.Certif
 		var pbCertificate proto.Certificate
 		var verifiedBy, approvedBy sql.NullInt64
 		var rating, statusLegalize sql.NullInt32
-		var verifiedAt, approvedAt, ijazah, transcript, ijazahSigned, transcriptSigned sql.NullString
+		var verifiedAt, approvedAt, ijazah, transcript, ijazahSigned, transcriptSigned, rejectedReason sql.NullString
 		var id sql.NullString
 		var isOffline, isVerified, isApproved sql.NullBool
 		err = rows.Scan(
@@ -267,7 +270,7 @@ func (u *Legalize) GetByAlumniId(ctx context.Context, db *sql.DB) (*proto.Certif
 			&pbCertificate.NoIjazah, &pbCertificate.MajorStudy, &pbCertificate.GraduationYear,
 			&ijazah, &transcript, &isOffline, &isVerified, &isApproved,
 			&verifiedBy, &verifiedAt, &approvedBy, &approvedAt,
-			&statusLegalize, &ijazahSigned, &transcriptSigned, &rating, &createdAt, &updatedAt,
+			&statusLegalize, &ijazahSigned, &transcriptSigned, &rating, &rejectedReason, &createdAt, &updatedAt,
 		)
 
 		if err != nil {
@@ -294,6 +297,7 @@ func (u *Legalize) GetByAlumniId(ctx context.Context, db *sql.DB) (*proto.Certif
 			pbLegalize.TranscriptSigned = "https://" + os.Getenv("OSS_BUCKET_DOCUMENT") + "." + os.Getenv("OSS_ENDPOINT") + "/" + transcriptSigned.String
 		}
 		pbLegalize.Rating = uint32(rating.Int32)
+		pbLegalize.RejectedReason = rejectedReason.String
 
 		pbCertificate.Legalize = &pbLegalize
 
@@ -318,6 +322,7 @@ func (u *Legalize) Rejected(ctx context.Context, db *sql.DB) error {
 		UPDATE legalizes 
 		SET 
 			is_verified = false, 
+			rejected_reason = ?,
 			verified_by = ?, 
 			verified_at = ?,
 			status = 0
@@ -331,6 +336,7 @@ func (u *Legalize) Rejected(ctx context.Context, db *sql.DB) error {
 	defer stmt.Close()
 
 	_, err = stmt.ExecContext(ctx,
+		u.Pb.RejectedReason,
 		ctx.Value(app.Ctx("user_id")).(uint64),
 		time.Now().UTC(),
 		u.Pb.Id,
