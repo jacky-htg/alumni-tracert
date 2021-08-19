@@ -52,6 +52,25 @@ func (u *AlumniTracertServer) LegalizeUpload(ctx context.Context, in *proto.Lega
 		return nil, err
 	}
 
+	err = legalizeModel.Get(ctx, u.Db)
+
+	var userModel model.User
+	list, err := userModel.GetAdmin(ctx, u.Db)
+	if err != nil {
+		util.LogError(u.Log, "get admon on notif legalisir status as submited", err)
+	}
+
+	for _, admin := range list {
+		if err := UpdateLegalisirEmailHelper(ctx, map[string]string{
+			"Name":         admin.Name,
+			"Email":        admin.Email,
+			"NoIjazah":     legalizeModel.Pb.NoIjazah,
+			"StatusIjazah": "SUBMIT",
+		}); err != nil {
+			util.LogError(u.Log, "send email notif legalisir status as submited", err)
+		}
+	}
+
 	return &legalizeModel.Pb, nil
 }
 
@@ -232,7 +251,8 @@ func (u *AlumniTracertServer) LegalizeVerified(ctx context.Context, in *proto.St
 		return nil, err
 	}
 
-	if err := new(validation.Legalize).Verified(ctx, in, u.Db); err != nil {
+	var legalizeValidation validation.Legalize
+	if err := legalizeValidation.Verified(ctx, in, u.Db); err != nil {
 		util.LogError(u.Log, "validation on verified legalize", err)
 		return nil, err
 	}
@@ -243,6 +263,34 @@ func (u *AlumniTracertServer) LegalizeVerified(ctx context.Context, in *proto.St
 	if err := legalizeModel.Verified(ctx, u.Db); err != nil {
 		util.LogError(u.Log, "verified Legalize", err)
 		return nil, err
+	}
+
+	if err := UpdateLegalisirEmailHelper(ctx, map[string]string{
+		"Name":         legalizeValidation.Model.Pb.AlumniName,
+		"Email":        legalizeValidation.Model.Pb.AlumniEmail,
+		"NoIjazah":     legalizeValidation.Model.Pb.NoIjazah,
+		"StatusIjazah": "DIVERIFIKASI",
+		"Selamat":      "Selamat",
+		"Subject":      "Legalisir No " + legalizeValidation.Model.Pb.NoIjazah + " Telah Diverifikasi",
+	}); err != nil {
+		util.LogError(u.Log, "send email update legalisir status as verified", err)
+	}
+
+	var userModel model.User
+	list, err := userModel.GetPejabat(ctx, u.Db)
+	if err != nil {
+		util.LogError(u.Log, "get pejabat on notif legalisir status as verified", err)
+	}
+
+	for _, pejabat := range list {
+		if err := UpdateLegalisirEmailHelper(ctx, map[string]string{
+			"Name":         pejabat.Name,
+			"Email":        pejabat.Email,
+			"NoIjazah":     legalizeValidation.Model.Pb.NoIjazah,
+			"StatusIjazah": "VERIFIED",
+		}); err != nil {
+			util.LogError(u.Log, "send email notif legalisir status as verified", err)
+		}
 	}
 
 	return &legalizeModel.Pb, nil
@@ -261,7 +309,8 @@ func (u *AlumniTracertServer) LegalizeRejected(ctx context.Context, in *proto.Le
 		return nil, err
 	}
 
-	if err := new(validation.Legalize).Rejected(ctx, in, u.Db); err != nil {
+	var legalizeValidation validation.Legalize
+	if err := legalizeValidation.Rejected(ctx, in, u.Db); err != nil {
 		util.LogError(u.Log, "validation on rejected legalize", err)
 		return nil, err
 	}
@@ -273,6 +322,17 @@ func (u *AlumniTracertServer) LegalizeRejected(ctx context.Context, in *proto.Le
 	if err := legalizeModel.Rejected(ctx, u.Db); err != nil {
 		util.LogError(u.Log, "rejected Legalize", err)
 		return nil, err
+	}
+
+	if err := UpdateLegalisirEmailHelper(ctx, map[string]string{
+		"Name":         legalizeValidation.Model.Pb.AlumniName,
+		"Email":        legalizeValidation.Model.Pb.AlumniEmail,
+		"NoIjazah":     legalizeValidation.Model.Pb.NoIjazah,
+		"StatusIjazah": "DITOLAK",
+		"Selamat":      "Maaf",
+		"Subject":      "Legalisir No " + legalizeValidation.Model.Pb.NoIjazah + " Telah Ditolak",
+	}); err != nil {
+		util.LogError(u.Log, "send email update legalisir status as rejected", err)
 	}
 
 	return &legalizeModel.Pb, nil
@@ -291,7 +351,8 @@ func (u *AlumniTracertServer) LegalizeDone(ctx context.Context, in *proto.Legali
 		return nil, err
 	}
 
-	if err := new(validation.Legalize).Done(ctx, in, u.Db); err != nil {
+	var legalizeValidation validation.Legalize
+	if err := legalizeValidation.Done(ctx, in, u.Db); err != nil {
 		util.LogError(u.Log, "validation on done legalize", err)
 		return nil, err
 	}
@@ -302,6 +363,17 @@ func (u *AlumniTracertServer) LegalizeDone(ctx context.Context, in *proto.Legali
 	if err := legalizeModel.Done(ctx, u.Db); err != nil {
 		util.LogError(u.Log, "Done Legalize", err)
 		return nil, err
+	}
+
+	if err := UpdateLegalisirEmailHelper(ctx, map[string]string{
+		"Name":         legalizeValidation.Model.Pb.AlumniName,
+		"Email":        legalizeValidation.Model.Pb.AlumniEmail,
+		"NoIjazah":     legalizeValidation.Model.Pb.NoIjazah,
+		"StatusIjazah": "SELESAI. Silahkan ambil legalisir di kampus Poltekkes Medan",
+		"Selamat":      "Selamat",
+		"Subject":      "Legalisir No " + legalizeValidation.Model.Pb.NoIjazah + " Telah Selesai",
+	}); err != nil {
+		util.LogError(u.Log, "send email update legalisir status as done", err)
 	}
 
 	return &legalizeModel.Pb, nil
@@ -370,6 +442,17 @@ func (u *AlumniTracertServer) LegalizeApproved(ctx context.Context, in *proto.St
 	if err := legalizeModel.Approved(ctx, u.Db); err != nil {
 		util.LogError(u.Log, "Approved Legalize", err)
 		return nil, err
+	}
+
+	if err := UpdateLegalisirEmailHelper(ctx, map[string]string{
+		"Name":         legalizeValidate.Model.Pb.AlumniName,
+		"Email":        legalizeValidate.Model.Pb.AlumniEmail,
+		"NoIjazah":     legalizeValidate.Model.Pb.NoIjazah,
+		"StatusIjazah": "SELESAI",
+		"Selamat":      "Selamat",
+		"Subject":      "Legalisir No " + legalizeValidate.Model.Pb.NoIjazah + " Telah Selesai",
+	}); err != nil {
+		util.LogError(u.Log, "send email update legalisir status as approved", err)
 	}
 
 	return &legalizeModel.Pb, nil

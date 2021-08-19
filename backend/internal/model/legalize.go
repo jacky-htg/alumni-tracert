@@ -39,9 +39,10 @@ func (u *Legalize) Upsert(ctx context.Context, db *sql.DB) error {
 			INSERT INTO legalizes (id, certificate_id, ijazah, transcript, is_offline, status) 
 			VALUES (?, ?, ?, ?, ?, 1)
 		`
+		u.Pb.Id = uuid.New().String()
 		paramQueries = append(
 			paramQueries,
-			uuid.New().String(),
+			u.Pb.Id,
 			u.Pb.CertificateId,
 			u.Pb.Ijazah,
 			u.Pb.Transcript,
@@ -169,7 +170,7 @@ func (u *Legalize) ListQuery(ctx context.Context, db *sql.DB, in *proto.ListInpu
 
 func (u *Legalize) Get(ctx context.Context, db *sql.DB) error {
 	query := `
-		SELECT l.id, a.id, a.name, c.nim, a.nik, 
+		SELECT l.id, a.id, a.name, u.email, c.nim, a.nik, 
 			c.no_ijazah, c.major_study, c.graduation_year,
 			l.ijazah, l.transcript, l.is_offline, l.is_verified, l.is_approved, 
 			l.verified_by, l.verified_at, l.approved_by, l.approved_at, 
@@ -177,6 +178,7 @@ func (u *Legalize) Get(ctx context.Context, db *sql.DB) error {
 		FROM legalizes l
 		JOIN certificates c ON l.certificate_id = c.id
 		JOIN alumni a ON c.alumni_id = a.id
+		JOIN users u ON a.user_id = u.id
 		WHERE l.id = ?
 	`
 
@@ -187,7 +189,7 @@ func (u *Legalize) Get(ctx context.Context, db *sql.DB) error {
 	var verifiedBy, approvedBy sql.NullInt64
 	var verifiedAt, approvedAt, ijazahSigned, transcriptSigned, rejectedReason sql.NullString
 	err := row.Scan(
-		&u.Pb.Id, &pbAlumni.Id, &pbAlumni.Name, &pbCertificate.Nim, &pbAlumni.Nik,
+		&u.Pb.Id, &pbAlumni.Id, &pbAlumni.Name, &pbAlumni.Email, &pbCertificate.Nim, &pbAlumni.Nik,
 		&pbCertificate.NoIjazah, &pbCertificate.MajorStudy, &pbCertificate.GraduationYear,
 		&u.Pb.Ijazah, &u.Pb.Transcript, &u.Pb.IsOffline, &u.Pb.IsVerified, &u.Pb.IsApproved,
 		&verifiedBy, &verifiedAt, &approvedBy, &approvedAt,
@@ -208,7 +210,10 @@ func (u *Legalize) Get(ctx context.Context, db *sql.DB) error {
 	u.Pb.ApprovedAt = approvedAt.String
 	u.Pb.ApprovedBy = uint64(approvedBy.Int64)
 	u.Pb.AlumniId = pbAlumni.Id
+	u.Pb.AlumniName = pbAlumni.Name
+	u.Pb.AlumniEmail = pbAlumni.Email
 	u.Pb.CertificateId = pbCertificate.Id
+	u.Pb.NoIjazah = pbCertificate.NoIjazah
 	u.Pb.Ijazah = "https://" + os.Getenv("OSS_BUCKET_DOCUMENT") + "." + os.Getenv("OSS_ENDPOINT") + "/" + u.Pb.Ijazah
 	u.Pb.Transcript = "https://" + os.Getenv("OSS_BUCKET_DOCUMENT") + "." + os.Getenv("OSS_ENDPOINT") + "/" + u.Pb.Transcript
 

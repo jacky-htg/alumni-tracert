@@ -130,7 +130,10 @@ proto.proto.Legalize.toObject = function(includeInstance, msg) {
     rating: jspb.Message.getFieldWithDefault(msg, 16, 0),
     rejectedReason: jspb.Message.getFieldWithDefault(msg, 17, ""),
     created: jspb.Message.getFieldWithDefault(msg, 18, ""),
-    updated: jspb.Message.getFieldWithDefault(msg, 19, "")
+    updated: jspb.Message.getFieldWithDefault(msg, 19, ""),
+    alumniName: jspb.Message.getFieldWithDefault(msg, 20, ""),
+    alumniEmail: jspb.Message.getFieldWithDefault(msg, 21, ""),
+    noIjazah: jspb.Message.getFieldWithDefault(msg, 22, "")
   };
 
   if (includeInstance) {
@@ -242,6 +245,18 @@ proto.proto.Legalize.deserializeBinaryFromReader = function(msg, reader) {
     case 19:
       var value = /** @type {string} */ (reader.readString());
       msg.setUpdated(value);
+      break;
+    case 20:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setAlumniName(value);
+      break;
+    case 21:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setAlumniEmail(value);
+      break;
+    case 22:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setNoIjazah(value);
       break;
     default:
       reader.skipField();
@@ -402,6 +417,27 @@ proto.proto.Legalize.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeString(
       19,
+      f
+    );
+  }
+  f = message.getAlumniName();
+  if (f.length > 0) {
+    writer.writeString(
+      20,
+      f
+    );
+  }
+  f = message.getAlumniEmail();
+  if (f.length > 0) {
+    writer.writeString(
+      21,
+      f
+    );
+  }
+  f = message.getNoIjazah();
+  if (f.length > 0) {
+    writer.writeString(
+      22,
       f
     );
   }
@@ -747,6 +783,60 @@ proto.proto.Legalize.prototype.getUpdated = function() {
  */
 proto.proto.Legalize.prototype.setUpdated = function(value) {
   return jspb.Message.setProto3StringField(this, 19, value);
+};
+
+
+/**
+ * optional string alumni_name = 20;
+ * @return {string}
+ */
+proto.proto.Legalize.prototype.getAlumniName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 20, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.Legalize} returns this
+ */
+proto.proto.Legalize.prototype.setAlumniName = function(value) {
+  return jspb.Message.setProto3StringField(this, 20, value);
+};
+
+
+/**
+ * optional string alumni_email = 21;
+ * @return {string}
+ */
+proto.proto.Legalize.prototype.getAlumniEmail = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 21, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.Legalize} returns this
+ */
+proto.proto.Legalize.prototype.setAlumniEmail = function(value) {
+  return jspb.Message.setProto3StringField(this, 21, value);
+};
+
+
+/**
+ * optional string no_ijazah = 22;
+ * @return {string}
+ */
+proto.proto.Legalize.prototype.getNoIjazah = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 22, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.Legalize} returns this
+ */
+proto.proto.Legalize.prototype.setNoIjazah = function(value) {
+  return jspb.Message.setProto3StringField(this, 22, value);
 };
 
 

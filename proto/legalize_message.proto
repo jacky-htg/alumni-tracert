@@ -25,6 +25,9 @@ message Legalize {
   string rejected_reason = 17;
   string created = 18;
   string updated = 19;
+  string alumni_name = 20;
+  string alumni_email = 21;
+  string no_ijazah = 22;
 }
 
 message LegalizeListResponse {

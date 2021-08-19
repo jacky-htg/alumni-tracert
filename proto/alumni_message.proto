@@ -17,6 +17,7 @@ message Alumni {
   repeated Certificate certificates = 8;
   string created = 9;
   string updated = 10;
+  string email = 11;
 }
 
 message AlumniListResponse {
