@@ -3,6 +3,7 @@ package validation
 import (
 	"context"
 	"database/sql"
+	"time"
 	"tracert/internal/constant"
 	"tracert/internal/model"
 	"tracert/internal/pkg/app"
@@ -41,6 +42,23 @@ func (u *Legalize) Upload(ctx context.Context, in *proto.Legalize, db *sql.DB) e
 	err := certificate.GetByIdAndAlumni(ctx, db)
 	if err != nil {
 		return err
+	}
+
+	mTracer := model.Tracer{}
+	mTracer.Pb.UserId = ctx.Value(app.Ctx("user_id")).(uint64)
+	err = mTracer.GetLastByUserId(ctx, db)
+	if err != nil {
+		return err
+	}
+
+	created, err := time.Parse("2006-01-02T15:04:05Z", mTracer.Pb.Created)
+	if err != nil {
+		return status.Error(codes.Internal, err.Error())
+	}
+
+	expired := time.Now().Add(-time.Hour * 24 * 30 * 2)
+	if expired.After(created) {
+		return status.Error(codes.PermissionDenied, "Silahkan update kuisioner terlebih dahulu")
 	}
 
 	return nil
