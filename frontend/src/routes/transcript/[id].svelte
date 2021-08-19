@@ -8,7 +8,7 @@
 
   export let id
 
-  let ijazahSigned = null
+  let transcriptSigned = null
   async function myLegalizeCall() {
     var deps = {
 			proto: {
@@ -32,7 +32,7 @@
         throw {message:"E-legalisir telah kadaluwarsa"}
       }
 
-      ijazahSigned = legalize.getIjazahSigned() 
+      transcriptSigned = legalize.getTranscriptSigned() 
     } catch(e) {
       notifications.danger(e.message)
     }
@@ -41,7 +41,7 @@
 </script>
 
 <div>
-  <object title="ijazah" data="{ijazahSigned}" type="application/pdf" width="100%" height="800px">
-      alt : <a href="ijazahSigned">Ijazah</a>
+  <object title="transcript" data="{transcriptSigned}" type="application/pdf" width="100%" height="800px">
+      alt : <a href="transcriptSigned">Transcript</a>
   </object>
 </div>
