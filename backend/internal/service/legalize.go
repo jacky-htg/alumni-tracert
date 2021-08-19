@@ -61,7 +61,7 @@ func (u *AlumniTracertServer) LegalizeUpload(ctx context.Context, in *proto.Lega
 	}
 
 	for _, admin := range list {
-		if err := UpdateLegalisirEmailHelper(ctx, map[string]string{
+		if err := NotifLegalisirEmailHelper(ctx, map[string]string{
 			"Name":         admin.Name,
 			"Email":        admin.Email,
 			"NoIjazah":     legalizeModel.Pb.NoIjazah,
@@ -283,7 +283,7 @@ func (u *AlumniTracertServer) LegalizeVerified(ctx context.Context, in *proto.St
 	}
 
 	for _, pejabat := range list {
-		if err := UpdateLegalisirEmailHelper(ctx, map[string]string{
+		if err := NotifLegalisirEmailHelper(ctx, map[string]string{
 			"Name":         pejabat.Name,
 			"Email":        pejabat.Email,
 			"NoIjazah":     legalizeValidation.Model.Pb.NoIjazah,
