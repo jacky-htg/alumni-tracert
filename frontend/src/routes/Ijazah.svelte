@@ -65,7 +65,7 @@
   }
 
   const graduationYears = [];
-  for (let i =  2018; i <= (today.getFullYear()-1); i++) {
+  for (let i =  2016; i <= (today.getFullYear()-1); i++) {
     graduationYears.push(i);
   }
 

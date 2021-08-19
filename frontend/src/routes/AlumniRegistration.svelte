@@ -98,7 +98,7 @@
   }
 
   const graduationYears = [];
-  for (let i =  2018; i <= (today.getFullYear()-1); i++) {
+  for (let i =  2016; i <= (today.getFullYear()-1); i++) {
     graduationYears.push(i);
   }
 </script>
@@ -187,7 +187,7 @@
               </div>
 
               <div class="col-span-4">
-                <label for="no-ijazah" class="block text-sm font-medium text-gray-700">NOMORA IJAZAH</label>
+                <label for="no-ijazah" class="block text-sm font-medium text-gray-700">NOMOR IJAZAH</label>
                 <input on:change="{changeNoIjazah}" type="text" name="no-ijazah" id="no-ijazah" autocomplete="no-ijazah" class="block w-full px-4 py-2 mt-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-m">
               </div>
 
