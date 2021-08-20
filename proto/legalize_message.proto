@@ -6,7 +6,7 @@ option go_package = ".;proto";
 import "generic_message.proto";
 
 message Legalize {
-  uint64 id = 1;
+  string id = 1;
   uint64 alumni_id = 2;
   uint64 certificate_id = 3;
   string ijazah = 4;
@@ -22,8 +22,12 @@ message Legalize {
   string transcript_signed = 14; 
   uint32 status = 15;
   uint32 rating = 16;
-  string created = 17;
-  string updated = 18;
+  string rejected_reason = 17;
+  string created = 18;
+  string updated = 19;
+  string alumni_name = 20;
+  string alumni_email = 21;
+  string no_ijazah = 22;
 }
 
 message LegalizeListResponse {

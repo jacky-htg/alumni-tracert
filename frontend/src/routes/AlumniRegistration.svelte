@@ -40,6 +40,10 @@
     certificateProto.setMajorStudy(event.currentTarget.value)
   }
 
+  const changeEntryYear = (event) => {
+    certificateProto.setEntryYear(event.currentTarget.value)
+  }
+
   const changeGraduationYear = (event) => {
     certificateProto.setGraduationYear(event.currentTarget.value)
   }
@@ -86,6 +90,17 @@
       notifications.danger(e.message)
     }
   };
+
+  const entryYears = [];
+  const today = new Date();
+  for (let i =  2013; i <= (today.getFullYear()-4); i++) {
+    entryYears.push(i);
+  }
+
+  const graduationYears = [];
+  for (let i =  2016; i <= (today.getFullYear()-1); i++) {
+    graduationYears.push(i);
+  }
 </script>
 
 <div class="flex flex-wrap w-full h-full">
@@ -96,12 +111,12 @@
         
         <KuisionerNoOpening/>
 
-        <h2 class="mb-8 text-xl font-semibold text-black">Data Alumni</h2>
+        <h2 class="mb-8 text-xl font-semibold text-black">IDENTITAS ALUMNI</h2>
           <div class="overflow-hidden">
 
             <div class="grid grid-cols-4 gap-4 mb-8">
               <div class="col-span-4">
-                <label for="name" class="block text-sm font-medium text-gray-700">Nama</label>
+                <label for="name" class="block text-sm font-medium text-gray-700">NAMA</label>
                 <input on:change="{changeName}" type="text" name="name" id="name" autocomplete="given-name" class="block w-full px-4 py-2 mt-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-m">
               </div>
 
@@ -116,17 +131,17 @@
               </div>
 
               <div class="col-span-2">
-                <label for="city" class="block text-sm font-medium text-gray-700">Tempat lahir</label>
+                <label for="city" class="block text-sm font-medium text-gray-700">TEMPAT LAHIR</label>
                 <input on:change="{changeCity}" type="text" name="city" id="city" class="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
               </div>
 
               <div class="col-span-2">
-                <label for="bod" class="block text-sm font-medium text-gray-700">Tanggal kelahiran</label>
+                <label for="bod" class="block text-sm font-medium text-gray-700">TANGGAL LAHIR</label>
                 <input on:change="{changeBod}" type="date" name="bod" id="bod" class="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
               </div>
 
               <div class="col-span-2">
-                <label for="jurusan" class="block text-sm font-medium text-gray-700">Jurusan/Prodi</label>
+                <label for="jurusan" class="block text-sm font-medium text-gray-700">JURUSAN/PRODI</label>
                 <select on:blur="{changeJurusan}" id="jurusan" name="jurusan" autocomplete="jurusan" class="block w-full px-4 py-2 mt-1 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-m">
                   <option value="" disabled selected>Pilih Jurusan</option>
                   <option>Jurusan Analisis Kesehatan/TLM</option>
@@ -145,34 +160,44 @@
                   <option>Prodi D3 Kebidanan Tarutung</option>
                   <option>Prodi D3 Kebidanan Karo</option>
                   <option>Prodi D3 Keperawatan Gunung Sitoli</option>
-                  <option>Prodi D3 Kebidanan Dairi</option>
+                  <option>Prodi D3 Keperawatan Dairi</option>
                   <option>Prodi D3 Keperawatan Sibolga</option>
                   <option>Prodi Profesi Bidan</option>
                 </select>
               </div>
 
-              <div class="col-span-2">
-                <label for="graduation-year" class="block text-sm font-medium text-gray-700">Tahun lulus</label>
+              <div class="col-span-1">
+                <label for="entry-year" class="block text-sm font-medium text-gray-700">TAHUN MASUK</label>
+                <select on:blur="{changeEntryYear}" id="entry-year" name="entry-year" autocomplete="entry-year" class="block w-full px-4 py-2 mt-1 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-m">
+                  <option value="" disabled selected>Tahun Masuk</option>
+                  {#each entryYears as year }
+                  <option>{year}</option>
+                  {/each}
+                </select>
+              </div>
+
+              <div class="col-span-1">
+                <label for="graduation-year" class="block text-sm font-medium text-gray-700">TAHUN LULUS</label>
                 <select on:blur="{changeGraduationYear}" id="graduation-year" name="graduation-year" autocomplete="graduation-year" class="block w-full px-4 py-2 mt-1 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-m">
-                  <option value="" disabled selected>Pilih Tahun Lulus</option>
-                  <option>2018</option>
-                  <option>2019</option>
-                  <option>2020</option>
+                  <option value="" disabled selected>Tahun Lulus</option>
+                  {#each graduationYears as year }
+                  <option>{year}</option>
+                  {/each}
                 </select>
               </div>
 
               <div class="col-span-4">
-                <label for="no-ijazah" class="block text-sm font-medium text-gray-700">Nomor Ijazah</label>
+                <label for="no-ijazah" class="block text-sm font-medium text-gray-700">NOMOR IJAZAH</label>
                 <input on:change="{changeNoIjazah}" type="text" name="no-ijazah" id="no-ijazah" autocomplete="no-ijazah" class="block w-full px-4 py-2 mt-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-m">
               </div>
 
               <div class="col-span-4">
-                <label for="phone" class="block text-sm font-medium text-gray-700">Nomor telp./WhatsApp</label>
+                <label for="phone" class="block text-sm font-medium text-gray-700">NOMOR TELP/WA</label>
                 <input on:change="{changePhone}" type="text" name="phone" id="phone" autocomplete="phone" class="block w-full px-4 py-2 mt-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-m">
               </div>
 
               <div class="col-span-4">
-                <label for="email-address" class="block text-sm font-medium text-gray-700">Email</label>
+                <label for="email-address" class="block text-sm font-medium text-gray-700">EMAIL</label>
                 <input on:change="{changeEmail}" type="text" name="email-address" id="email-address" autocomplete="email" class="block w-full px-4 py-2 mt-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-m">
               </div>
               

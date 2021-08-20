@@ -3,6 +3,7 @@ package validation
 import (
 	"context"
 	"database/sql"
+	"time"
 	"tracert/internal/constant"
 	"tracert/internal/model"
 	"tracert/internal/pkg/app"
@@ -43,11 +44,28 @@ func (u *Legalize) Upload(ctx context.Context, in *proto.Legalize, db *sql.DB) e
 		return err
 	}
 
+	mTracer := model.Tracer{}
+	mTracer.Pb.UserId = ctx.Value(app.Ctx("user_id")).(uint64)
+	err = mTracer.GetLastByUserId(ctx, db)
+	if err != nil {
+		return err
+	}
+
+	created, err := time.Parse("2006-01-02T15:04:05Z", mTracer.Pb.Created)
+	if err != nil {
+		return status.Error(codes.Internal, err.Error())
+	}
+
+	expired := time.Now().Add(-time.Hour * 24 * 30 * 2)
+	if expired.After(created) {
+		return status.Error(codes.PermissionDenied, "Silahkan update kuisioner terlebih dahulu")
+	}
+
 	return nil
 }
 
-func (u *Legalize) Rejected(ctx context.Context, in *proto.UintMessage, db *sql.DB) error {
-	if in.Data <= 0 {
+func (u *Legalize) Rejected(ctx context.Context, in *proto.Legalize, db *sql.DB) error {
+	if len(in.Id) <= 0 {
 		return status.Error(codes.InvalidArgument, "Please supply valid ID")
 	}
 
@@ -55,7 +73,7 @@ func (u *Legalize) Rejected(ctx context.Context, in *proto.UintMessage, db *sql.
 		return status.Error(codes.PermissionDenied, "You can not verified this document")
 	}
 
-	u.Model.Pb.Id = in.Data
+	u.Model.Pb.Id = in.Id
 	if err := u.Model.Get(ctx, db); err != nil {
 		return err
 	}
@@ -76,7 +94,7 @@ func (u *Legalize) Rejected(ctx context.Context, in *proto.UintMessage, db *sql.
 }
 
 func (u *Legalize) Done(ctx context.Context, in *proto.Legalize, db *sql.DB) error {
-	if in.Id <= 0 {
+	if len(in.Id) <= 0 {
 		return status.Error(codes.InvalidArgument, "Please supply valid ID")
 	}
 
@@ -108,8 +126,8 @@ func (u *Legalize) Done(ctx context.Context, in *proto.Legalize, db *sql.DB) err
 	return nil
 }
 
-func (u *Legalize) Verified(ctx context.Context, in *proto.UintMessage, db *sql.DB) error {
-	if in.Data <= 0 {
+func (u *Legalize) Verified(ctx context.Context, in *proto.StringMessage, db *sql.DB) error {
+	if len(in.Data) <= 0 {
 		return status.Error(codes.InvalidArgument, "Please supply valid ID")
 	}
 
@@ -137,8 +155,29 @@ func (u *Legalize) Verified(ctx context.Context, in *proto.UintMessage, db *sql.
 	return nil
 }
 
-func (u *Legalize) Approved(ctx context.Context, in *proto.UintMessage, db *sql.DB) error {
-	if in.Data <= 0 {
+func (u *Legalize) Check(ctx context.Context, in *proto.StringMessage, db *sql.DB) error {
+	if len(in.Data) <= 0 {
+		return status.Error(codes.InvalidArgument, "Please supply valid ID")
+	}
+
+	u.Model.Pb.Id = in.Data
+	if err := u.Model.Get(ctx, db); err != nil {
+		return err
+	}
+
+	if u.Model.Pb.Status != uint32(constant.LEGALIZE_STATUS_APPROVED) {
+		return status.Error(codes.InvalidArgument, "Invalid Certificate")
+	}
+
+	if u.Model.Pb.IsOffline {
+		return status.Error(codes.InvalidArgument, "Invalid Certificate")
+	}
+
+	return nil
+}
+
+func (u *Legalize) Approved(ctx context.Context, in *proto.StringMessage, db *sql.DB) error {
+	if len(in.Data) <= 0 {
 		return status.Error(codes.InvalidArgument, "Please supply valid ID")
 	}
 

@@ -3,6 +3,7 @@ package model
 import (
 	"context"
 	"database/sql"
+	"tracert/internal/pkg/app"
 	"tracert/internal/pkg/util"
 	"tracert/proto"
 
@@ -12,6 +13,22 @@ import (
 
 type Tracer struct {
 	Pb proto.Tracer
+}
+
+func (u *Tracer) GetLastByUserId(ctx context.Context, db *sql.DB) error {
+	query := `SELECT id, created FROM tracers WHERE user_id = ? ORDER BY id desc LIMIT 1`
+
+	row := db.QueryRowContext(ctx, query, ctx.Value(app.Ctx("user_id")).(uint64))
+	err := row.Scan(&u.Pb.Id, &u.Pb.Created)
+	if err == sql.ErrNoRows {
+		return status.Errorf(codes.NotFound, "not found: %v", err)
+	}
+
+	if err != nil {
+		return status.Errorf(codes.Internal, "scan data: %v", err)
+	}
+
+	return nil
 }
 
 func (u *Tracer) Create(ctx context.Context, db *sql.DB) error {

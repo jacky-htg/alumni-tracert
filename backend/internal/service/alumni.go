@@ -51,7 +51,7 @@ func (u *AlumniTracertServer) AlumniRegistration(ctx context.Context, in *proto.
 	}
 	in.Certificate = certificate
 
-	err = u.sendEmailHelper(ctx, user, *password)
+	err = RegistrationEmailHelper(ctx, user, *password)
 	if err != nil {
 		util.LogError(u.Log, "send email create user", err)
 		tx.Rollback()
@@ -251,6 +251,7 @@ func (u *AlumniTracertServer) certificateCreateHelper(ctx context.Context, in *p
 	certificateModel.Pb.Nim = in.Nim
 	certificateModel.Pb.NoIjazah = in.NoIjazah
 	certificateModel.Pb.MajorStudy = in.MajorStudy
+	certificateModel.Pb.EntryYear = in.EntryYear
 	certificateModel.Pb.GraduationYear = in.GraduationYear
 
 	err := certificateModel.Create(ctx, tx)

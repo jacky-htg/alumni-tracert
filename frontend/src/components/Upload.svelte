@@ -29,9 +29,9 @@
   export let noKeyboard = false;
   export let noDrag = false;
   export let noDragEventsBubbling = false;
-  export let containerClasses = "";
+  // export let containerClasses = "";
   export let containerStyles = "";
-  export let disableDefaultStyles = false;
+  // export let disableDefaultStyles = false;
   export let isLoading = false;
   export let name="";
   export let file=null;
@@ -268,7 +268,7 @@
 </script>
 {#if file}
 <div
-  class="flex flex-col justify-center px-6 pt-5 pb-6 mt-1 border-2 border-gray-300 border-dashed rounded-md"
+  class="flex flex-col justify-center px-6 pt-7 pb-8 mt-1 border-2 border-gray-300 border-dashed rounded-md"
 >
   <svg class="w-12 h-12 mx-auto" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 56 56" style="enable-background:new 0 0 56 56;" xml:space="preserve">
     <g>
@@ -305,12 +305,13 @@
     autocomplete="off"
     tabindex="-1"
     on:change={onDropCb}
-    on:click={onInputElementClick}
     bind:this={inputRef}
     style="display: none;" />
   <slot>
     {#if isLoading}
-      <BarLoader size="80" color="rgb(4, 120, 87)" unit="px" duration="3s" />
+      <div class="p-4">
+        <BarLoader size="80" color="rgb(4, 120, 87)" unit="px" duration="3s" />
+      </div>
     {:else}
       <div class="space-y-1 text-center">
         <svg class="w-12 h-12 mx-auto text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
@@ -319,25 +320,11 @@
         <div class="flex text-sm text-gray-600">
           <label for="file-upload" class="relative font-medium text-indigo-600 bg-white rounded-md cursor-pointer hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
             <span>Upload a file</span>
-            <input
-              id="file-upload"
-              name="file-upload"
-              type="file"
-              class="sr-only"
-              {accept}
-              {multiple}
-              autocomplete="off"
-              tabindex="-1"
-              on:change={onDropCb}
-              on:click={onInputElementClick}
-              bind:this={inputRef}
-              style="display: none;"
-            >
           </label>
           <p class="pl-1">or drag and drop</p>
         </div>
         <p class="text-xs text-gray-500">
-          PDF, PNG, JPG up to 10MB
+          PNG, JPG up to 10MB
         </p>
       </div>
     {/if}

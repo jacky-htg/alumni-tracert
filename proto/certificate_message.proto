@@ -10,11 +10,12 @@ message Certificate {
   uint64 alumni_id = 2;
   string nim = 3;
   string major_study = 4;
-  uint32 graduation_year = 5;
-  string no_ijazah = 6;
-  string created = 7;
-  string updated = 8;
-  Legalize legalize = 9;
+  uint32 entry_year = 5;
+  uint32 graduation_year = 6;
+  string no_ijazah = 7;
+  string created = 8;
+  string updated = 9;
+  Legalize legalize = 10;
 }
 
 message Certificates {

@@ -109,7 +109,8 @@ proto.proto.Alumni.toObject = function(includeInstance, msg) {
     certificatesList: jspb.Message.toObjectList(msg.getCertificatesList(),
     certificate_message_pb.Certificate.toObject, includeInstance),
     created: jspb.Message.getFieldWithDefault(msg, 9, ""),
-    updated: jspb.Message.getFieldWithDefault(msg, 10, "")
+    updated: jspb.Message.getFieldWithDefault(msg, 10, ""),
+    email: jspb.Message.getFieldWithDefault(msg, 11, "")
   };
 
   if (includeInstance) {
@@ -186,6 +187,10 @@ proto.proto.Alumni.deserializeBinaryFromReader = function(msg, reader) {
     case 10:
       var value = /** @type {string} */ (reader.readString());
       msg.setUpdated(value);
+      break;
+    case 11:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setEmail(value);
       break;
     default:
       reader.skipField();
@@ -284,6 +289,13 @@ proto.proto.Alumni.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeString(
       10,
+      f
+    );
+  }
+  f = message.getEmail();
+  if (f.length > 0) {
+    writer.writeString(
+      11,
       f
     );
   }
@@ -487,6 +499,24 @@ proto.proto.Alumni.prototype.getUpdated = function() {
  */
 proto.proto.Alumni.prototype.setUpdated = function(value) {
   return jspb.Message.setProto3StringField(this, 10, value);
+};
+
+
+/**
+ * optional string email = 11;
+ * @return {string}
+ */
+proto.proto.Alumni.prototype.getEmail = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 11, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.Alumni} returns this
+ */
+proto.proto.Alumni.prototype.setEmail = function(value) {
+  return jspb.Message.setProto3StringField(this, 11, value);
 };
 
 

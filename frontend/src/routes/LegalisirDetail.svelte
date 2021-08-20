@@ -6,7 +6,7 @@
   import { Legalize } from '../../proto/legalize_message_pb'
   import { Alumni } from '../../proto/alumni_message_pb'
   import { PATH_URL, SIDEBAR_ADMIN } from '../helper/path'
-  import LegalizeService from '../services/legalisirList';
+  import LegalizeService from '../services/legalize';;
   import AlumniService from '../services/alumni';
   import { onMount } from 'svelte'
   import { notifications } from '../helper/toast'
@@ -28,14 +28,14 @@
   }
 
   async function legalizeGetCall(proto){
-    return await new LegalizeService(deps, proto).legalizeGet()
+    return await new LegalizeService(deps, proto).get()
 	}
   async function alumniCall(proto){
     const alumni = new AlumniService(deps, proto)
     return await alumni.get()
 	}
   const urlParams = new URLSearchParams(window.location.search);
-  let id = Number(urlParams.get('id') || 0);
+  let id = urlParams.get('id') || "";
   const usertype = Cookies.get('usertype');
   onMount(async () => {
 		try {
@@ -74,6 +74,7 @@
 			
 			const legalizeService = new LegalizeService(deps, legalizeProto)
 			await legalizeService.reject()
+      legalize.status = 0
 			isLoadingReject = false;
 		} catch(e) {
 			errorServiceHandling(e)
@@ -93,6 +94,7 @@
 			
 			const legalizeService = new LegalizeService(deps, legalizeProto)
 			await legalizeService.verify() 
+      legalize.status = 2
 			isLoadingAccept = false;
 		} catch(e) {
 			errorServiceHandling(e)
@@ -112,6 +114,7 @@
 			
 			const legalizeService = new LegalizeService(deps, legalizeProto)
 			await legalizeService.approve()
+      legalize.status = 3
 			isLoadingApproved = false;
 		} catch(e) {
 			errorServiceHandling(e)
@@ -131,6 +134,7 @@
 			
 			const legalizeService = new LegalizeService(deps, legalizeProto)
 			await legalizeService.done()
+      legalize.status = 3
 			isLoadingApproved = false;
 		} catch(e) {
 			isLoadingApproved = false;
@@ -139,12 +143,12 @@
 	}
 
   const onDownloadIjazah = () => {
-    const signedUrl = legalizeProtoResp.getIjazahSigned();
+    const signedUrl = legalizeProtoResp.getIjazah();
     window.open(signedUrl,'_blank');
   }
 
   const onDownloadTranskrip = () => {
-    const signedUrl = legalizeProtoResp.getTranscriptSigned();
+    const signedUrl = legalizeProtoResp.getTranscript();
     window.open(signedUrl,'_blank');
   }
 
@@ -152,7 +156,7 @@
 
 <div class="w-full mx-auto max-w-8xl">
 	<div class="lg:flex">
-    <Sidebar active="list-alumni" sideBarMenus={SIDEBAR_ADMIN} pathImage="../" />
+    <Sidebar active="e-legalisir" sideBarMenus={SIDEBAR_ADMIN} pathImage="../" />
     <main class="flex-auto w-full min-w-0 px-20 pt-12 lg:static lg:max-h-full lg:overflow-visible">
       <a use:link href={PATH_URL.ADMIN_E_LEGALISIR} class="flex items-center mb-8">
         <i class="mr-4 fas fa-arrow-left"></i>
@@ -178,7 +182,9 @@
                   <Button isLoading={isLoadingReject} on:click={onReject} className="mr-2" bgColor="bg-red-500" bgHoverColor="bg-red-400">Reject</Button>
                   <Button isLoading={isLoadingAccept} on:click={onAccept} className="mr-2" bgColor="bg-green-500" bgHoverColor="bg-green-400">Verify</Button>
                 {:else}
-                  <Button isLoading={isLoadingApproved} on:click={onDone} className="mr-2" bgColor="bg-yellow-300" bgHoverColor="bg-yellow-200">Done</Button>
+                  {#if legalize.isOffline}
+                    <Button isLoading={isLoadingApproved} on:click={onDone} className="mr-2" bgColor="bg-yellow-300" bgHoverColor="bg-yellow-200">Done</Button>
+                  {/if}
                 {/if}
               {:else if usertype == "4" && legalize.status === 2}
                 <Button isLoading={isLoadingApproved} on:click={onApprove} className="mr-2" bgColor="bg-yellow-300" bgHoverColor="bg-yellow-200">Approve</Button>

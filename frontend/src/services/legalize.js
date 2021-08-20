@@ -30,6 +30,11 @@ export default class extends Tracert{
         return out
     })
   }
+  check (){
+    return this.client.legalizeCheck(this.req, {}).then(out => {
+        return out
+    })
+  }
   reject (){
     const token = Cookies.get('token')
     return this.client.legalizeRejected(this.req, {token}).then(out => {

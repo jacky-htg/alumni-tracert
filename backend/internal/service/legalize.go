@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"strconv"
 	"time"
 
 	"tracert/internal/constant"
@@ -18,7 +17,7 @@ import (
 	"tracert/internal/validation"
 	"tracert/proto"
 
-	"github.com/signintech/gopdf"
+	"github.com/jung-kurt/gofpdf"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -51,6 +50,25 @@ func (u *AlumniTracertServer) LegalizeUpload(ctx context.Context, in *proto.Lega
 	err = legalizeModel.Upsert(ctx, u.Db)
 	if err != nil {
 		return nil, err
+	}
+
+	err = legalizeModel.Get(ctx, u.Db)
+
+	var userModel model.User
+	list, err := userModel.GetAdmin(ctx, u.Db)
+	if err != nil {
+		util.LogError(u.Log, "get admon on notif legalisir status as submited", err)
+	}
+
+	for _, admin := range list {
+		if err := NotifLegalisirEmailHelper(ctx, map[string]string{
+			"Name":         admin.Name,
+			"Email":        admin.Email,
+			"NoIjazah":     legalizeModel.Pb.NoIjazah,
+			"StatusIjazah": "SUBMIT",
+		}); err != nil {
+			util.LogError(u.Log, "send email notif legalisir status as submited", err)
+		}
 	}
 
 	return &legalizeModel.Pb, nil
@@ -151,14 +169,14 @@ func (u *AlumniTracertServer) LegalizeList(in *proto.ListInput, stream proto.Tra
 		var pbLegalize proto.Legalize
 		var pbAlumni proto.Alumni
 		var pbCertificate proto.Certificate
-		var verifiedAt, approvedAt sql.NullString
+		var verifiedAt, approvedAt, rejectedReason sql.NullString
 		var verifiedBy, approvedBy sql.NullInt64
 		err = rows.Scan(
 			&pbLegalize.Id, &pbAlumni.Id, &pbAlumni.Name, &pbCertificate.Nim, &pbAlumni.Nik,
 			&pbCertificate.Id, &pbCertificate.NoIjazah, &pbCertificate.MajorStudy, &pbCertificate.GraduationYear,
 			&pbLegalize.Ijazah, &pbLegalize.Transcript, &pbLegalize.IsOffline, &pbLegalize.IsVerified, &pbLegalize.IsApproved,
 			&verifiedBy, &verifiedAt, &approvedBy, &approvedAt,
-			&pbLegalize.Status, &createdAt, &updatedAt,
+			&pbLegalize.Status, &rejectedReason, &createdAt, &updatedAt,
 		)
 		if err != nil {
 			util.LogError(u.Log, "scan on looping list ijazah", err)
@@ -173,6 +191,7 @@ func (u *AlumniTracertServer) LegalizeList(in *proto.ListInput, stream proto.Tra
 		pbLegalize.ApprovedAt = approvedAt.String
 		pbLegalize.ApprovedBy = uint64(approvedBy.Int64)
 		pbLegalize.CertificateId = pbCertificate.Id
+		pbLegalize.RejectedReason = rejectedReason.String
 
 		res := &proto.LegalizeListResponse{
 			ListInput: listResponse,
@@ -219,7 +238,7 @@ func (u *AlumniTracertServer) LegalizeGet(ctx context.Context, in *proto.Legaliz
 	return &legalizeModel.Pb, nil
 }
 
-func (u *AlumniTracertServer) LegalizeVerified(ctx context.Context, in *proto.UintMessage) (*proto.Legalize, error) {
+func (u *AlumniTracertServer) LegalizeVerified(ctx context.Context, in *proto.StringMessage) (*proto.Legalize, error) {
 	select {
 	case <-ctx.Done():
 		return nil, util.ContextError(ctx)
@@ -232,7 +251,8 @@ func (u *AlumniTracertServer) LegalizeVerified(ctx context.Context, in *proto.Ui
 		return nil, err
 	}
 
-	if err := new(validation.Legalize).Verified(ctx, in, u.Db); err != nil {
+	var legalizeValidation validation.Legalize
+	if err := legalizeValidation.Verified(ctx, in, u.Db); err != nil {
 		util.LogError(u.Log, "validation on verified legalize", err)
 		return nil, err
 	}
@@ -245,10 +265,38 @@ func (u *AlumniTracertServer) LegalizeVerified(ctx context.Context, in *proto.Ui
 		return nil, err
 	}
 
+	if err := UpdateLegalisirEmailHelper(ctx, map[string]string{
+		"Name":         legalizeValidation.Model.Pb.AlumniName,
+		"Email":        legalizeValidation.Model.Pb.AlumniEmail,
+		"NoIjazah":     legalizeValidation.Model.Pb.NoIjazah,
+		"StatusIjazah": "DIVERIFIKASI",
+		"Selamat":      "Selamat",
+		"Subject":      "Legalisir No " + legalizeValidation.Model.Pb.NoIjazah + " Telah Diverifikasi",
+	}); err != nil {
+		util.LogError(u.Log, "send email update legalisir status as verified", err)
+	}
+
+	var userModel model.User
+	list, err := userModel.GetPejabat(ctx, u.Db)
+	if err != nil {
+		util.LogError(u.Log, "get pejabat on notif legalisir status as verified", err)
+	}
+
+	for _, pejabat := range list {
+		if err := NotifLegalisirEmailHelper(ctx, map[string]string{
+			"Name":         pejabat.Name,
+			"Email":        pejabat.Email,
+			"NoIjazah":     legalizeValidation.Model.Pb.NoIjazah,
+			"StatusIjazah": "VERIFIED",
+		}); err != nil {
+			util.LogError(u.Log, "send email notif legalisir status as verified", err)
+		}
+	}
+
 	return &legalizeModel.Pb, nil
 }
 
-func (u *AlumniTracertServer) LegalizeRejected(ctx context.Context, in *proto.UintMessage) (*proto.Legalize, error) {
+func (u *AlumniTracertServer) LegalizeRejected(ctx context.Context, in *proto.Legalize) (*proto.Legalize, error) {
 	select {
 	case <-ctx.Done():
 		return nil, util.ContextError(ctx)
@@ -261,17 +309,30 @@ func (u *AlumniTracertServer) LegalizeRejected(ctx context.Context, in *proto.Ui
 		return nil, err
 	}
 
-	if err := new(validation.Legalize).Rejected(ctx, in, u.Db); err != nil {
+	var legalizeValidation validation.Legalize
+	if err := legalizeValidation.Rejected(ctx, in, u.Db); err != nil {
 		util.LogError(u.Log, "validation on rejected legalize", err)
 		return nil, err
 	}
 
 	var legalizeModel model.Legalize
 	legalizeModel.Pb.VerifiedBy = ctx.Value(app.Ctx("user_id")).(uint64)
-	legalizeModel.Pb.Id = in.Data
+	legalizeModel.Pb.Id = in.Id
+	legalizeModel.Pb.RejectedReason = in.RejectedReason
 	if err := legalizeModel.Rejected(ctx, u.Db); err != nil {
 		util.LogError(u.Log, "rejected Legalize", err)
 		return nil, err
+	}
+
+	if err := UpdateLegalisirEmailHelper(ctx, map[string]string{
+		"Name":         legalizeValidation.Model.Pb.AlumniName,
+		"Email":        legalizeValidation.Model.Pb.AlumniEmail,
+		"NoIjazah":     legalizeValidation.Model.Pb.NoIjazah,
+		"StatusIjazah": "DITOLAK",
+		"Selamat":      "Maaf",
+		"Subject":      "Legalisir No " + legalizeValidation.Model.Pb.NoIjazah + " Telah Ditolak",
+	}); err != nil {
+		util.LogError(u.Log, "send email update legalisir status as rejected", err)
 	}
 
 	return &legalizeModel.Pb, nil
@@ -290,7 +351,8 @@ func (u *AlumniTracertServer) LegalizeDone(ctx context.Context, in *proto.Legali
 		return nil, err
 	}
 
-	if err := new(validation.Legalize).Done(ctx, in, u.Db); err != nil {
+	var legalizeValidation validation.Legalize
+	if err := legalizeValidation.Done(ctx, in, u.Db); err != nil {
 		util.LogError(u.Log, "validation on done legalize", err)
 		return nil, err
 	}
@@ -303,10 +365,38 @@ func (u *AlumniTracertServer) LegalizeDone(ctx context.Context, in *proto.Legali
 		return nil, err
 	}
 
+	if err := UpdateLegalisirEmailHelper(ctx, map[string]string{
+		"Name":         legalizeValidation.Model.Pb.AlumniName,
+		"Email":        legalizeValidation.Model.Pb.AlumniEmail,
+		"NoIjazah":     legalizeValidation.Model.Pb.NoIjazah,
+		"StatusIjazah": "SELESAI. Silahkan ambil legalisir di kampus Poltekkes Medan",
+		"Selamat":      "Selamat",
+		"Subject":      "Legalisir No " + legalizeValidation.Model.Pb.NoIjazah + " Telah Selesai",
+	}); err != nil {
+		util.LogError(u.Log, "send email update legalisir status as done", err)
+	}
+
 	return &legalizeModel.Pb, nil
 }
 
-func (u *AlumniTracertServer) LegalizeApproved(ctx context.Context, in *proto.UintMessage) (*proto.Legalize, error) {
+func (u *AlumniTracertServer) LegalizeCheck(ctx context.Context, in *proto.StringMessage) (*proto.Legalize, error) {
+	select {
+	case <-ctx.Done():
+		return nil, util.ContextError(ctx)
+	default:
+	}
+
+	var legalizeValidate validation.Legalize
+	err := legalizeValidate.Check(ctx, in, u.Db)
+	if err != nil {
+		util.LogError(u.Log, "validation on check legalize", err)
+		return nil, err
+	}
+
+	return &legalizeValidate.Model.Pb, nil
+}
+
+func (u *AlumniTracertServer) LegalizeApproved(ctx context.Context, in *proto.StringMessage) (*proto.Legalize, error) {
 	select {
 	case <-ctx.Done():
 		return nil, util.ContextError(ctx)
@@ -327,21 +417,21 @@ func (u *AlumniTracertServer) LegalizeApproved(ctx context.Context, in *proto.Ui
 	}
 
 	sUnix := fmt.Sprintf("%d", time.Now().Unix())
-	idStr := strconv.Itoa(int(legalizeValidate.Model.Pb.Id))
-	pdfName := sUnix + "-" + idStr + ".pdf"
+	pdfName := sUnix + "-" + legalizeValidate.Model.Pb.Id + ".pdf"
 
 	for fileType, path := range map[string]string{
 		"ijazah":     legalizeValidate.Model.Pb.Ijazah,
 		"transcript": legalizeValidate.Model.Pb.Transcript,
 	} {
-		err = signPdf(fileType, path, sUnix, idStr)
+		err = signPdf(fileType, path, sUnix, legalizeValidate.Model.Pb.Id)
 		if err != nil {
 			return nil, err
 		}
+
 		oss.UploadLocalFile(os.Getenv("OSS_BUCKET_DOCUMENT"), fileType+"/"+pdfName, fileType+"-"+pdfName)
 		os.Remove(fileType + "-" + pdfName)
-		os.Remove(fileType + "-" + sUnix + "-" + idStr + ".jpeg")
-		os.Remove("qrCode-" + fileType + "-" + idStr + ".jpg")
+		os.Remove(fileType + "-" + sUnix + "-" + legalizeValidate.Model.Pb.Id + ".jpeg")
+		os.Remove("qrCode-" + fileType + "-" + legalizeValidate.Model.Pb.Id + ".jpg")
 	}
 
 	var legalizeModel model.Legalize
@@ -354,17 +444,30 @@ func (u *AlumniTracertServer) LegalizeApproved(ctx context.Context, in *proto.Ui
 		return nil, err
 	}
 
+	if err := UpdateLegalisirEmailHelper(ctx, map[string]string{
+		"Name":         legalizeValidate.Model.Pb.AlumniName,
+		"Email":        legalizeValidate.Model.Pb.AlumniEmail,
+		"NoIjazah":     legalizeValidate.Model.Pb.NoIjazah,
+		"StatusIjazah": "SELESAI",
+		"Selamat":      "Selamat",
+		"Subject":      "Legalisir No " + legalizeValidate.Model.Pb.NoIjazah + " Telah Selesai",
+	}); err != nil {
+		util.LogError(u.Log, "send email update legalisir status as approved", err)
+	}
+
 	return &legalizeModel.Pb, nil
 }
 
 func signPdf(fileType string, pathUrl string, sUnix string, id string) error {
+	pdf := gofpdf.New("P", "mm", "A4", "")
 
-	pdf := gopdf.GoPdf{}
-	pdf.Start(gopdf.Config{PageSize: *gopdf.PageSizeA4})
+	if fileType == "ijazah" {
+		pdf = gofpdf.New("L", "mm", "A4", "")
+	}
+
 	pdf.AddPage()
 
-	fileUrl := "https://" + os.Getenv("OSS_BUCKET_DOCUMENT") + "." + os.Getenv("OSS_ENDPOINT") + "/" + pathUrl
-	resp, err := http.Get(fileUrl)
+	resp, err := http.Get(pathUrl)
 	if err != nil {
 		return status.Error(codes.Internal, err.Error())
 	}
@@ -374,19 +477,26 @@ func signPdf(fileType string, pathUrl string, sUnix string, id string) error {
 	if err != nil {
 		return status.Error(codes.Internal, err.Error())
 	}
+
 	err = myimage.SaveToFile(img, "jpeg", fileType+"-"+sUnix+"-"+id)
 	if err != nil {
 		return status.Error(codes.Internal, err.Error())
 	}
 
-	pdf.Image("./"+fileType+"-"+sUnix+"-"+id+".jpeg", 0, 0, nil)
-	pdf.Image("./stempel-sign.png", 75, 75, nil) //print image
-
 	if err := util.CreateQrCode(fileType, id); err != nil {
 		return err
 	}
-	pdf.Image("./qrCode-"+fileType+"-"+id+".jpg", 0, 75, nil) //print image
 
-	pdf.WritePdf(fileType + "-" + sUnix + "-" + id + ".pdf")
-	return nil
+	if fileType == "ijazah" {
+		pdf.Image("./"+fileType+"-"+sUnix+"-"+id+".jpeg", 0, 0, 290, 0, false, "", 0, "")
+		pdf.Image("./stempel-sign.png", 44, 15, 75, 0, false, "", 0, "")
+		pdf.Image("./qrCode-"+fileType+"-"+id+".jpg", 10, 15, 35, 0, false, "", 0, "")
+	} else {
+		pdf.Image("./"+fileType+"-"+sUnix+"-"+id+".jpeg", 0, 0, 205, 0, false, "", 0, "")
+		pdf.Image("./stempel-sign.png", 44, 220, 75, 0, false, "", 0, "")
+		pdf.Image("./qrCode-"+fileType+"-"+id+".jpg", 10, 220, 35, 0, false, "", 0, "")
+	}
+
+	return pdf.OutputFileAndClose(fileType + "-" + sUnix + "-" + id + ".pdf")
+
 }

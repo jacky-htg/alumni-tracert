@@ -94,10 +94,11 @@ proto.proto.Certificate.toObject = function(includeInstance, msg) {
     alumniId: jspb.Message.getFieldWithDefault(msg, 2, 0),
     nim: jspb.Message.getFieldWithDefault(msg, 3, ""),
     majorStudy: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    graduationYear: jspb.Message.getFieldWithDefault(msg, 5, 0),
-    noIjazah: jspb.Message.getFieldWithDefault(msg, 6, ""),
-    created: jspb.Message.getFieldWithDefault(msg, 7, ""),
-    updated: jspb.Message.getFieldWithDefault(msg, 8, ""),
+    entryYear: jspb.Message.getFieldWithDefault(msg, 5, 0),
+    graduationYear: jspb.Message.getFieldWithDefault(msg, 6, 0),
+    noIjazah: jspb.Message.getFieldWithDefault(msg, 7, ""),
+    created: jspb.Message.getFieldWithDefault(msg, 8, ""),
+    updated: jspb.Message.getFieldWithDefault(msg, 9, ""),
     legalize: (f = msg.getLegalize()) && legalize_message_pb.Legalize.toObject(includeInstance, f)
   };
 
@@ -153,21 +154,25 @@ proto.proto.Certificate.deserializeBinaryFromReader = function(msg, reader) {
       break;
     case 5:
       var value = /** @type {number} */ (reader.readUint32());
-      msg.setGraduationYear(value);
+      msg.setEntryYear(value);
       break;
     case 6:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setNoIjazah(value);
+      var value = /** @type {number} */ (reader.readUint32());
+      msg.setGraduationYear(value);
       break;
     case 7:
       var value = /** @type {string} */ (reader.readString());
-      msg.setCreated(value);
+      msg.setNoIjazah(value);
       break;
     case 8:
       var value = /** @type {string} */ (reader.readString());
-      msg.setUpdated(value);
+      msg.setCreated(value);
       break;
     case 9:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setUpdated(value);
+      break;
+    case 10:
       var value = new legalize_message_pb.Legalize;
       reader.readMessage(value,legalize_message_pb.Legalize.deserializeBinaryFromReader);
       msg.setLegalize(value);
@@ -229,38 +234,45 @@ proto.proto.Certificate.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getGraduationYear();
+  f = message.getEntryYear();
   if (f !== 0) {
     writer.writeUint32(
       5,
       f
     );
   }
-  f = message.getNoIjazah();
-  if (f.length > 0) {
-    writer.writeString(
+  f = message.getGraduationYear();
+  if (f !== 0) {
+    writer.writeUint32(
       6,
       f
     );
   }
-  f = message.getCreated();
+  f = message.getNoIjazah();
   if (f.length > 0) {
     writer.writeString(
       7,
       f
     );
   }
-  f = message.getUpdated();
+  f = message.getCreated();
   if (f.length > 0) {
     writer.writeString(
       8,
       f
     );
   }
+  f = message.getUpdated();
+  if (f.length > 0) {
+    writer.writeString(
+      9,
+      f
+    );
+  }
   f = message.getLegalize();
   if (f != null) {
     writer.writeMessage(
-      9,
+      10,
       f,
       legalize_message_pb.Legalize.serializeBinaryToWriter
     );
@@ -341,10 +353,10 @@ proto.proto.Certificate.prototype.setMajorStudy = function(value) {
 
 
 /**
- * optional uint32 graduation_year = 5;
+ * optional uint32 entry_year = 5;
  * @return {number}
  */
-proto.proto.Certificate.prototype.getGraduationYear = function() {
+proto.proto.Certificate.prototype.getEntryYear = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
 };
 
@@ -353,34 +365,34 @@ proto.proto.Certificate.prototype.getGraduationYear = function() {
  * @param {number} value
  * @return {!proto.proto.Certificate} returns this
  */
-proto.proto.Certificate.prototype.setGraduationYear = function(value) {
+proto.proto.Certificate.prototype.setEntryYear = function(value) {
   return jspb.Message.setProto3IntField(this, 5, value);
 };
 
 
 /**
- * optional string no_ijazah = 6;
+ * optional uint32 graduation_year = 6;
+ * @return {number}
+ */
+proto.proto.Certificate.prototype.getGraduationYear = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.Certificate} returns this
+ */
+proto.proto.Certificate.prototype.setGraduationYear = function(value) {
+  return jspb.Message.setProto3IntField(this, 6, value);
+};
+
+
+/**
+ * optional string no_ijazah = 7;
  * @return {string}
  */
 proto.proto.Certificate.prototype.getNoIjazah = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.proto.Certificate} returns this
- */
-proto.proto.Certificate.prototype.setNoIjazah = function(value) {
-  return jspb.Message.setProto3StringField(this, 6, value);
-};
-
-
-/**
- * optional string created = 7;
- * @return {string}
- */
-proto.proto.Certificate.prototype.getCreated = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
 };
 
@@ -389,16 +401,16 @@ proto.proto.Certificate.prototype.getCreated = function() {
  * @param {string} value
  * @return {!proto.proto.Certificate} returns this
  */
-proto.proto.Certificate.prototype.setCreated = function(value) {
+proto.proto.Certificate.prototype.setNoIjazah = function(value) {
   return jspb.Message.setProto3StringField(this, 7, value);
 };
 
 
 /**
- * optional string updated = 8;
+ * optional string created = 8;
  * @return {string}
  */
-proto.proto.Certificate.prototype.getUpdated = function() {
+proto.proto.Certificate.prototype.getCreated = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 8, ""));
 };
 
@@ -407,18 +419,36 @@ proto.proto.Certificate.prototype.getUpdated = function() {
  * @param {string} value
  * @return {!proto.proto.Certificate} returns this
  */
-proto.proto.Certificate.prototype.setUpdated = function(value) {
+proto.proto.Certificate.prototype.setCreated = function(value) {
   return jspb.Message.setProto3StringField(this, 8, value);
 };
 
 
 /**
- * optional Legalize legalize = 9;
+ * optional string updated = 9;
+ * @return {string}
+ */
+proto.proto.Certificate.prototype.getUpdated = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 9, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.Certificate} returns this
+ */
+proto.proto.Certificate.prototype.setUpdated = function(value) {
+  return jspb.Message.setProto3StringField(this, 9, value);
+};
+
+
+/**
+ * optional Legalize legalize = 10;
  * @return {?proto.proto.Legalize}
  */
 proto.proto.Certificate.prototype.getLegalize = function() {
   return /** @type{?proto.proto.Legalize} */ (
-    jspb.Message.getWrapperField(this, legalize_message_pb.Legalize, 9));
+    jspb.Message.getWrapperField(this, legalize_message_pb.Legalize, 10));
 };
 
 
@@ -427,7 +457,7 @@ proto.proto.Certificate.prototype.getLegalize = function() {
  * @return {!proto.proto.Certificate} returns this
 */
 proto.proto.Certificate.prototype.setLegalize = function(value) {
-  return jspb.Message.setWrapperField(this, 9, value);
+  return jspb.Message.setWrapperField(this, 10, value);
 };
 
 
@@ -445,7 +475,7 @@ proto.proto.Certificate.prototype.clearLegalize = function() {
  * @return {boolean}
  */
 proto.proto.Certificate.prototype.hasLegalize = function() {
-  return jspb.Message.getField(this, 9) != null;
+  return jspb.Message.getField(this, 10) != null;
 };
 
 

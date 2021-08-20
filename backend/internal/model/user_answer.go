@@ -87,7 +87,6 @@ func (u *UserAnswer) List(ctx context.Context, db *sql.DB) (*proto.TracerList, e
 		)
 
 		if alumni.Nik != nik {
-			println("cool", alumni.Nik, nik)
 			if len(alumni.Nik) > 0 {
 				out.Answer = append(out.Answer, &alumni)
 			}

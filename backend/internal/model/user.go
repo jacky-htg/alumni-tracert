@@ -141,6 +141,12 @@ func (u *User) GetUserLogin(ctx context.Context, db *sql.DB) error {
 }
 
 func (u *User) ListQuery(ctx context.Context, db *sql.DB, in *proto.ListInput) (string, []interface{}, *proto.ListInput, error) {
+	select {
+	case <-ctx.Done():
+		return "", nil, nil, util.ContextError(ctx)
+	default:
+	}
+
 	query := `SELECT id, email, name, is_actived, user_type, created, updated FROM users`
 	where := []string{}
 	paramQueries := []interface{}{}
@@ -225,4 +231,76 @@ func (u *User) Get(ctx context.Context, db *sql.DB) error {
 	u.Pb.Updated = updatedAt.String()
 
 	return nil
+}
+
+func (u *User) GetAdmin(ctx context.Context, db *sql.DB) ([]*proto.User, error) {
+	select {
+	case <-ctx.Done():
+		return nil, util.ContextError(ctx)
+	default:
+	}
+
+	var list []*proto.User
+	rows, err := db.QueryContext(ctx, `SELECT name, email FROM users WHERE user_type = 3`)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		err := util.ContextError(ctx)
+		if err != nil {
+			return nil, err
+		}
+
+		var pbUser proto.User
+		err = rows.Scan(&pbUser.Name, &pbUser.Email)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "scan data: %v", err)
+		}
+
+		list = append(list, &pbUser)
+	}
+
+	if rows.Err() != nil {
+		return nil, status.Error(codes.Internal, rows.Err().Error())
+	}
+
+	return list, nil
+}
+
+func (u *User) GetPejabat(ctx context.Context, db *sql.DB) ([]*proto.User, error) {
+	select {
+	case <-ctx.Done():
+		return nil, util.ContextError(ctx)
+	default:
+	}
+
+	var list []*proto.User
+	rows, err := db.QueryContext(ctx, `SELECT name, email FROM users WHERE user_type = 4`)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		err := util.ContextError(ctx)
+		if err != nil {
+			return nil, err
+		}
+
+		var pbUser proto.User
+		err = rows.Scan(&pbUser.Name, &pbUser.Email)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "scan data: %v", err)
+		}
+
+		list = append(list, &pbUser)
+	}
+
+	if rows.Err() != nil {
+		return nil, status.Error(codes.Internal, rows.Err().Error())
+	}
+
+	return list, nil
 }

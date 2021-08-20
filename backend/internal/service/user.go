@@ -3,17 +3,14 @@ package service
 import (
 	"context"
 	"database/sql"
-	"os"
 	"time"
 
 	"tracert/internal/model"
-	"tracert/internal/pkg/email"
 	"tracert/internal/pkg/token"
 	"tracert/internal/pkg/util"
 	"tracert/internal/validation"
 	"tracert/proto"
 
-	"github.com/sendgrid/sendgrid-go/helpers/mail"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -38,7 +35,7 @@ func (u *AlumniTracertServer) UserCreate(ctx context.Context, in *proto.User) (*
 		return nil, err
 	}
 
-	err = u.sendEmailHelper(ctx, user, *password)
+	err = RegistrationEmailHelper(ctx, user, *password)
 	if err != nil {
 		tx.Rollback()
 		util.LogError(u.Log, "send email create user", err)
@@ -164,27 +161,4 @@ func (u *AlumniTracertServer) userCreateHelper(ctx context.Context, in *proto.Us
 	userModel.Pb.Token = token
 
 	return &userModel.Pb, &userModel.Password, nil
-}
-
-func (u *AlumniTracertServer) sendEmailHelper(ctx context.Context, in *proto.User, password string) error {
-	// send email registration info
-	from := mail.NewEmail(os.Getenv("SENDGRID_FROM_NAME"), os.Getenv("SENDGRID_FROM_EMAIL"))
-	p := mail.NewPersonalization()
-	tos := []*mail.Email{
-		mail.NewEmail(in.GetName(), in.GetEmail()),
-	}
-	p.AddTos(tos...)
-
-	p.SetDynamicTemplateData("name", in.GetName())
-	p.SetDynamicTemplateData("username", in.Email)
-	p.SetDynamicTemplateData("password", password)
-	p.SetDynamicTemplateData("app_name", os.Getenv("APP_NAME"))
-	p.SetDynamicTemplateData("cs_email", os.Getenv("CUSTOMERSERVICE_EMAIL"))
-	p.SetDynamicTemplateData("cs_phone", os.Getenv("CUSTOMERSERVICE_PHONE"))
-
-	err := email.SendMailV3(from, p, os.Getenv("SENDGRID_TEMPLATE_NEW_USER"))
-	if err != nil {
-		return status.Errorf(codes.Internal, "send new account email: %v", err)
-	}
-	return nil
 }

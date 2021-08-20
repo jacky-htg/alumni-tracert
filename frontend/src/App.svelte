@@ -10,7 +10,8 @@
 	import AppraiserRegistration from './routes/AppraiserRegistration.svelte'
 	import DetailAlumni from './routes/AlumniDetail.svelte';
 	import Upload from './routes/Upload.svelte';
-	import Download from './routes/Download.svelte';
+	import QrIjazahLandingPage from './routes/ijazah/[id].svelte';
+	import QrTranscriptLandingPage from './routes/transcript/[id].svelte';
 	import Login from './routes/Login.svelte';
 	import ListAlumni from './routes/list-alumni.svelte';
 	import ELegalisir from './routes/e-legalisir.svelte';
@@ -38,11 +39,16 @@
 	<Route path={PATH_URL.TENTANG_KAMI} component={TentangKami} />
 	<Route path={PATH_URL.ALUMNI_REGISTRATION} component={AlumniRegistration} />
 	<Route path={PATH_URL.APPRAISER_REGISTRATION} component={AppraiserRegistration} />
+	<Route path={PATH_URL.QR_IJAZAH_LANDING_PAGE} let:params>
+		<QrIjazahLandingPage id="{params.id}"/>
+	</Route>
+	<Route path={PATH_URL.QR_TRANSCRIPT_LANDING_PAGE} let:params>
+		<QrTranscriptLandingPage id="{params.id}"/>
+	</Route>
 	<ProtectedRoute path={PATH_URL.DASHBOARD} component={Dashboard} />
 	<ProtectedRoute path={PATH_URL.KUISIONER_FORM} component={KuisionerForm} />
 	<ProtectedRoute path={PATH_URL.IJAZAH} component={Ijazah} />
 	<ProtectedRoute path={PATH_URL.UPLOAD_IJAZAH} component={Upload} />
-	<ProtectedRoute path={PATH_URL.DOWNLOAD_IJAZAH} component={Download} />
 	<ProtectedRoute path={PATH_URL.ADMIN_ALUMNI} component={ListAlumni} />
 	<ProtectedRoute path={PATH_URL.ADMIN_E_LEGALISIR} component={ELegalisir} />
 	<ProtectedRoute path={PATH_URL.ADMIN_ALUMNI_DETAIL} component={DetailAlumni} />
