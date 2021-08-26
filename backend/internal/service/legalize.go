@@ -379,6 +379,58 @@ func (u *AlumniTracertServer) LegalizeDone(ctx context.Context, in *proto.Legali
 	return &legalizeModel.Pb, nil
 }
 
+func (u *AlumniTracertServer) LegalizeExtended(ctx context.Context, in *proto.Legalize) (*proto.Legalize, error) {
+	select {
+	case <-ctx.Done():
+		return nil, util.ContextError(ctx)
+	default:
+	}
+
+	ctx, err := GetUserLogin(ctx, u.Db)
+	if err != nil {
+		util.LogError(u.Log, "Get user login on extended legalize", err)
+		return nil, err
+	}
+
+	var legalizeValidation validation.Legalize
+	if err := legalizeValidation.Extended(ctx, in, u.Db); err != nil {
+		util.LogError(u.Log, "validation on extended legalize", err)
+		return nil, err
+	}
+
+	if legalizeValidation.Model.Pb.IsOffline {
+		err = legalizeValidation.Model.ExtendedOffline(ctx, u.Db)
+	} else {
+		err = legalizeValidation.Model.ExtendedOnline(ctx, u.Db)
+	}
+
+	if err != nil {
+		util.LogError(u.Log, "Extended Legalize", err)
+		return nil, err
+	}
+
+	if legalizeValidation.Model.Pb.IsOffline {
+		var userModel model.User
+		list, err := userModel.GetAdmin(ctx, u.Db)
+		if err != nil {
+			util.LogError(u.Log, "get admon on notif legalisir status as submited", err)
+		}
+
+		for _, admin := range list {
+			if err := NotifLegalisirEmailHelper(ctx, map[string]string{
+				"Name":         admin.Name,
+				"Email":        admin.Email,
+				"NoIjazah":     legalizeValidation.Model.Pb.NoIjazah,
+				"StatusIjazah": "Permintaan Perpanjangan Legalisir",
+			}); err != nil {
+				util.LogError(u.Log, "send email notif legalisir status as extended request", err)
+			}
+		}
+	}
+
+	return &legalizeValidation.Model.Pb, nil
+}
+
 func (u *AlumniTracertServer) LegalizeCheck(ctx context.Context, in *proto.StringMessage) (*proto.Legalize, error) {
 	select {
 	case <-ctx.Done():

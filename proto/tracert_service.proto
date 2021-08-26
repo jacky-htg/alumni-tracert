@@ -47,6 +47,7 @@ service TracertService {
   rpc LegalizeRejected(Legalize) returns (Legalize) {} 
   rpc LegalizeApproved(StringMessage) returns (Legalize) {}
   rpc LegalizeRating(Legalize) returns (StringMessage) {}
+  rpc LegalizeExtended(Legalize) returns (Legalize) {}
 
   rpc UserAnswerCreate(UserAnswer) returns (UserAnswer) {}
   rpc TracerCreate(Tracer) returns (Tracer) {}

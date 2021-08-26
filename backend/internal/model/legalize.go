@@ -316,6 +316,73 @@ func (u *Legalize) GetByAlumniId(ctx context.Context, db *sql.DB) (*proto.Certif
 	return &list, nil
 }
 
+func (u *Legalize) ExtendedOffline(ctx context.Context, db *sql.DB) error {
+	select {
+	case <-ctx.Done():
+		return util.ContextError(ctx)
+	default:
+	}
+
+	query := `
+		UPDATE legalizes 
+		SET 
+			is_approved = false,
+			approved_by IS NULL,
+			approved_at IS NULL,
+			is_extend = true,
+			status = 2,
+			rejected_reason IS NULL,
+			created = NOW(), 
+			modified = NOW()
+		WHERE id = ? 
+	`
+
+	stmt, err := db.PrepareContext(ctx, query)
+	if err != nil {
+		return status.Errorf(codes.Internal, "Prepare extendedOffline: %v", err)
+	}
+	defer stmt.Close()
+
+	_, err = stmt.ExecContext(ctx, u.Pb.Id)
+
+	if err != nil {
+		return status.Errorf(codes.Internal, "Exec update: %v", err)
+	}
+
+	return nil
+}
+
+func (u *Legalize) ExtendedOnline(ctx context.Context, db *sql.DB) error {
+	select {
+	case <-ctx.Done():
+		return util.ContextError(ctx)
+	default:
+	}
+
+	query := `
+		UPDATE legalizes 
+		SET 
+			is_extend = true,
+			created = NOW(), 
+			modified = NOW()
+		WHERE id = ? 
+	`
+
+	stmt, err := db.PrepareContext(ctx, query)
+	if err != nil {
+		return status.Errorf(codes.Internal, "Prepare extendedOffline: %v", err)
+	}
+	defer stmt.Close()
+
+	_, err = stmt.ExecContext(ctx, u.Pb.Id)
+
+	if err != nil {
+		return status.Errorf(codes.Internal, "Exec update: %v", err)
+	}
+
+	return nil
+}
+
 func (u *Legalize) Rejected(ctx context.Context, db *sql.DB) error {
 	select {
 	case <-ctx.Done():
