@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package proto;
+option go_package = ".;proto";
+
+message ForgotPasswordRequest {
+  string email = 1;
+}
+
+message ResetPasswordRequest {
+  string token = 1;
+  string new_password = 2;
+  string re_password = 3;
+}
+
+message ChangePasswordRequest {
+  string old_password = 1;
+  string new_password = 2;
+  string re_password = 3;
+}

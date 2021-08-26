@@ -31,6 +31,8 @@ var user_answer_message_pb = require('./user_answer_message_pb.js')
 var user_message_pb = require('./user_message_pb.js')
 
 var certificate_message_pb = require('./certificate_message_pb.js')
+
+var auth_message_pb = require('./auth_message_pb.js')
 const proto = {};
 proto.proto = require('./tracert_service_pb.js');
 
@@ -163,6 +165,246 @@ proto.proto.TracertServicePromiseClient.prototype.login =
       request,
       metadata || {},
       methodDescriptor_TracertService_Login);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.proto.ForgotPasswordRequest,
+ *   !proto.proto.StringMessage>}
+ */
+const methodDescriptor_TracertService_ForgotPassword = new grpc.web.MethodDescriptor(
+  '/proto.TracertService/ForgotPassword',
+  grpc.web.MethodType.UNARY,
+  auth_message_pb.ForgotPasswordRequest,
+  generic_message_pb.StringMessage,
+  /**
+   * @param {!proto.proto.ForgotPasswordRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  generic_message_pb.StringMessage.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.proto.ForgotPasswordRequest,
+ *   !proto.proto.StringMessage>}
+ */
+const methodInfo_TracertService_ForgotPassword = new grpc.web.AbstractClientBase.MethodInfo(
+  generic_message_pb.StringMessage,
+  /**
+   * @param {!proto.proto.ForgotPasswordRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  generic_message_pb.StringMessage.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.proto.ForgotPasswordRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.proto.StringMessage)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.StringMessage>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.TracertServiceClient.prototype.forgotPassword =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/proto.TracertService/ForgotPassword',
+      request,
+      metadata || {},
+      methodDescriptor_TracertService_ForgotPassword,
+      callback);
+};
+
+
+/**
+ * @param {!proto.proto.ForgotPasswordRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.proto.StringMessage>}
+ *     Promise that resolves to the response
+ */
+proto.proto.TracertServicePromiseClient.prototype.forgotPassword =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/proto.TracertService/ForgotPassword',
+      request,
+      metadata || {},
+      methodDescriptor_TracertService_ForgotPassword);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.proto.ResetPasswordRequest,
+ *   !proto.proto.StringMessage>}
+ */
+const methodDescriptor_TracertService_ResetPassword = new grpc.web.MethodDescriptor(
+  '/proto.TracertService/ResetPassword',
+  grpc.web.MethodType.UNARY,
+  auth_message_pb.ResetPasswordRequest,
+  generic_message_pb.StringMessage,
+  /**
+   * @param {!proto.proto.ResetPasswordRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  generic_message_pb.StringMessage.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.proto.ResetPasswordRequest,
+ *   !proto.proto.StringMessage>}
+ */
+const methodInfo_TracertService_ResetPassword = new grpc.web.AbstractClientBase.MethodInfo(
+  generic_message_pb.StringMessage,
+  /**
+   * @param {!proto.proto.ResetPasswordRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  generic_message_pb.StringMessage.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.proto.ResetPasswordRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.proto.StringMessage)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.StringMessage>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.TracertServiceClient.prototype.resetPassword =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/proto.TracertService/ResetPassword',
+      request,
+      metadata || {},
+      methodDescriptor_TracertService_ResetPassword,
+      callback);
+};
+
+
+/**
+ * @param {!proto.proto.ResetPasswordRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.proto.StringMessage>}
+ *     Promise that resolves to the response
+ */
+proto.proto.TracertServicePromiseClient.prototype.resetPassword =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/proto.TracertService/ResetPassword',
+      request,
+      metadata || {},
+      methodDescriptor_TracertService_ResetPassword);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.proto.ChangePasswordRequest,
+ *   !proto.proto.StringMessage>}
+ */
+const methodDescriptor_TracertService_ChangePassword = new grpc.web.MethodDescriptor(
+  '/proto.TracertService/ChangePassword',
+  grpc.web.MethodType.UNARY,
+  auth_message_pb.ChangePasswordRequest,
+  generic_message_pb.StringMessage,
+  /**
+   * @param {!proto.proto.ChangePasswordRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  generic_message_pb.StringMessage.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.proto.ChangePasswordRequest,
+ *   !proto.proto.StringMessage>}
+ */
+const methodInfo_TracertService_ChangePassword = new grpc.web.AbstractClientBase.MethodInfo(
+  generic_message_pb.StringMessage,
+  /**
+   * @param {!proto.proto.ChangePasswordRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  generic_message_pb.StringMessage.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.proto.ChangePasswordRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.proto.StringMessage)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.StringMessage>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.TracertServiceClient.prototype.changePassword =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/proto.TracertService/ChangePassword',
+      request,
+      metadata || {},
+      methodDescriptor_TracertService_ChangePassword,
+      callback);
+};
+
+
+/**
+ * @param {!proto.proto.ChangePasswordRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.proto.StringMessage>}
+ *     Promise that resolves to the response
+ */
+proto.proto.TracertServicePromiseClient.prototype.changePassword =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/proto.TracertService/ChangePassword',
+      request,
+      metadata || {},
+      methodDescriptor_TracertService_ChangePassword);
 };
 
 
