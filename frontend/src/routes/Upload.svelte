@@ -237,33 +237,33 @@
 
       <div class="ijazah-wrapper">
         {#each ijazahList as ijazah, idx}
-          <div class="izajah-card relative rounded-md bg-white shadow p-6 mb-6">
-            <p class="w-3/4 text-m text-gray-500">
+          <div class="relative p-6 mb-6 bg-white rounded-md shadow izajah-card">
+            <p class="w-3/4 text-gray-500 text-m">
               Jurusan: 
               <span class="font-bold text-black">
                 {ijazah.proto.getMajorStudy()}
               </span>
             </p>
-            <p class="w-3/4 text-m text-gray-500">
+            <p class="w-3/4 text-gray-500 text-m">
               Tahun Kelulusan: 
               <span class="font-bold text-black">
                 {ijazah.proto.getGraduationYear()}
               </span>
             </p>
-            <p class="w-3/4 text-m text-gray-500">
+            <p class="w-3/4 text-gray-500 text-m">
               NIM: 
               <span class="font-bold text-black">
                 {ijazah.proto.getNim()}
               </span>
             </p>
-            <p class="w-3/4 mb-8 text-m text-gray-500">
+            <p class="w-3/4 mb-8 text-gray-500 text-m">
               No. Ijazah: 
               <span class="font-bold text-black">
                 {ijazah.proto.getNoIjazah()}
               </span>
             </p>
             {#if ijazah.proto.getLegalize().getStatus()}
-            <p class="absolute top-6 right-6 text-m text-gray-500">
+            <p class="absolute text-gray-500 top-6 right-6 text-m">
               Jenis Legalisir: 
               <span class="font-bold text-black">
                 {ijazah.proto.getLegalize().getIsOffline() ? 'Legalisir Cap Basah' : 'E-Legalisir'}
@@ -273,26 +273,51 @@
             
             {#if  ijazah.proto.getLegalize().getId()}
               <p class="text-xl text-gray-500">Anda telah mengajukan {ijazah.proto.getLegalize().getIsOffline() ? 'Legalisir Cap Basah' : ' E-legalisir '} dengan status saat ini:</p>
+
+              <div class="flex mt-12 mb-4">
+                <div class="w-1/4 mr-8">
+                  <hr class="border-4 {ijazah.proto.getLegalize().getStatus() === 1 ? 'border-indigo-600' : 'border-gray-200'}">
+                  <div class="my-4">
+                    <p class="my-4 text-lg font-semibold {ijazah.proto.getLegalize().getStatus() === 1 ? 'text-indigo-600' : 'text-gray-200'}">Submitted</p>
+                  </div>
+                </div>
+                <div class="w-1/4 mr-8">
+                  <hr class="border-4 {ijazah.proto.getLegalize().getStatus() === 2 ? 'border-indigo-600' : 'border-gray-200'}">
+                  <div class="my-4">
+                    <p class="my-4 text-lg font-semibold {ijazah.proto.getLegalize().getStatus() === 2 ? 'text-indigo-600' : 'text-gray-200'}">Diverifikasi</p>
+                  </div>
+                </div>
+                <div class="w-1/4 mr-8">
+                  <hr class="border-4 {ijazah.proto.getLegalize().getStatus() === 2 ? 'border-indigo-600' : 'border-gray-200'}">
+                  <div class="my-4">
+                    <p class="my-4 text-lg font-semibold {ijazah.proto.getLegalize().getStatus() === 3 ? 'text-indigo-600' : 'text-gray-200'}">Disetujui</p>
+                  </div>
+                </div>
+                <div class="w-1/4 mr-8">
+                  <hr class="border-4 {ijazah.proto.getLegalize().getStatus() === 0 ? 'border-red-500' : 'border-gray-200'}">
+                  <div class="my-4">
+                    <p class="my-4 text-lg font-semibold {ijazah.proto.getLegalize().getStatus() === 3 ? 'text-red-500' : 'text-gray-200'}">Ditolak</p>
+                  </div>
+                </div>
+              </div>
+
               {#if ijazah.proto.getLegalize().getStatus() === 0}
-                <div class="my-8">
+                <div class="mb-4">
                   <p class="mb-4 text-4xl font-semibold text-red-500">DITOLAK</p>
                   <p class="w-3/4 text-xl">Silahkan ajukan e-legalisir ulang, atau hubungi admin untuk info lebih lanjut</p>
                 </div>
               {:else if ijazah.proto.getLegalize().getStatus() === 1}
-                <div class="my-8">
-                  <p class="my-4 text-4xl font-semibold text-yellow-700">SUBMITTED</p>
-                  <p class="w-3/4 text-xl">Dokumen sedang dalam proses pengecekan, mohon menunggu proses verifikasi</p>
+                <div class="mb-4">
+                  <p class="w-full text-xl">Dokumen sedang dalam proses pengecekan, mohon menunggu proses verifikasi</p>
                 </div>
               {:else if ijazah.proto.getLegalize().getStatus() === 2}
-                <div class="my-8">
-                  <p class="my-4 text-4xl font-semibold text-blue-500">DIVERIFIKASI</p>
-                  <p class="w-3/4 text-xl">Dokumen sedang dalam tahap verifikasi, mohon menunggu proses tanda tangan dokumen</p>
+                <div class="mb-4">
+                  <p class="w-full text-xl">Dokumen sedang dalam tahap verifikasi, mohon menunggu proses tanda tangan dokumen</p>
                 </div>
                 {:else if ijazah.proto.getLegalize().getStatus() === 3}
-                <div class="my-8">
-                  <p class="my-4 text-4xl font-semibold text-green-700">DISETUJUI</p>
+                <div class="mb-4">
                   {#if ijazah.proto.getLegalize().getIsOffline()}
-                    <p class="w-3/4 text-xl">Dokumen telah diverifikasi dan disetujui, silahkan untuk mengambil dokumen ijazah atau transkrip nilai yang sudah disetujui di kampus</p>
+                    <p class="w-full text-xl">Dokumen telah diverifikasi dan disetujui, silahkan untuk mengambil dokumen ijazah atau transkrip nilai yang sudah disetujui di kampus</p>
                   {:else}
                     <p class="w-3/4 text-xl">Dokumen telah diverifikasi dan disetujui, silahkan untuk mengunduh dokumen ijazah atau transkrip nilai yang sudah disetujui melalui tombol dibawah ini</p>
                   {/if}
@@ -335,8 +360,8 @@
 
             {#if !ijazah.proto.getLegalize().getId() || ijazah.proto.getLegalize().getStatus() === 0 }
             
-            <div class="flex justify-around items-center">
-              <div class="mb-12 w-2/5">
+            <div class="flex items-center justify-around">
+              <div class="w-2/5 mb-12">
                 <label for="ijazah" class="block mb-4 text-base font-medium text-gray-700">
                   Upload ijazah
                 </label>
@@ -351,7 +376,7 @@
                 />
               </div>
   
-              <div class="mb-12 w-2/5">
+              <div class="w-2/5 mb-12">
                 <label for="transcript" class="block mb-4 text-base font-medium text-gray-700">
                   Upload transkrip nilai
                 </label>
@@ -367,7 +392,7 @@
               </div>
               
             </div>
-            <div class="px-4 py-3 mt-10 text-left flex justify-between bg-gray-50 sm:px-6">
+            <div class="flex justify-between px-4 py-3 mt-10 text-left bg-gray-50 sm:px-6">
               <div class="flex items-center">
                 <p class='mr-6'>Jenis Legalisir:</p>
                 <div class="flex items-center mr-4">

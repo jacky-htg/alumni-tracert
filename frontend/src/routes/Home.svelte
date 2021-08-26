@@ -14,10 +14,10 @@
   // let src = 'images/poltekkes-medan.jpeg'
 </script>
 
-<div class="flex flex-wrap w-full h-full">
-  <div class="flex w-full p-4 md:w-2/3 align-center">
+<div class="flex flex-wrap w-full h-full min-h-screen">
+  <div class="flex items-center w-full p-4 md:w-2/3">
 
-    <main class="max-w-full px-4 mx-auto mt-24 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 lg:px-8">
+    <main class="max-w-full px-4 mx-auto sm:px-6 lg:px-8">
       <div class="sm:text-center lg:text-left">
         <img class="object-cover w-64 h-full mb-4" src={Images.logo_poltekkes} alt="">
         <h1 class="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl md:text-4xl">
@@ -63,6 +63,6 @@
 
   </div>
   <div class="flex w-full mt-4 md:mt-0 md:w-1/3 lg:inset-y-0 lg:right-0">
-    <img class="object-cover w-full h-56 sm:h-72 md:h-96 lg:w-full lg:h-full" src={Images.img_poltekkes} alt="Foto poltekkes">
+    <img class="object-cover w-full h-56 sm:h-72 md:h-full lg:w-full lg:h-full" src={Images.img_poltekkes} alt="Foto poltekkes">
   </div>
 </div>
