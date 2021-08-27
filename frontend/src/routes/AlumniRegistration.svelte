@@ -9,6 +9,7 @@
   import { PATH_URL } from '../helper/path'
   import { navigate } from 'svelte-routing'
   import Cookies from 'js-cookie'
+  import Yearpicker from '../components/Yearpicker.svelte';
 
   const userProto = new User()
   const alumniProto = new Alumni()
@@ -110,6 +111,7 @@
       <div class="sm:text-center lg:text-left">
         
         <KuisionerNoOpening/>
+        <Yearpicker />
 
         <h2 class="mb-8 text-xl font-semibold text-black">IDENTITAS ALUMNI</h2>
           <div class="overflow-hidden">
