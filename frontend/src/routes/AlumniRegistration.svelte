@@ -111,6 +111,7 @@
       <div class="sm:text-center lg:text-left">
         
         <KuisionerNoOpening/>
+        
         <Yearpicker />
 
         <h2 class="mb-8 text-xl font-semibold text-black">IDENTITAS ALUMNI</h2>

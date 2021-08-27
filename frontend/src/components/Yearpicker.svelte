@@ -129,16 +129,20 @@
     <div slot="trigger">
       <slot {yearSelected}>
         {#if !trigger}
-        <input type="text" value="{yearSelected}"/>
+        <input type="text" class="block w-full px-4 py-2 mt-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-m" value="{yearSelected}"/>
         {/if}
       </slot>
     </div>
     <div slot="contents">
-      <div class="calendar">
-        <div><span on:click="{() => {changeYearGroup(-20)}}">&lt;</span>{minYear} - {maxYear} <span on:click="{() => {changeYearGroup(20)}}">&gt;</span></div>
-        <div>
+      <div class="p-12 rounded-md calendar">
+        <div class="flex justify-between mb-8">
+          <span on:click="{() => {changeYearGroup(-20)}}" class="cursor-pointer hover:font-bold hover:text-indigo-500">&lt;</span>
+          <span class="text-lg font-bold text-black">{minYear} - {maxYear}</span>
+          <span on:click="{() => {changeYearGroup(20)}}" class="cursor-pointer hover:font-bold hover:text-indigo-500">&gt;</span>
+        </div>
+        <div class="grid grid-cols-4 gap-4">
           {#each years as year }
-          <div><button on:click="{selectYear}">{year}</button></div>
+          <button on:click="{selectYear}" class="hover:font-bold hover:text-indigo-500">{year}</button>
           {/each}
         </div>
       </div>
@@ -158,16 +162,6 @@
   *:before,
   *:after {
     box-sizing: inherit;
-  }
-
-  .calendar {
-    box-sizing: border-box;
-    position: relative;
-    overflow: hidden;
-    user-select: none;
-    width: 100vw;
-    padding: 10px;
-    padding-top: 0;
   }
 
   button {
