@@ -38,8 +38,7 @@
   // let password = 'hariINI@2021'
   let state = {
     username: '',
-    password: '',
-    emptyUsername: false,
+    password: ''
   }
   const handleInput = (e) => {
     const { value, name } = e.target
@@ -65,19 +64,6 @@
       notifications.danger(e.message)
     }
   };
-
-  const forgotPass = async () => {
-    if (state.username !== '') {
-      // try {
-        
-      // } catch(e) {
-      //   isLoading = false;
-      //   notifications.danger(e.message)
-      // }
-    } else {
-      state.emptyUsername = true;
-    }
-  }
   
 </script>
 <div class="container flex flex-col items-center justify-center w-screen h-screen mx-auto">
@@ -92,7 +78,6 @@
         placeholder="username"
         type="text"
         required
-        error={state.emptyUsername}
       />
       <Input
         label="Password"
@@ -105,6 +90,6 @@
       />
       <Button isLoading={isLoading}>Login</Button>
 
-      <p on:click="{forgotPass}" class="cursor-pointer text-center mt-6 text-md text-blue-600">Lupa Password ?</p>
+      <p on:click="{() => navigate(PATH_URL.FORGOT_PASS, { replace: false })}" class="cursor-pointer text-center mt-6 text-md text-blue-600">Lupa Password ?</p>
   </form>
 </div>
