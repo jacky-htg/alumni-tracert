@@ -39,19 +39,24 @@
   const usertype = Cookies.get('usertype');
   onMount(async () => {
 		try {
-      if(!urlParams.has('id')) {
-        navigate(PATH_URL.ADMIN_E_LEGALISIR, { replace: true })
+      if (!(usertype === 3 || usertype === 4)) {
+				notifications.danger("permission denied")
+				navigate(`${PATH_URL.DASHBOARD}`, { replace: false })
+			} else {
+        if(!urlParams.has('id')) {
+          navigate(PATH_URL.ADMIN_E_LEGALISIR, { replace: true })
+        }
+        isLoadingPage = true;
+        const legalizeProto = new Legalize()
+        legalizeProto.setId(id)
+        legalizeProtoResp = await legalizeGetCall(legalizeProto);
+        legalize = legalizeProtoResp.toObject();
+        const alumniProto = new Alumni();
+        alumniProto.setId(legalize.alumniId);
+        let alumniProtoresp = await alumniCall(alumniProto);
+        alumniData = alumniProtoresp.toObject();
+        isLoadingPage = false;
       }
-      isLoadingPage = true;
-      const legalizeProto = new Legalize()
-      legalizeProto.setId(id)
-			legalizeProtoResp = await legalizeGetCall(legalizeProto);
-      legalize = legalizeProtoResp.toObject();
-      const alumniProto = new Alumni();
-      alumniProto.setId(legalize.alumniId);
-      let alumniProtoresp = await alumniCall(alumniProto);
-      alumniData = alumniProtoresp.toObject();
-      isLoadingPage = false;
     } catch(e) {
       errorServiceHandling(e)
       isLoadingPage = false;

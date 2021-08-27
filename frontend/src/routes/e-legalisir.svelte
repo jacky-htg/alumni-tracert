@@ -77,11 +77,16 @@
 
 	onMount(async () => {
 		try {
-			isLoadingTable = true;
-			await fetchData();
-			isLoadingTable = false;
-			if(legalisirList.length < limit) {
-				isLastPage = true;
+			if (!(usertype === 3 || usertype === 4)) {
+				notifications.danger("permission denied")
+				navigate(`${PATH_URL.DASHBOARD}`, { replace: false })
+			} else {
+				isLoadingTable = true;
+				await fetchData();
+				isLoadingTable = false;
+				if(legalisirList.length < limit) {
+					isLastPage = true;
+				}
 			}
     } catch(e) {
 			onError(e);

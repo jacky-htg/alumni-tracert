@@ -15,6 +15,7 @@
 
   let alumni = {}
   let isLoadingPage = true;
+  const usertype = Cookies.get('usertype');
 
   async function alumniCall(proto){
     var deps = {
@@ -29,16 +30,21 @@
 
   onMount(async () => {
 		try {
-      isLoadingPage = true;
-      const urlParams = new URLSearchParams(window.location.search);
-      if(!urlParams.has('id')) {
-        navigate(PATH_URL.LIST_ALUMNI, { replace: true })
+      if (!(usertype === 3 || usertype === 4)) {
+				notifications.danger("permission denied")
+				navigate(`${PATH_URL.DASHBOARD}`, { replace: false })
+			} else {
+        isLoadingPage = true;
+        const urlParams = new URLSearchParams(window.location.search);
+        if(!urlParams.has('id')) {
+          navigate(PATH_URL.LIST_ALUMNI, { replace: true })
+        }
+        const alumniProto = new Alumni()
+        alumniProto.setId(urlParams.get('id'))
+        const alumniResp = await alumniCall(alumniProto);
+        alumni = alumniResp.toObject();
+        isLoadingPage = false;
       }
-      const alumniProto = new Alumni()
-      alumniProto.setId(urlParams.get('id'))
-			const alumniResp = await alumniCall(alumniProto);
-      alumni = alumniResp.toObject();
-      isLoadingPage = false;
     } catch(e) {
       isLoadingPage = false;
       errorServiceHandling(e)
