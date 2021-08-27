@@ -23,8 +23,8 @@
   
   let yearSelected = today.getFullYear();
   let highlighted = today.getFullYear();
-  let minYear = Math.floor(today.getFullYear()/10) * 10;
-  let maxYear = Math.ceil(today.getFullYear()/10) * 10;
+  let minYear = (Math.floor(today.getFullYear()/10) * 10) - 10;
+  let maxYear = (Math.ceil(today.getFullYear()/10) * 10) -1;
   let isOpen = false;
   let isClosing = false;
 
@@ -135,7 +135,7 @@
     </div>
     <div slot="contents">
       <div class="calendar">
-        <div><span on:click="{() => {changeYearGroup(-10)}}">&lt;</span>{minYear} - {maxYear} <span on:click="{() => {changeYearGroup(10)}}">&gt;</span></div>
+        <div><span on:click="{() => {changeYearGroup(-20)}}">&lt;</span>{minYear} - {maxYear} <span on:click="{() => {changeYearGroup(20)}}">&gt;</span></div>
         <div>
           {#each years as year }
           <div><button on:click="{selectYear}">{year}</button></div>
