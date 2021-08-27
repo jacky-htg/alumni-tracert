@@ -327,11 +327,11 @@ func (u *Legalize) ExtendedOffline(ctx context.Context, db *sql.DB) error {
 		UPDATE legalizes 
 		SET 
 			is_approved = false,
-			approved_by IS NULL,
-			approved_at IS NULL,
+			approved_by = NULL,
+			approved_at = NULL,
 			is_extend = true,
 			status = 2,
-			rejected_reason IS NULL,
+			rejected_reason = NULL,
 			created = NOW(), 
 			modified = NOW()
 		WHERE id = ? 

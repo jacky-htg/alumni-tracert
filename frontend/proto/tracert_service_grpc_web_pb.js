@@ -2468,5 +2468,85 @@ proto.proto.TracertServicePromiseClient.prototype.getTrace =
 };
 
 
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.proto.EmptyMessage,
+ *   !proto.proto.Tracer>}
+ */
+const methodDescriptor_TracertService_GetLastTrace = new grpc.web.MethodDescriptor(
+  '/proto.TracertService/GetLastTrace',
+  grpc.web.MethodType.UNARY,
+  generic_message_pb.EmptyMessage,
+  user_answer_message_pb.Tracer,
+  /**
+   * @param {!proto.proto.EmptyMessage} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  user_answer_message_pb.Tracer.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.proto.EmptyMessage,
+ *   !proto.proto.Tracer>}
+ */
+const methodInfo_TracertService_GetLastTrace = new grpc.web.AbstractClientBase.MethodInfo(
+  user_answer_message_pb.Tracer,
+  /**
+   * @param {!proto.proto.EmptyMessage} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  user_answer_message_pb.Tracer.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.proto.EmptyMessage} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.proto.Tracer)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.Tracer>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.TracertServiceClient.prototype.getLastTrace =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/proto.TracertService/GetLastTrace',
+      request,
+      metadata || {},
+      methodDescriptor_TracertService_GetLastTrace,
+      callback);
+};
+
+
+/**
+ * @param {!proto.proto.EmptyMessage} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.proto.Tracer>}
+ *     Promise that resolves to the response
+ */
+proto.proto.TracertServicePromiseClient.prototype.getLastTrace =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/proto.TracertService/GetLastTrace',
+      request,
+      metadata || {},
+      methodDescriptor_TracertService_GetLastTrace);
+};
+
+
 module.exports = proto.proto;
 
