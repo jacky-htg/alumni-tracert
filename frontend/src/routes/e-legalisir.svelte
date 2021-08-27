@@ -199,7 +199,6 @@
 	}
 
   const onPrint = (data) => {
-    console.log(`data`, data)
     printJS(data, 'image');
     // const ijazah = window.open('https://bpodt-staging.oss-ap-southeast-5.aliyuncs.com/' + data.ijazah)
     // const transcript = window.open('https://bpodt-staging.oss-ap-southeast-5.aliyuncs.com/' + data.transcript)
