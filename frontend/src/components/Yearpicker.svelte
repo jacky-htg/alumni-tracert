@@ -21,7 +21,7 @@
 
   export let trigger = null;
   
-  let yearSelected = today.getFullYear();
+  let yearSelected = "";
   let highlighted = today.getFullYear();
   let minYear = (Math.floor(today.getFullYear()/10) * 10) - 10;
   let maxYear = (Math.ceil(today.getFullYear()/10) * 10) -1;
@@ -41,11 +41,6 @@
     changeYears();
   });
 
-  function assignmentHandler(formatted) {
-    if (!trigger) return;
-    trigger.innerHTML = formatted;
-  }
-
   function registerSelection(chosen) {
     close();
     return dispatch('yearSelected', chosen);
@@ -59,13 +54,13 @@
         incrementDayHighlighted(-1);
         break;
       case keyCodes.up:
-        incrementDayHighlighted(-5);
+        incrementDayHighlighted(-4);
         break;
       case keyCodes.right:
         incrementDayHighlighted(1);
         break;
       case keyCodes.down:
-        incrementDayHighlighted(5);
+        incrementDayHighlighted(4);
         break;
       case keyCodes.pgup:
         incrementMonth(-1);
@@ -74,7 +69,6 @@
         incrementMonth(1);
         break;
       case keyCodes.escape:
-        // eslint-disable-next-line
         close();
         break;
       case keyCodes.enter:
@@ -102,6 +96,7 @@
 
   const selectYear = (e) => {
     yearSelected = e.currentTarget.innerHTML
+    dispatch('yearSelected', {yearSelected});
     close()
   }
 
@@ -163,11 +158,6 @@
   *:after {
     box-sizing: inherit;
   }
-
-  button {
-    display:inline-block;
-  }
-
   @media (min-width: 480px) {
     .calendar {
       height: auto;
