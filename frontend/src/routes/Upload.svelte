@@ -1,4 +1,5 @@
 <script>
+  import { navigate } from 'svelte-routing'
 	import Sidebar from "../components/Sidebar.svelte";
 	import Upload from "../components/Upload.svelte";
 	import { notifications } from "../helper/toast";
@@ -8,7 +9,8 @@
   import { Legalize } from '../../proto/legalize_message_pb'
   import { EmptyMessage, StringMessage, UintMessage } from '../../proto/generic_message_pb'
   import LegalizeService from '../services/legalize'
-  import { TracertServicePromiseClient, LegalizeExtende } from '../../proto/tracert_service_grpc_web_pb'
+  import UserService from '../services/user'
+  import { TracertServicePromiseClient } from '../../proto/tracert_service_grpc_web_pb'
   import { SIDEBAR_USER } from '../helper/path'
   import { onMount } from 'svelte'
   import errorServiceHandling from '../helper/error_service'
@@ -158,6 +160,19 @@
     return await legalizeService.extend() 
   }
 
+  async function getLastTrace() {
+    var deps = {
+      proto: {
+        TracertClient: TracertServicePromiseClient
+      }
+    }
+
+    let emptyMessageProto = new EmptyMessage()
+
+    const userService = new UserService(deps, emptyMessageProto)
+    return await userService.getLastTrace();
+  }
+
   const extend = async (idx) => {
     try {
       stringMessage = await extendLegalize(idx)
@@ -249,9 +264,29 @@
     ijazahList = temp
   }
 
-  const download = (link) => {
-    console.log(`link`, link)
-    window.open(link)
+  const download = async (link) => {
+    try {
+      const lastTrace = await getLastTrace();
+
+      const lastTraceCreated = moment(lastTrace.getCreated()).add(2, 'M');
+      const now = moment(new Date());
+      const diff = moment.duration(now.diff(lastTraceCreated)).asDays()
+
+      if (diff > 0) {
+        notifications.info('Anda harus mengisi ulang kuisioner terlebih dahulu sebelum melakukan download legalisir.', 5000)
+        navigate(PATH_URL.KUISIONER_FORM, { replace: false })
+      } else {
+        window.open(link)
+      }
+      // window.print()
+    } catch (e) {
+      errorServiceHandling(e)
+      if (Cookies.get('token') == null) {
+        location = PATH_URL.LOGIN  
+      } 
+      notifications.danger(e.message)
+    }
+    
   }
 </script>
 
@@ -319,6 +354,12 @@
 
               <div class="flex mt-12 mb-4">
                 <div class="w-1/4 mr-8">
+                  <hr class="border-4 {ijazah.proto.getLegalize().getStatus() === 0 ? 'border-red-500' : 'border-gray-200'}">
+                  <div class="my-4">
+                    <p class="my-4 text-lg font-semibold {ijazah.proto.getLegalize().getStatus() === 0 ? 'text-red-500' : 'text-gray-200'}">Ditolak</p>
+                  </div>
+                </div>
+                <div class="w-1/4 mr-8">
                   <hr class="border-4 {ijazah.proto.getLegalize().getStatus() === 1 ? 'border-indigo-600' : 'border-gray-200'}">
                   <div class="my-4">
                     <p class="my-4 text-lg font-semibold {ijazah.proto.getLegalize().getStatus() === 1 ? 'text-indigo-600' : 'text-gray-200'}">Submitted</p>
@@ -334,12 +375,6 @@
                   <hr class="border-4 {ijazah.proto.getLegalize().getStatus() === 3 ? 'border-green-600' : 'border-gray-200'}">
                   <div class="my-4">
                     <p class="my-4 text-lg font-semibold {ijazah.proto.getLegalize().getStatus() === 3 ? 'text-green -600' : 'text-gray-200'}">Disetujui</p>
-                  </div>
-                </div>
-                <div class="w-1/4 mr-8">
-                  <hr class="border-4 {ijazah.proto.getLegalize().getStatus() === 0 ? 'border-red-500' : 'border-gray-200'}">
-                  <div class="my-4">
-                    <p class="my-4 text-lg font-semibold {ijazah.proto.getLegalize().getStatus() === 0 ? 'text-red-500' : 'text-gray-200'}">Ditolak</p>
                   </div>
                 </div>
               </div>
@@ -368,12 +403,12 @@
 
                 {#if !ijazah.proto.getLegalize().getIsOffline()}
                 <div class="flex">
-                  <a target="_new" on:click="{() => download(ijazah.proto.getLegalize().getIjazahSigned())}" class="flex items-center justify-center px-6 py-2 mr-4 text-base font-medium text-green-900 border border-transparent rounded-md bg-green-50 w-max-full hover:bg-white hover:border-green-300 md:text-lg">
+                  <a target="_new" on:click="{() => download(ijazah.proto.getLegalize().getIjazahSigned())}" class="flex cursor-pointer items-center justify-center px-6 py-2 mr-4 text-base font-medium text-green-900 border border-transparent rounded-md bg-green-50 w-max-full hover:bg-white hover:border-green-300 md:text-lg">
                     <i class="mr-4 fas fa-download"></i>
                     Download Legalisir Ijazah
                   </a>
 
-                  <a target="_new" on:click="{() => download(ijazah.proto.getLegalize().getTranscriptSigned())}" class="flex items-center justify-center px-6 py-2 text-base font-medium text-green-900 border border-transparent rounded-md bg-green-50 w-max-full hover:bg-white hover:border-green-300 md:text-lg ">
+                  <a target="_new" on:click="{() => download(ijazah.proto.getLegalize().getTranscriptSigned())}" class="flex cursor-pointer items-center justify-center px-6 py-2 text-base font-medium text-green-900 border border-transparent rounded-md bg-green-50 w-max-full hover:bg-white hover:border-green-300 md:text-lg ">
                     <i class="mr-4 fas fa-download"></i>
                     Download Legalisir Transkrip
                   </a> 
