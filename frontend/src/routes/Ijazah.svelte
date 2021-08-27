@@ -8,6 +8,7 @@
 	import errorServiceHandling from '../helper/error_service'
 	import { PATH_URL } from '../helper/path'
 	import { navigate } from 'svelte-routing'
+	import Yearpicker from '../components/Yearpicker.svelte'
 
 
 	const certificateProto = new Certificate();
@@ -21,18 +22,20 @@
 			case 'jurusan':
 				certificateProto.setMajorStudy(event.currentTarget.value)
 				break;
-			case 'entry-year':
-				certificateProto.setEntryYear(event.currentTarget.value)
-				break;
-			case 'graduation-year':
-				certificateProto.setGraduationYear(event.currentTarget.value)
-				break;
 			case 'no-ijazah':
 				certificateProto.setNoIjazah(event.currentTarget.value)
 				break;
 			default:
 				break;
 		}
+	}
+
+	const changeEntryYear = event => {
+		certificateProto.setEntryYear(event.detail.yearSelected)
+	}
+
+	const changeGraduationYear = event => {
+		certificateProto.setGraduationYear(event.detail.yearSelected)
 	}
 
 	 async function createCertificateCall(){
@@ -57,17 +60,6 @@
 			notifications.danger(e.message)
 		}
 	}
-
-	const entryYears = [];
-  const today = new Date();
-  for (let i =  2013; i <= (today.getFullYear()-4); i++) {
-    entryYears.push(i);
-  }
-
-  const graduationYears = [];
-  for (let i =  2016; i <= (today.getFullYear()-1); i++) {
-    graduationYears.push(i);
-  }
 
 </script>
 
@@ -117,22 +109,12 @@
 
 					<div class="col-span-1">
 						<label for="entry-year" class="block text-sm font-medium text-gray-700">Tahun masuk</label>
-						<select on:blur="{onChange}" id="entry-year" name="entry-year" autocomplete="entry-year" class="block w-full px-4 py-2 mt-1 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-m">
-							<option value="" disabled selected>Pilih Tahun Masuk</option>
-							{#each entryYears as year }
-							<option>{year}</option>
-							{/each}
-						</select>
+						<Yearpicker on:yearSelected={changeEntryYear}/>
 					</div>
 					
 					<div class="col-span-1">
 						<label for="graduation-year" class="block text-sm font-medium text-gray-700">Tahun lulus</label>
-						<select on:blur="{onChange}" id="graduation-year" name="graduation-year" autocomplete="graduation-year" class="block w-full px-4 py-2 mt-1 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-m">
-							<option value="" disabled selected>Pilih Tahun Lulus</option>
-							{#each graduationYears as year }
-							<option>{year}</option>
-							{/each}
-						</select>
+						<Yearpicker on:yearSelected={changeGraduationYear}/>
 					</div>
 
 					<div class="col-span-4">
