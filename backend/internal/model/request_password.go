@@ -24,7 +24,7 @@ func (u *RequestPassword) Create(ctx context.Context, db *sql.DB) error {
 	}
 
 	u.Pb.Id = uuid.New().String()
-	u.Pb.ExpiredAt = time.Now().UTC().Add(time.Hour * 24 * 2).String()
+	u.Pb.ExpiredAt = time.Now().UTC().Add(time.Hour * 24 * 2).Format("2006-01-02 15:04:05")
 
 	stmt, err := db.PrepareContext(ctx, `INSERT INTO request_passwords (id, user_id, expired_at) VALUES (?, ?, ?)`)
 	if err != nil {

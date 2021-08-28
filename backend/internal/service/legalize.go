@@ -193,6 +193,9 @@ func (u *AlumniTracertServer) LegalizeList(in *proto.ListInput, stream proto.Tra
 		pbLegalize.CertificateId = pbCertificate.Id
 		pbLegalize.RejectedReason = rejectedReason.String
 
+		pbLegalize.Ijazah = "https://" + os.Getenv("OSS_BUCKET_DOCUMENT") + "." + os.Getenv("OSS_ENDPOINT") + "/" + pbLegalize.Ijazah
+		pbLegalize.Transcript = "https://" + os.Getenv("OSS_BUCKET_DOCUMENT") + "." + os.Getenv("OSS_ENDPOINT") + "/" + pbLegalize.Transcript
+
 		res := &proto.LegalizeListResponse{
 			ListInput: listResponse,
 			Legalize:  &pbLegalize,
