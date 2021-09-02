@@ -78,7 +78,7 @@
 
   onMount(async () => {
 		try {
-			if (!(usertype === 3 || usertype === 4)) {
+			if (!(usertype === "3" || usertype === "4")) {
 				notifications.danger("permission denied")
 				navigate(`${PATH_URL.DASHBOARD}`, { replace: false })
 			} else {

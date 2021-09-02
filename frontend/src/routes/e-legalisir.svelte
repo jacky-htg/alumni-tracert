@@ -78,7 +78,7 @@
 
 	onMount(async () => {
 		try {
-			if (!(usertype === 3 || usertype === 4)) {
+			if (!(usertype === "3" || usertype === "4")) {
 				notifications.danger("permission denied")
 				navigate(`${PATH_URL.DASHBOARD}`, { replace: false })
 			} else {
@@ -204,25 +204,7 @@
 	}
 
   const onPrint = (data) => {
-    printJS(data, 'image');
-    // const ijazah = window.open('https://bpodt-staging.oss-ap-southeast-5.aliyuncs.com/' + data.ijazah)
-    // const transcript = window.open('https://bpodt-staging.oss-ap-southeast-5.aliyuncs.com/' + data.transcript)
-    // ijazah.print()
-    // transcript.print()
-
-    // try {
-    //   isLoadingApproved = true;
-    //   const legalizeProto = new Legalize()
-    //   legalizeProto.setId(id)
-			
-    //   const legalizeService = new LegalizeService(deps, legalizeProto)
-    //   await legalizeService.done()
-    //   updateStatusList(id, 3)
-    //   isLoadingApproved = false;
-    // } catch(e) {
-    //   isLoadingApproved = false;
-    //   onError(e)
-    // }
+		printJS(data, 'image');
   }
 
 	const onNextPage = async () => {

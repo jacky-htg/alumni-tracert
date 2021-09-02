@@ -436,7 +436,7 @@
               {/if}
             {/if}
 
-            {#if ijazah.isExpired}
+            {#if ijazah.id && ijazah.isExpired}
               <p class="text-xl text-gray-500">Anda telah mengajukan {ijazah.proto.getLegalize().getIsOffline() ? 'Legalisir Cap Basah' : ' E-legalisir '} dengan status saat ini:</p>
               <div class="mb-4">
                 <p class="mb-4 text-4xl font-semibold text-red-500">KADALUARSA</p>

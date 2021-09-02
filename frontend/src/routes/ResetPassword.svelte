@@ -11,7 +11,6 @@
   import { notifications } from '../helper/toast';
   import Cookies from 'js-cookie'
   import { onMount } from 'svelte'
-  import { token } from '../stores/token';
 
   export let id;
 
@@ -104,7 +103,7 @@
         on:input={handleInput}
         bind:value={state.oldPassword}
         placeholder="Password Lama"
-        type="text"
+        type="password"
         required
       />
       {/if}
@@ -114,7 +113,7 @@
         on:input={handleInput}
         bind:value={state.password}
         placeholder="Password Baru"
-        type="text"
+        type="password"
         required
       />
       <Input
@@ -123,7 +122,7 @@
         on:input={handleInput}
         bind:value={state.confirmPassword}
         placeholder="Ulang Password Baru"
-        type="text"
+        type="password"
         required
       />
       <Button isLoading={isLoading}>{id ? 'Ganti Password' : 'Reset Password'}</Button>
