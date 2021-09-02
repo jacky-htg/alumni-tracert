@@ -17,6 +17,9 @@ export const PATH_URL = {
   ADMIN_E_LEGALISIR: "/admin/e-legalisir",
   ADMIN_ALUMNI_DETAIL: "/admin/alumni-detail",
   ADMIN_LEGALISIR_DETAIL: "/admin/legalisir-detail",
+  FORGOT_PASS: "/forgot-password",
+  CHANGE_PASS: "/change-password",
+  RESET_PASS: "/change-password/:id",
 
   IMAGES: "/images",
 };
