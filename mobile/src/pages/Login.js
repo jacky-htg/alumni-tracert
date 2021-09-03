@@ -7,14 +7,16 @@ import {
   Image,
   View,
 } from 'react-native';
+import {PAGES} from '../routes';
 import {Button, Text, Card, Input} from 'react-native-elements';
 
-const Home = () => {
+const Home = ({navigation}) => {
   const [isLoading, setLoading] = useState(false);
   const onPressLogin = () => {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
+      navigation.navigate(PAGES.TAB_LOGIN.path);
     }, 3000);
   };
   return (

@@ -73,6 +73,7 @@ const Home = ({navigation}) => {
           titleStyle={{
             color: '#047857',
           }}
+          onPress={() => navigation.navigate(PAGES.TAB_NOT_LOGIN.path)}
         />
         <Button
           title="Sapa Almuni"
@@ -84,6 +85,7 @@ const Home = ({navigation}) => {
           titleStyle={{
             color: '#047857',
           }}
+          onPress={() => navigation.navigate(PAGES.TAB_NOT_LOGIN.path)}
         />
         <Button
           title="Tentang Kami"
@@ -95,6 +97,7 @@ const Home = ({navigation}) => {
           titleStyle={{
             color: '#047857',
           }}
+          onPress={() => navigation.navigate(PAGES.TAB_NOT_LOGIN.path)}
         />
       </View>
     </ScrollView>
