@@ -17,7 +17,7 @@ const Home = ({navigation}) => {
     setTimeout(() => {
       setLoading(false);
       navigation.navigate(PAGES.TAB_LOGIN.path);
-    }, 3000);
+    }, 1000);
   };
   return (
     <View
