@@ -1,23 +1,40 @@
 import React, {useState} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Image,
-  View,
-} from 'react-native';
+import {Image, View} from 'react-native';
+import {LoginInput} from '../proto/user_message_pb';
+import {TracertServiceClient} from '../proto/Tracert_serviceServiceClientPb';
+import Login from '../services/login';
 import {PAGES} from '../routes';
 import {Button, Text, Card, Input} from 'react-native-elements';
 
 const Home = ({navigation}) => {
   const [isLoading, setLoading] = useState(false);
-  const onPressLogin = () => {
+  const [username, setUserName] = useState('');
+  const [password, setPassword] = useState('');
+  async function loginCall() {
+    var deps = {
+      proto: {
+        TracertClient: TracertServiceClient,
+      },
+    };
+
+    const loginInput = new LoginInput();
+    loginInput.setEmail(username);
+    loginInput.setPassword(password);
+
+    let login = new Login(deps, loginInput);
+    return await login.login();
+  }
+  const onPressLogin = async () => {
     setLoading(true);
-    setTimeout(() => {
+    try {
+      const user = await loginCall();
+      /* setTimeout(() => {
       setLoading(false);
       navigation.navigate(PAGES.TAB_LOGIN.path);
-    }, 1000);
+    }, 1000); */
+    } catch (e) {
+      console.log('ERROR = ', e);
+    }
   };
   return (
     <View
@@ -35,9 +52,22 @@ const Home = ({navigation}) => {
           style={{marginBottom: 24}}
         />
         <Card.Title>Selamat datang, silahkan login</Card.Title>
-        <Input placeholder="Username" />
+        <Input
+          placeholder="Username"
+          onChange={e => {
+            const {value} = e.target;
+            setUserName(value);
+          }}
+        />
 
-        <Input placeholder="Password" secureTextEntry={true} />
+        <Input
+          placeholder="Password"
+          secureTextEntry={true}
+          onChange={e => {
+            const {value} = e.target;
+            setPassword(value);
+          }}
+        />
 
         <Button
           title="Login"
