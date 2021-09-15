@@ -26,6 +26,7 @@ const App = () => {
             key={key}
             name={PAGES[key].path}
             component={PAGES[key].component}
+            options={PAGES[key].options}
           />
         ))}
       </Stack.Navigator>
