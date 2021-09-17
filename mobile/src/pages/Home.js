@@ -16,6 +16,9 @@ const Home = ({navigation}) => {
   const onPressLogin = () => {
     navigation.navigate(PAGES.LOGIN.path);
   };
+  const onPressKuisioner = () => {
+    navigation.navigate(PAGES.KUISIONER.path);
+  };
   return (
     <ScrollView>
       <Image
@@ -54,6 +57,7 @@ const Home = ({navigation}) => {
           buttonStyle={{
             backgroundColor: '#047857',
           }}
+          onPress={onPressKuisioner}
         />
         <Divider
           orientation="horizontal"

@@ -14,5 +14,7 @@ export default class {
       const enableDevTools = window.__GRPCWEB_DEVTOOLS__ || (() => {});
       enableDevTools([this.client]);
     } */
+    const enableDevTools = window.__GRPCWEB_DEVTOOLS__ || (() => {});
+    enableDevTools([this.client]);
   }
 }

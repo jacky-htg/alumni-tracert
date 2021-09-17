@@ -5,7 +5,9 @@ import CDC from './pages/CDC';
 import SapaAlumni from './pages/SapaAlumni';
 import AboutUs from './pages/AboutUs';
 import MyLegalisir from './pages/MyLegalisir';
-import {Icon} from 'react-native-elements';
+import Kuisioner from './pages/Kuisioner';
+import AppraiserRegistration from './pages/AppraiserRegistration';
+import AlumniRegistration from './pages/AlumniRegistration';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -92,6 +94,21 @@ export const PAGES = {
   TAB_NOT_LOGIN: {
     path: 'tab2',
     component: TabNotLogin,
+    options: {headerShown: false},
+  },
+  KUISIONER: {
+    path: 'kuisioner',
+    component: Kuisioner,
+    options: {headerShown: false},
+  },
+  APPRAISER_REGISTRATION: {
+    path: 'appraiser_registration',
+    component: AppraiserRegistration,
+    options: {headerShown: false},
+  },
+  ALUMNI_REGISTRATION: {
+    path: 'alumni_registration',
+    component: AlumniRegistration,
     options: {headerShown: false},
   },
 };
