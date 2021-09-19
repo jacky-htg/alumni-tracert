@@ -1,4 +1,5 @@
 import React from 'react';
+import SplashScreen from './pages/SplashScreen';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import CDC from './pages/CDC';
@@ -9,6 +10,7 @@ import Kuisioner from './pages/Kuisioner';
 import AppraiserRegistration from './pages/AppraiserRegistration';
 import AlumniRegistration from './pages/AlumniRegistration';
 import AddIjazah from './pages/AddIjazah';
+import DetailCertificate from './pages/DetailCertificate';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -77,6 +79,11 @@ export const TabNotLogin = () => {
 };
 
 export const PAGES = {
+  SPLASH: {
+    path: 'splash',
+    component: SplashScreen,
+    options: {headerShown: false},
+  },
   HOME: {
     path: 'home',
     component: Home,
@@ -115,6 +122,11 @@ export const PAGES = {
   ADD_IJAZAH: {
     path: 'add_ijazah',
     component: AddIjazah,
+    options: {headerShown: false},
+  },
+  DETAIL_CERTIFICATE: {
+    path: 'detail_certificate',
+    component: DetailCertificate,
     options: {headerShown: false},
   },
 };

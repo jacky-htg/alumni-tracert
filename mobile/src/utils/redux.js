@@ -41,10 +41,19 @@ const reducer = combineReducers({
     switch (action.type) {
       case actions.GET_MY_LEGALISIR_LIST_SUCCESS:
         if (action.data) {
-          return {
-            ...action.data,
-          };
+          return [...action.data];
         }
+        return state;
+      default:
+        return state;
+    }
+  },
+  detailCertificate: (state = {}, action) => {
+    switch (action.type) {
+      case actions.SET_DETAIL_IJAZAH:
+        return {
+          ...action.data,
+        };
       default:
         return state;
     }

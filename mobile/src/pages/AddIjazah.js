@@ -5,7 +5,7 @@ import {Button, Text, Card, Chip} from 'react-native-elements';
 import SearchDropDown from '../components/SearchDropDown';
 import InputBorderer from '../components/InputBorderer';
 import {Jurusan} from '../utils/constants';
-import {createCertificate} from '../utils/actions';
+import {createCertificate, getLegalizeList} from '../utils/actions';
 
 const AddIjazah = ({navigation}) => {
   const dispatch = useDispatch();
@@ -15,7 +15,7 @@ const AddIjazah = ({navigation}) => {
   const [yearIn, setYearIn] = useState('');
   const [yearOut, setYearOut] = useState('');
   const [noIjazah, setNoIjazah] = useState('');
-  const onPressAdd = () => {
+  const onPressAdd = async () => {
     setLoading(true);
     try {
       const param = {
@@ -25,8 +25,8 @@ const AddIjazah = ({navigation}) => {
         graduationYear: yearOut.id,
         noIjazah,
       };
-      console.log('PARAM = ', param);
-      dispatch(createCertificate(param));
+      await dispatch(createCertificate(param));
+      await dispatch(getLegalizeList());
       setLoading(false);
       navigation.goBack();
     } catch (e) {

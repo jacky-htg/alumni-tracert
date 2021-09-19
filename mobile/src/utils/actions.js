@@ -33,7 +33,13 @@ export const actions = {
   GET_MY_LEGALISIR_LIST_FAILED: 'GET_MY_LEGALISIR_LIST_FAILED',
   CREATE_CERTIFICATE_SUCCESS: 'CREATE_CERTIFICATE_SUCCESS',
   CREATE_CERTIFICATE_FAILED: 'CREATE_CERTIFICATE_FAILED',
+  SET_DETAIL_IJAZAH: 'SET_DETAIL_IJAZAH',
 };
+
+export const setDetailIjazah = data => ({
+  type: actions.SET_DETAIL_IJAZAH,
+  data,
+});
 
 export const createUser = (name, email) => async dispatch => {
   try {

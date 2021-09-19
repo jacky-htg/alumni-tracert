@@ -6,11 +6,11 @@
  * @flow strict-local
  */
 
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {PAGES} from './src/routes';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {Provider} from 'react-redux';
+import {Provider, useDispatch} from 'react-redux';
 import store from './src/utils/redux';
 
 const Stack = createNativeStackNavigator();
@@ -20,7 +20,7 @@ const App = () => {
     <Provider store={store}>
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName="Home"
+          initialRouteName="Splash"
           screenOptions={{
             headerShown: false,
           }}>
