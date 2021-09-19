@@ -39,6 +39,22 @@ message AlumniListResponse {
   ListInput list_input = 2;
 }
 
+message ForgotPasswordRequest {
+  string email = 1;
+}
+
+message ResetPasswordRequest {
+  string token = 1;
+  string new_password = 2;
+  string re_password = 3;
+}
+
+message ChangePasswordRequest {
+  string old_password = 1;
+  string new_password = 2;
+  string re_password = 3;
+}
+
 message Certificate {
   uint64 id = 1;
   uint64 alumni_id = 2;
@@ -147,6 +163,13 @@ message QuestionOption {
   string updated = 6;
 }
 
+message RequestPassword {
+  string id = 1;
+  uint64 user_id = 2;
+  bool is_used = 3;
+  string expired_at = 4;
+}
+
 message Tracer {
   uint64 id = 1;
   uint64 user_id = 2;
@@ -214,8 +237,9 @@ message AlumniRegistrationInput {
 
 service TracertService {
   rpc Login(LoginInput) returns (User) {}
-  /* rpc ForgotPassword(StringMessage) return (StringMessage) {}
-  rpc ChangePassword(ChangePassword) return (StringMessage) {} */
+  rpc ForgotPassword(ForgotPasswordRequest) returns (StringMessage) {}
+  rpc ResetPassword(ResetPasswordRequest) returns (StringMessage) {}
+  rpc ChangePassword(ChangePasswordRequest) returns (StringMessage) {}
  
   rpc QuestionList(QuestionGroupListInput) returns (QuestionGroupList) {}
 
@@ -247,8 +271,10 @@ service TracertService {
   rpc LegalizeRejected(Legalize) returns (Legalize) {} 
   rpc LegalizeApproved(StringMessage) returns (Legalize) {}
   rpc LegalizeRating(Legalize) returns (StringMessage) {}
+  rpc LegalizeExtended(Legalize) returns (Legalize) {}
 
   rpc UserAnswerCreate(UserAnswer) returns (UserAnswer) {}
   rpc TracerCreate(Tracer) returns (Tracer) {}
   rpc GetTrace(EmptyMessage) returns (TracerList){}
+  rpc GetLastTrace(EmptyMessage) returns (Tracer){}
 }

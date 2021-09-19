@@ -153,6 +153,246 @@ proto.proto.TracertServicePromiseClient.prototype.login =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
+ *   !proto.proto.ForgotPasswordRequest,
+ *   !proto.proto.StringMessage>}
+ */
+const methodDescriptor_TracertService_ForgotPassword = new grpc.web.MethodDescriptor(
+  '/proto.TracertService/ForgotPassword',
+  grpc.web.MethodType.UNARY,
+  proto.proto.ForgotPasswordRequest,
+  proto.proto.StringMessage,
+  /**
+   * @param {!proto.proto.ForgotPasswordRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.proto.StringMessage.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.proto.ForgotPasswordRequest,
+ *   !proto.proto.StringMessage>}
+ */
+const methodInfo_TracertService_ForgotPassword = new grpc.web.AbstractClientBase.MethodInfo(
+  proto.proto.StringMessage,
+  /**
+   * @param {!proto.proto.ForgotPasswordRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.proto.StringMessage.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.proto.ForgotPasswordRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.proto.StringMessage)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.StringMessage>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.TracertServiceClient.prototype.forgotPassword =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/proto.TracertService/ForgotPassword',
+      request,
+      metadata || {},
+      methodDescriptor_TracertService_ForgotPassword,
+      callback);
+};
+
+
+/**
+ * @param {!proto.proto.ForgotPasswordRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.proto.StringMessage>}
+ *     Promise that resolves to the response
+ */
+proto.proto.TracertServicePromiseClient.prototype.forgotPassword =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/proto.TracertService/ForgotPassword',
+      request,
+      metadata || {},
+      methodDescriptor_TracertService_ForgotPassword);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.proto.ResetPasswordRequest,
+ *   !proto.proto.StringMessage>}
+ */
+const methodDescriptor_TracertService_ResetPassword = new grpc.web.MethodDescriptor(
+  '/proto.TracertService/ResetPassword',
+  grpc.web.MethodType.UNARY,
+  proto.proto.ResetPasswordRequest,
+  proto.proto.StringMessage,
+  /**
+   * @param {!proto.proto.ResetPasswordRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.proto.StringMessage.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.proto.ResetPasswordRequest,
+ *   !proto.proto.StringMessage>}
+ */
+const methodInfo_TracertService_ResetPassword = new grpc.web.AbstractClientBase.MethodInfo(
+  proto.proto.StringMessage,
+  /**
+   * @param {!proto.proto.ResetPasswordRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.proto.StringMessage.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.proto.ResetPasswordRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.proto.StringMessage)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.StringMessage>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.TracertServiceClient.prototype.resetPassword =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/proto.TracertService/ResetPassword',
+      request,
+      metadata || {},
+      methodDescriptor_TracertService_ResetPassword,
+      callback);
+};
+
+
+/**
+ * @param {!proto.proto.ResetPasswordRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.proto.StringMessage>}
+ *     Promise that resolves to the response
+ */
+proto.proto.TracertServicePromiseClient.prototype.resetPassword =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/proto.TracertService/ResetPassword',
+      request,
+      metadata || {},
+      methodDescriptor_TracertService_ResetPassword);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.proto.ChangePasswordRequest,
+ *   !proto.proto.StringMessage>}
+ */
+const methodDescriptor_TracertService_ChangePassword = new grpc.web.MethodDescriptor(
+  '/proto.TracertService/ChangePassword',
+  grpc.web.MethodType.UNARY,
+  proto.proto.ChangePasswordRequest,
+  proto.proto.StringMessage,
+  /**
+   * @param {!proto.proto.ChangePasswordRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.proto.StringMessage.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.proto.ChangePasswordRequest,
+ *   !proto.proto.StringMessage>}
+ */
+const methodInfo_TracertService_ChangePassword = new grpc.web.AbstractClientBase.MethodInfo(
+  proto.proto.StringMessage,
+  /**
+   * @param {!proto.proto.ChangePasswordRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.proto.StringMessage.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.proto.ChangePasswordRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.proto.StringMessage)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.StringMessage>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.TracertServiceClient.prototype.changePassword =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/proto.TracertService/ChangePassword',
+      request,
+      metadata || {},
+      methodDescriptor_TracertService_ChangePassword,
+      callback);
+};
+
+
+/**
+ * @param {!proto.proto.ChangePasswordRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.proto.StringMessage>}
+ *     Promise that resolves to the response
+ */
+proto.proto.TracertServicePromiseClient.prototype.changePassword =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/proto.TracertService/ChangePassword',
+      request,
+      metadata || {},
+      methodDescriptor_TracertService_ChangePassword);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
  *   !proto.proto.QuestionGroupListInput,
  *   !proto.proto.QuestionGroupList>}
  */
@@ -1893,6 +2133,86 @@ proto.proto.TracertServicePromiseClient.prototype.legalizeRating =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
+ *   !proto.proto.Legalize,
+ *   !proto.proto.Legalize>}
+ */
+const methodDescriptor_TracertService_LegalizeExtended = new grpc.web.MethodDescriptor(
+  '/proto.TracertService/LegalizeExtended',
+  grpc.web.MethodType.UNARY,
+  proto.proto.Legalize,
+  proto.proto.Legalize,
+  /**
+   * @param {!proto.proto.Legalize} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.proto.Legalize.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.proto.Legalize,
+ *   !proto.proto.Legalize>}
+ */
+const methodInfo_TracertService_LegalizeExtended = new grpc.web.AbstractClientBase.MethodInfo(
+  proto.proto.Legalize,
+  /**
+   * @param {!proto.proto.Legalize} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.proto.Legalize.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.proto.Legalize} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.proto.Legalize)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.Legalize>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.TracertServiceClient.prototype.legalizeExtended =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/proto.TracertService/LegalizeExtended',
+      request,
+      metadata || {},
+      methodDescriptor_TracertService_LegalizeExtended,
+      callback);
+};
+
+
+/**
+ * @param {!proto.proto.Legalize} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.proto.Legalize>}
+ *     Promise that resolves to the response
+ */
+proto.proto.TracertServicePromiseClient.prototype.legalizeExtended =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/proto.TracertService/LegalizeExtended',
+      request,
+      metadata || {},
+      methodDescriptor_TracertService_LegalizeExtended);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
  *   !proto.proto.UserAnswer,
  *   !proto.proto.UserAnswer>}
  */
@@ -2127,6 +2447,86 @@ proto.proto.TracertServicePromiseClient.prototype.getTrace =
       request,
       metadata || {},
       methodDescriptor_TracertService_GetTrace);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.proto.EmptyMessage,
+ *   !proto.proto.Tracer>}
+ */
+const methodDescriptor_TracertService_GetLastTrace = new grpc.web.MethodDescriptor(
+  '/proto.TracertService/GetLastTrace',
+  grpc.web.MethodType.UNARY,
+  proto.proto.EmptyMessage,
+  proto.proto.Tracer,
+  /**
+   * @param {!proto.proto.EmptyMessage} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.proto.Tracer.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.proto.EmptyMessage,
+ *   !proto.proto.Tracer>}
+ */
+const methodInfo_TracertService_GetLastTrace = new grpc.web.AbstractClientBase.MethodInfo(
+  proto.proto.Tracer,
+  /**
+   * @param {!proto.proto.EmptyMessage} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.proto.Tracer.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.proto.EmptyMessage} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.proto.Tracer)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.proto.Tracer>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.proto.TracertServiceClient.prototype.getLastTrace =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/proto.TracertService/GetLastTrace',
+      request,
+      metadata || {},
+      methodDescriptor_TracertService_GetLastTrace,
+      callback);
+};
+
+
+/**
+ * @param {!proto.proto.EmptyMessage} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.proto.Tracer>}
+ *     Promise that resolves to the response
+ */
+proto.proto.TracertServicePromiseClient.prototype.getLastTrace =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/proto.TracertService/GetLastTrace',
+      request,
+      metadata || {},
+      methodDescriptor_TracertService_GetLastTrace);
 };
 
 

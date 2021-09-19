@@ -15,6 +15,27 @@ export class TracertServiceClient {
                response: single$proto_pb.User) => void
   ): grpcWeb.ClientReadableStream<single$proto_pb.User>;
 
+  forgotPassword(
+    request: single$proto_pb.ForgotPasswordRequest,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: single$proto_pb.StringMessage) => void
+  ): grpcWeb.ClientReadableStream<single$proto_pb.StringMessage>;
+
+  resetPassword(
+    request: single$proto_pb.ResetPasswordRequest,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: single$proto_pb.StringMessage) => void
+  ): grpcWeb.ClientReadableStream<single$proto_pb.StringMessage>;
+
+  changePassword(
+    request: single$proto_pb.ChangePasswordRequest,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: single$proto_pb.StringMessage) => void
+  ): grpcWeb.ClientReadableStream<single$proto_pb.StringMessage>;
+
   questionList(
     request: single$proto_pb.QuestionGroupListInput,
     metadata: grpcWeb.Metadata | undefined,
@@ -161,6 +182,13 @@ export class TracertServiceClient {
                response: single$proto_pb.StringMessage) => void
   ): grpcWeb.ClientReadableStream<single$proto_pb.StringMessage>;
 
+  legalizeExtended(
+    request: single$proto_pb.Legalize,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: single$proto_pb.Legalize) => void
+  ): grpcWeb.ClientReadableStream<single$proto_pb.Legalize>;
+
   userAnswerCreate(
     request: single$proto_pb.UserAnswer,
     metadata: grpcWeb.Metadata | undefined,
@@ -182,6 +210,13 @@ export class TracertServiceClient {
                response: single$proto_pb.TracerList) => void
   ): grpcWeb.ClientReadableStream<single$proto_pb.TracerList>;
 
+  getLastTrace(
+    request: single$proto_pb.EmptyMessage,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: single$proto_pb.Tracer) => void
+  ): grpcWeb.ClientReadableStream<single$proto_pb.Tracer>;
+
 }
 
 export class TracertServicePromiseClient {
@@ -193,6 +228,21 @@ export class TracertServicePromiseClient {
     request: single$proto_pb.LoginInput,
     metadata?: grpcWeb.Metadata
   ): Promise<single$proto_pb.User>;
+
+  forgotPassword(
+    request: single$proto_pb.ForgotPasswordRequest,
+    metadata?: grpcWeb.Metadata
+  ): Promise<single$proto_pb.StringMessage>;
+
+  resetPassword(
+    request: single$proto_pb.ResetPasswordRequest,
+    metadata?: grpcWeb.Metadata
+  ): Promise<single$proto_pb.StringMessage>;
+
+  changePassword(
+    request: single$proto_pb.ChangePasswordRequest,
+    metadata?: grpcWeb.Metadata
+  ): Promise<single$proto_pb.StringMessage>;
 
   questionList(
     request: single$proto_pb.QuestionGroupListInput,
@@ -304,6 +354,11 @@ export class TracertServicePromiseClient {
     metadata?: grpcWeb.Metadata
   ): Promise<single$proto_pb.StringMessage>;
 
+  legalizeExtended(
+    request: single$proto_pb.Legalize,
+    metadata?: grpcWeb.Metadata
+  ): Promise<single$proto_pb.Legalize>;
+
   userAnswerCreate(
     request: single$proto_pb.UserAnswer,
     metadata?: grpcWeb.Metadata
@@ -318,6 +373,11 @@ export class TracertServicePromiseClient {
     request: single$proto_pb.EmptyMessage,
     metadata?: grpcWeb.Metadata
   ): Promise<single$proto_pb.TracerList>;
+
+  getLastTrace(
+    request: single$proto_pb.EmptyMessage,
+    metadata?: grpcWeb.Metadata
+  ): Promise<single$proto_pb.Tracer>;
 
 }
 
