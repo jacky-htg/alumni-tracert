@@ -1,19 +1,11 @@
 import React, {useState, useMemo} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Image,
-  View,
-  Dimensions,
-} from 'react-native';
+import {SafeAreaView, ScrollView} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {Button, Text, Card, Chip} from 'react-native-elements';
 import SearchDropDown from '../components/SearchDropDown';
 import InputBorderer from '../components/InputBorderer';
 import {Jurusan} from '../utils/constants';
-const windowWidth = Dimensions.get('window').width;
+import {createCertificate} from '../utils/actions';
 
 const AddIjazah = ({navigation}) => {
   const dispatch = useDispatch();
@@ -26,11 +18,20 @@ const AddIjazah = ({navigation}) => {
   const onPressAdd = () => {
     setLoading(true);
     try {
-      setLoading(true);
+      const param = {
+        nim,
+        majorStudy: jurusan.title,
+        entryYear: yearIn.id,
+        graduationYear: yearOut.id,
+        noIjazah,
+      };
+      console.log('PARAM = ', param);
+      dispatch(createCertificate(param));
+      setLoading(false);
+      navigation.goBack();
     } catch (e) {
       setLoading(false);
     }
-    navigation.goBack();
   };
 
   function generateArrayOfYears() {
@@ -45,7 +46,6 @@ const AddIjazah = ({navigation}) => {
   }
 
   const yearArr = useMemo(() => generateArrayOfYears());
-
   return (
     <SafeAreaView style={{backgroundColor: '#ffffff', flex: 1}}>
       <ScrollView

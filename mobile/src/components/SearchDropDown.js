@@ -18,7 +18,7 @@ const SearchDropDown = ({label, ...props}) => {
       )}
       <AutocompleteDropdown
         clearOnFocus={false}
-        closeOnBlur={true}
+        closeOnBlur={false}
         closeOnSubmit={true}
         textInputProps={{
           autoCorrect: false,

@@ -84,13 +84,14 @@ const MyLegalisir = ({navigation}) => {
         />
       </View>
       <ScrollView style={{marginTop: 8}}>
-        {legalisirList.map((legal, i) => (
-          <Card key={i}>
-            <Card.Title>{`${legal.studi} ${legal.number}`}</Card.Title>
-            <Card.Divider />
-            {getChipByStatus(legal)}
-          </Card>
-        ))}
+        {legalisirList.length > 0 &&
+          legalisirList.map((legal, i) => (
+            <Card key={i}>
+              <Card.Title>{`${legal.studi} ${legal.number}`}</Card.Title>
+              <Card.Divider />
+              {getChipByStatus(legal)}
+            </Card>
+          ))}
       </ScrollView>
     </View>
   );

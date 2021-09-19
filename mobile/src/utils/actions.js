@@ -7,6 +7,7 @@ import {
   Alumni,
   Legalize,
   EmptyMessage,
+  Certificate,
 } from '../../proto/single-proto_pb';
 //
 import userService from '../../services/user';
@@ -15,6 +16,7 @@ import alumniService from '../../services/alumni';
 import AlumniListService from '../../services/alumniList';
 import appraiserService from '../../services/appraiser';
 import LegalizeService from '../../services/legalize';
+import CertificateService from '../../services/certificate';
 import storage from './storage';
 
 export const actions = {
@@ -29,6 +31,8 @@ export const actions = {
   REGISTER_APPRAISER_FAILED: 'REGISTER_APPRAISER_FAILED',
   GET_MY_LEGALISIR_LIST_SUCCESS: 'GET_MY_LEGALISIR_LIST_SUCCESS',
   GET_MY_LEGALISIR_LIST_FAILED: 'GET_MY_LEGALISIR_LIST_FAILED',
+  CREATE_CERTIFICATE_SUCCESS: 'CREATE_CERTIFICATE_SUCCESS',
+  CREATE_CERTIFICATE_FAILED: 'CREATE_CERTIFICATE_FAILED',
 };
 
 export const createUser = (name, email) => async dispatch => {
@@ -141,6 +145,7 @@ export const registerAppraiser =
       alumniAppraiserProto.setInstansi(instansi);
       alumniAppraiserProto.setPosition(position);
       alumniAppraiserProto.setAlumniPosition(alumniPosition);
+      console.log(alumniProto.toObject());
       alumniProto.setId(alumniData.id);
       alumniProto.setCreated(alumniData.created);
       alumniProto.setDateOfBirth(alumniData.dateOfBirth);
@@ -184,15 +189,43 @@ export const getLegalizeList = () => async dispatch => {
     const token = await storage.load({key: 'token'});
     const result = await legalizeService.getOwn(token.token);
     dispatch({
-      type: actions.REGISTER_APPRAISER_SUCCESS,
-      data: result.certificateList,
+      type: actions.GET_MY_LEGALISIR_LIST_SUCCESS,
+      data: result.toObject().certificateList,
     });
     return result;
   } catch (error) {
     dispatch({
-      type: actions.GET_ALUMNI_LIST_FAILED,
+      type: actions.GET_MY_LEGALISIR_LIST_FAILED,
       message: error.message,
     });
     return error;
   }
 };
+
+export const createCertificate =
+  ({nim, majorStudy, noIjazah, entryYear, graduationYear}) =>
+  async dispatch => {
+    try {
+      const certificateProto = new Certificate();
+      certificateProto.setNim(nim);
+      certificateProto.setMajorStudy(majorStudy);
+      certificateProto.setNoIjazah(noIjazah);
+      certificateProto.setEntryYear(entryYear);
+      certificateProto.setGraduationYear(graduationYear);
+      const token = await storage.load({key: 'token'});
+      console.log(certificateProto.toObject());
+      const certificate = new CertificateService(deps, certificateProto);
+      const result = await certificate.create(token.token);
+      dispatch({
+        type: actions.CREATE_CERTIFICATE_SUCCESS,
+        data: result.toObject(),
+      });
+      return result;
+    } catch (error) {
+      dispatch({
+        type: actions.CREATE_CERTIFICATE_FAILED,
+        message: error.message,
+      });
+      return error;
+    }
+  };
