@@ -16,6 +16,9 @@ const Home = ({navigation}) => {
   const onPressLogin = () => {
     navigation.navigate(PAGES.LOGIN.path);
   };
+  const onPressKuisioner = () => {
+    navigation.navigate(PAGES.KUISIONER.path);
+  };
   return (
     <ScrollView>
       <Image
@@ -54,6 +57,7 @@ const Home = ({navigation}) => {
           buttonStyle={{
             backgroundColor: '#047857',
           }}
+          onPress={onPressKuisioner}
         />
         <Divider
           orientation="horizontal"
@@ -73,6 +77,7 @@ const Home = ({navigation}) => {
           titleStyle={{
             color: '#047857',
           }}
+          onPress={() => navigation.navigate(PAGES.TAB_NOT_LOGIN.path)}
         />
         <Button
           title="Sapa Almuni"
@@ -84,6 +89,7 @@ const Home = ({navigation}) => {
           titleStyle={{
             color: '#047857',
           }}
+          onPress={() => navigation.navigate(PAGES.TAB_NOT_LOGIN.path)}
         />
         <Button
           title="Tentang Kami"
@@ -95,6 +101,7 @@ const Home = ({navigation}) => {
           titleStyle={{
             color: '#047857',
           }}
+          onPress={() => navigation.navigate(PAGES.TAB_NOT_LOGIN.path)}
         />
       </View>
     </ScrollView>

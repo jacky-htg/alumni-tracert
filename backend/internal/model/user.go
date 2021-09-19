@@ -98,6 +98,37 @@ func (u *User) Create(ctx context.Context, db *sql.Tx) error {
 	return nil
 }
 
+func (u *User) ChangePassword(ctx context.Context, db *sql.Tx) error {
+	select {
+	case <-ctx.Done():
+		return util.ContextError(ctx)
+	default:
+	}
+
+	query := `UPDATE users SET password = ? WHERE id = ?`
+
+	pass, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return status.Errorf(codes.Internal, "hash password: %v", err)
+	}
+
+	stmt, err := db.PrepareContext(ctx, query)
+	if err != nil {
+		return status.Errorf(codes.Internal, "Prepare update: %v", err)
+	}
+	defer stmt.Close()
+
+	_, err = stmt.ExecContext(ctx,
+		string(pass),
+		u.Pb.Id,
+	)
+	if err != nil {
+		return status.Errorf(codes.Internal, "Exec update: %v", err)
+	}
+
+	return nil
+}
+
 func (u *User) GetUserLogin(ctx context.Context, db *sql.DB) error {
 	select {
 	case <-ctx.Done():
@@ -229,6 +260,59 @@ func (u *User) Get(ctx context.Context, db *sql.DB) error {
 
 	u.Pb.Created = createdAt.String()
 	u.Pb.Updated = updatedAt.String()
+
+	return nil
+}
+
+func (u *User) GetByEmail(ctx context.Context, db *sql.DB) error {
+	query := `
+		SELECT id, email, name, is_actived, user_type, created, updated 
+		FROM users
+		WHERE email = ?
+	`
+
+	row := db.QueryRowContext(ctx, query, u.Pb.Email)
+	var createdAt, updatedAt time.Time
+	err := row.Scan(
+		&u.Pb.Id, &u.Pb.Email, &u.Pb.Name, &u.Pb.IsActived, &u.Pb.UserType, &createdAt, &updatedAt,
+	)
+	if err == sql.ErrNoRows {
+		return status.Errorf(codes.NotFound, "not found: %v", err)
+	}
+
+	if err != nil {
+		return status.Errorf(codes.Internal, "scan data: %v", err)
+	}
+
+	u.Pb.Created = createdAt.String()
+	u.Pb.Updated = updatedAt.String()
+
+	return nil
+}
+
+func (u *User) GetByPassword(ctx context.Context, db *sql.DB) error {
+	var strPassword string
+	query := `SELECT id, password FROM users WHERE id = ?`
+	stmt, err := db.PrepareContext(ctx, query)
+	if err != nil {
+		return status.Errorf(codes.Internal, "Prepare statement: %v", err)
+	}
+	defer stmt.Close()
+
+	err = stmt.QueryRowContext(ctx, u.Pb.GetId()).Scan(&u.Pb.Id, &strPassword)
+
+	if err == sql.ErrNoRows {
+		return status.Errorf(codes.NotFound, "Query Raw: %v", err)
+	}
+
+	if err != nil {
+		return status.Errorf(codes.Internal, "Query Raw: %v", err)
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(strPassword), []byte(u.Password))
+	if err != nil {
+		return status.Errorf(codes.NotFound, "Invalid Password: %v", err)
+	}
 
 	return nil
 }

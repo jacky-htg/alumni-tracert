@@ -57,9 +57,22 @@ const Home = () => {
           style={{marginBottom: 24}}
         />
         <Card.Title>Selamat datang, silahkan login</Card.Title>
-        <Input placeholder="Username" />
+        <Input
+          placeholder="Username"
+          onChange={e => {
+            const {value} = e.target;
+            // setUserName(value);
+          }}
+        />
 
-        <Input placeholder="Password" secureTextEntry={true} />
+        <Input
+          placeholder="Password"
+          secureTextEntry={true}
+          onChange={e => {
+            const {value} = e.target;
+            // setPassword(value);
+          }}
+        />
 
         <Button
           title="Login"

@@ -101,7 +101,7 @@ func (u *Legalize) ListQuery(ctx context.Context, db *sql.DB, in *proto.ListInpu
 	if ctx.Value(app.Ctx("user_type")).(uint32) == constant.USERTYPE_ADMIN {
 		where = append(where, "((l.status = 1 AND l.is_verified = FALSE AND l.is_approved = FALSE) OR (l.is_offline = TRUE AND l.status <> 3))")
 	} else if ctx.Value(app.Ctx("user_type")).(uint32) == constant.USERTYPE_PEJABAT {
-		where = append(where, "l.status = 2 AND l.is_verified = TRUE AND l.is_approved = FALSE")
+		where = append(where, "l.status = 2 AND l.is_verified = TRUE AND l.is_approved = FALSE AND l.is_offline = FALSE")
 	} else if ctx.Value(app.Ctx("user_type")).(uint32) == constant.USERTYPE_ALUMNI {
 		where = append(where, "a.id = ?")
 		paramQueries = append(paramQueries, ctx.Value(app.Ctx("alumni_id")).(uint64))
@@ -314,6 +314,73 @@ func (u *Legalize) GetByAlumniId(ctx context.Context, db *sql.DB) (*proto.Certif
 	}
 
 	return &list, nil
+}
+
+func (u *Legalize) ExtendedOffline(ctx context.Context, db *sql.DB) error {
+	select {
+	case <-ctx.Done():
+		return util.ContextError(ctx)
+	default:
+	}
+
+	query := `
+		UPDATE legalizes 
+		SET 
+			is_approved = false,
+			approved_by = NULL,
+			approved_at = NULL,
+			is_extend = true,
+			status = 2,
+			rejected_reason = NULL,
+			created = NOW(), 
+			modified = NOW()
+		WHERE id = ? 
+	`
+
+	stmt, err := db.PrepareContext(ctx, query)
+	if err != nil {
+		return status.Errorf(codes.Internal, "Prepare extendedOffline: %v", err)
+	}
+	defer stmt.Close()
+
+	_, err = stmt.ExecContext(ctx, u.Pb.Id)
+
+	if err != nil {
+		return status.Errorf(codes.Internal, "Exec update: %v", err)
+	}
+
+	return nil
+}
+
+func (u *Legalize) ExtendedOnline(ctx context.Context, db *sql.DB) error {
+	select {
+	case <-ctx.Done():
+		return util.ContextError(ctx)
+	default:
+	}
+
+	query := `
+		UPDATE legalizes 
+		SET 
+			is_extend = true,
+			created = NOW(), 
+			modified = NOW()
+		WHERE id = ? 
+	`
+
+	stmt, err := db.PrepareContext(ctx, query)
+	if err != nil {
+		return status.Errorf(codes.Internal, "Prepare extendedOffline: %v", err)
+	}
+	defer stmt.Close()
+
+	_, err = stmt.ExecContext(ctx, u.Pb.Id)
+
+	if err != nil {
+		return status.Errorf(codes.Internal, "Exec update: %v", err)
+	}
+
+	return nil
 }
 
 func (u *Legalize) Rejected(ctx context.Context, db *sql.DB) error {
