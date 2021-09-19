@@ -7,6 +7,7 @@ export default class extends Tracert {
   }
   login() {
     return this.client.login(this.req, {}).then(user => {
+      console.log('buku', user);
       return user;
     });
   }

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -15,33 +15,31 @@ import Login from '../../services/login';
 
 const Home = () => {
   const [isLoading, setLoading] = useState(false);
-  const onPressLogin = () => {
+  const [token, setToken] = useState();
+
+  const onPressLogin = async () => {
     setLoading(true);
+    await login();
+    console.log('token', token);
     setTimeout(() => {
       setLoading(false);
     }, 3000);
   };
 
-  const loginInput = new LoginInput();
-  loginInput.setEmail('rijal.asep.nugroho@gmail.com');
-  loginInput.setPassword('hariINI@2021');
+  const login = async () => {
+    var deps = {
+      proto: {
+        TracertClient: TracertServicePromiseClient,
+      },
+    };
 
-  const client = new TracertServicePromiseClient(
-    'https://api.borobudur.rijalasepnugroho.com',
-    null,
-    null,
-  );
+    const loginInput = new LoginInput();
+    loginInput.setEmail('rijal.asep.nugroho@gmail.com');
+    loginInput.setPassword('hariINI@2021');
 
-  const login = () => {
-    return client.login(loginInput, {}).then(user => {
-      console.log(user);
-      return user;
-    });
+    const mylogin = new Login(deps, loginInput);
+    setToken(await mylogin.login());
   };
-
-  useEffect(() => {
-    login();
-  });
 
   return (
     <View
