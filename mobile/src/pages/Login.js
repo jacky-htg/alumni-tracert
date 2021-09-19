@@ -3,8 +3,9 @@ import {Image, View} from 'react-native';
 import {Button, Card, Input} from 'react-native-elements';
 import {login} from '../utils/actions';
 import {useDispatch} from 'react-redux';
+import {PAGES} from '../routes';
 
-const Login = () => {
+const Login = ({navigation}) => {
   const [isLoading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -15,6 +16,7 @@ const Login = () => {
     try {
       await dispatch(login(email, password));
       setLoading(false);
+      navigation.navigate(PAGES.TAB_LOGIN.path);
     } catch (e) {
       setLoading(false);
     }

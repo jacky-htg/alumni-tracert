@@ -1,27 +1,13 @@
 import React, {useState} from 'react';
-import {
-  ScrollView,
-  View,
-  TouchableOpacity,
-  Image,
-  SafeAreaView,
-  Dimensions,
-} from 'react-native';
-import {Text, Button, Input} from 'react-native-elements';
+import {ScrollView, View, SafeAreaView, Dimensions} from 'react-native';
+import {Text, Button} from 'react-native-elements';
 import {PAGES} from '../routes';
+import InputBorderer from '../components/InputBorderer';
 import DatePicker from 'react-native-datepicker';
 const windowWidth = Dimensions.get('window').width;
 
 const AlumniRegistration = ({navigation}) => {
   const onPressNext = () => {};
-  const inputStyle = {
-    paddingHorizontal: 0,
-  };
-  const inputContStyle = {
-    marginTop: 8,
-    borderRadius: 8,
-    borderWidth: 1,
-  };
   return (
     <SafeAreaView
       style={{
@@ -38,48 +24,33 @@ const AlumniRegistration = ({navigation}) => {
         }}>
         <Text style={{fontSize: 20, fontWeight: 'bold'}}>IDENTITAS ALUMNI</Text>
         <View style={{paddingTop: 12}}>
-          <Input
-            containerStyle={inputStyle}
-            inputContainerStyle={inputContStyle}
+          <InputBorderer
             label="Nama"
-            onChange={e => {
-              const {value} = e.target;
+            onChangeText={e => {
               // setName(value);
             }}
           />
-          <Input
-            containerStyle={inputStyle}
-            inputContainerStyle={inputContStyle}
+          <InputBorderer
             label="NIM"
-            onChange={e => {
-              const {value} = e.target;
+            onChangeText={e => {
               // setName(value);
             }}
           />
-          <Input
-            containerStyle={inputStyle}
-            inputContainerStyle={inputContStyle}
+          <InputBorderer
             label="NIK"
-            onChange={e => {
-              const {value} = e.target;
+            onChangeText={e => {
               // setName(value);
             }}
           />
-          <Input
-            containerStyle={inputStyle}
-            inputContainerStyle={inputContStyle}
+          <InputBorderer
             label="TEMPAT LAHIR"
-            onChange={e => {
-              const {value} = e.target;
+            onChangeText={e => {
               // setName(value);
             }}
           />
-          <Input
-            containerStyle={inputStyle}
-            inputContainerStyle={inputContStyle}
+          <InputBorderer
             label="TEMPAT LAHIR"
-            onChange={e => {
-              const {value} = e.target;
+            onChangeText={e => {
               // setName(value);
             }}
           />

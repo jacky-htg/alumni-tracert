@@ -29,7 +29,10 @@ const reducer = combineReducers({
   alumniList: (state = [], action) => {
     switch (action.type) {
       case actions.GET_ALUMNI_LIST_SUCCESS:
-        return [...state, action.data];
+        if (!state.find(a => a.id === action.data.id)) {
+          return [...state, action.data];
+        }
+        return state;
       default:
         return state;
     }

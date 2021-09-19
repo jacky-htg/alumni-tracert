@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import {ScrollView, View, SafeAreaView} from 'react-native';
-import {Button, Input} from 'react-native-elements';
+import {Button, Text} from 'react-native-elements';
 import KuisionerNotes from '../components/KuisionerNotes';
 import {createUser, getAlumniList, registerAppraiser} from '../utils/actions';
+import InputBorderer from '../components/InputBorderer';
 import {useDispatch, useSelector} from 'react-redux';
 import {AutocompleteDropdown} from 'react-native-autocomplete-dropdown';
 
@@ -32,7 +33,6 @@ const AppraiserRegistration = ({navigation}) => {
           alumniPosition,
           alumniData,
         };
-        console.log('DATA = ', data);
         await dispatch(registerAppraiser(data));
       }
       setLoading(false);
@@ -46,15 +46,6 @@ const AppraiserRegistration = ({navigation}) => {
       dispatch(getAlumniList('', 10, 1));
     }
   }, [isLogin]);
-
-  const inputStyle = {
-    paddingHorizontal: 0,
-  };
-  const inputContStyle = {
-    marginTop: 8,
-    borderRadius: 8,
-    borderWidth: 1,
-  };
   return (
     <SafeAreaView>
       <ScrollView
@@ -65,24 +56,27 @@ const AppraiserRegistration = ({navigation}) => {
         <KuisionerNotes />
         {isLogin ? (
           <View style={{paddingTop: 12}}>
-            <Input
-              containerStyle={inputStyle}
-              inputContainerStyle={inputContStyle}
+            <InputBorderer
               label="Instansi"
               onChangeText={e => setInstansi(e)}
             />
-            <Input
-              containerStyle={inputStyle}
-              inputContainerStyle={inputContStyle}
-              label="Posisi"
-              onChangeText={e => setPosition(e)}
-            />
+            <InputBorderer label="Posisi" onChangeText={e => setPosition(e)} />
+            <Text
+              style={{
+                marginBottom: 10,
+                fontWeight: 'bold',
+                fontSize: 16,
+                color: '#9CA3AF',
+              }}>
+              Nama Alumni
+            </Text>
             <AutocompleteDropdown
               clearOnFocus={false}
               closeOnBlur={true}
               closeOnSubmit={true}
-              // initialValue={{id: '2'}} // or just '2'
-              onSelectItem={setAlumniData}
+              onSelectItem={a => {
+                setAlumniData(a);
+              }}
               dataSet={alumniList}
               textInputProps={{
                 autoCorrect: false,
@@ -90,40 +84,30 @@ const AppraiserRegistration = ({navigation}) => {
                 style: {
                   borderRadius: 8,
                   backgroundColor: '#fff',
-                  paddingLeft: 18,
-                  borderWidth: 1.2,
+                  paddingLeft: 4,
+                  borderWidth: 1,
+                  borderColor: '#9CA3AF',
+                  height: 52,
+                  marginBottom: 20,
                 },
               }}
               rightButtonsContainerStyle={{
-                borderRadius: 8,
                 right: 8,
                 height: 30,
-                top: 6,
+                top: 12,
                 alignSelfs: 'center',
                 backgroundColor: '#fff',
               }}
             />
-            <Input
-              containerStyle={inputStyle}
-              inputContainerStyle={inputContStyle}
+            <InputBorderer
               label="Posisi Alumni"
               onChangeText={e => setAlumniPosition(e)}
             />
           </View>
         ) : (
           <View style={{paddingTop: 12}}>
-            <Input
-              containerStyle={inputStyle}
-              inputContainerStyle={inputContStyle}
-              label="Nama"
-              onChangeText={e => setName(e)}
-            />
-            <Input
-              containerStyle={inputStyle}
-              inputContainerStyle={inputContStyle}
-              label="Email"
-              onChangeText={e => setEmail(e)}
-            />
+            <InputBorderer label="Nama" onChangeText={e => setName(e)} />
+            <InputBorderer label="Email" onChangeText={e => setEmail(e)} />
           </View>
         )}
 
