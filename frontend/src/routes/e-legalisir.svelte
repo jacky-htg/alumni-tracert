@@ -13,6 +13,7 @@
 	import errorServiceHandling from '../helper/error_service'
 	import Button from '../components/Button.svelte'
 	import LegalizeService from '../services/legalize'
+  import printJS from 'print-js'
 
 	let search = '';
 	let limit = 10;
@@ -77,11 +78,16 @@
 
 	onMount(async () => {
 		try {
-			isLoadingTable = true;
-			await fetchData();
-			isLoadingTable = false;
-			if(legalisirList.length < limit) {
-				isLastPage = true;
+			if (!(usertype === "3" || usertype === "4")) {
+				notifications.danger("permission denied")
+				navigate(`${PATH_URL.DASHBOARD}`, { replace: false })
+			} else {
+				isLoadingTable = true;
+				await fetchData();
+				isLoadingTable = false;
+				if(legalisirList.length < limit) {
+					isLastPage = true;
+				}
 			}
     } catch(e) {
 			onError(e);
@@ -197,6 +203,10 @@
 		}
 	}
 
+  const onPrint = (data) => {
+		printJS(data, 'image');
+  }
+
 	const onNextPage = async () => {
 		try {
 			page++;
@@ -243,6 +253,12 @@
 		}, 500);
 	}
 </script>
+
+<style>
+  .dropdown:hover .dropdown-menu {
+    display: block;
+  }
+</style>
 
 <div class="w-full mx-auto max-w-8xl">
 	<div class="lg:flex">
@@ -310,6 +326,17 @@
 														<Button isLoading={isLoadingReject} on:click={() => onReject(legalist.id)} className="mr-2" bgColor="bg-red-500" bgHoverColor="bg-red-400" size="small">Reject</Button>
 														<Button isLoading={isLoadingAccept} on:click={() => onAccept(legalist.id)} className="mr-2" bgColor="bg-green-500" bgHoverColor="bg-green-400" size="small">Verify</Button>
 													{:else if legalist.status === 2 && legalist.isOffline}
+                            <!-- <Button on:click={() => onPrint(legalist)} className="mr-2" bgColor="bg-yellow-500" bgHoverColor="bg-yellow-400" size="small">Print</Button> -->
+                            <div class="dropdown inline-block relative">
+                              <button class="text-right mr-2 bg-yellow-500 hover:bg-yellow-400 py-1 pl-4 pr-2 text-sm text-white rounded inline-flex items-center">
+                                <span class="mr-1">Print</span>
+                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/> </svg>
+                              </button>
+                              <ul class="dropdown-menu absolute hidden text-gray-700 pt-1">
+                                <li class=""><a on:click="{() => onPrint(legalist.ijazah)}" class="cursor-pointer text-white rounded-t bg-yellow-500 hover:bg-yellow-400 py-2 px-4 block whitespace-no-wrap">Ijazah</a></li>
+                                <li class=""><a on:click="{() => onPrint(legalist.transcript)}" class="cursor-pointer text-white rounded-b bg-yellow-500 hover:bg-yellow-400 py-2 px-4 block whitespace-no-wrap">Transkrip</a></li>
+                              </ul>
+                            </div>
 														<Button isLoading={isLoadingApproved} on:click={() => onDone(legalist.id)} className="mr-2" bgColor="bg-green-500" bgHoverColor="bg-green-400" size="small">Done</Button>
 													{/if}
 												{/if}

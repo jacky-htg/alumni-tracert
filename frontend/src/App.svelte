@@ -21,6 +21,8 @@
 	import TentangKami from './routes/TentangKami.svelte';
 	import LegalisirDetail from './routes/LegalisirDetail.svelte'
 	import Ijazah from './routes/Ijazah.svelte'
+  import ForgotPassword from './routes/ForgotPassword.svelte'
+  import ResetPassword from './routes/ResetPassword.svelte'
 </script>
 
 <style global lang="postcss">
@@ -39,6 +41,10 @@
 	<Route path={PATH_URL.TENTANG_KAMI} component={TentangKami} />
 	<Route path={PATH_URL.ALUMNI_REGISTRATION} component={AlumniRegistration} />
 	<Route path={PATH_URL.APPRAISER_REGISTRATION} component={AppraiserRegistration} />
+  <Route path={PATH_URL.FORGOT_PASS} component={ForgotPassword} />
+  <Route path={PATH_URL.RESET_PASS} let:params>
+    <ResetPassword id="{params.id}"/>
+  </Route>
 	<Route path={PATH_URL.QR_IJAZAH_LANDING_PAGE} let:params>
 		<QrIjazahLandingPage id="{params.id}"/>
 	</Route>
@@ -53,5 +59,6 @@
 	<ProtectedRoute path={PATH_URL.ADMIN_E_LEGALISIR} component={ELegalisir} />
 	<ProtectedRoute path={PATH_URL.ADMIN_ALUMNI_DETAIL} component={DetailAlumni} />
 	<ProtectedRoute path={PATH_URL.ADMIN_LEGALISIR_DETAIL} component={LegalisirDetail} />
+  <ProtectedRoute path={PATH_URL.CHANGE_PASS} component={ResetPassword} />
 </Router>
 <Toast />

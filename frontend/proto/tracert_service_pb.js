@@ -28,3 +28,5 @@ var user_message_pb = require('./user_message_pb.js');
 goog.object.extend(proto, user_message_pb);
 var certificate_message_pb = require('./certificate_message_pb.js');
 goog.object.extend(proto, certificate_message_pb);
+var auth_message_pb = require('./auth_message_pb.js');
+goog.object.extend(proto, auth_message_pb);

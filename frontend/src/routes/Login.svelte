@@ -70,8 +70,26 @@
   <img class="object-cover w-64 mb-8" src={Images.logo_poltekkes} alt="">
   <p class="mb-6 text-xl text-black">Selamat datang, silahkan login</p>
   <form on:submit|preventDefault={login} class="flex flex-col w-full p-8 mt-10 bg-gray-100 rounded-lg lg:w-2/6 md:w-1/2 md:mt-0">
-      <Input label="Username" name="username" on:input={handleInput} bind:value={state.username} placeholder="username" type="text" required/>
-      <Input label="Password" name="password" on:input={handleInput} bind:value={state.password} placeholder="password" type="password" required/>
+      <Input
+        label="Username"
+        name="username"
+        on:input={handleInput}
+        bind:value={state.username}
+        placeholder="username"
+        type="text"
+        required
+      />
+      <Input
+        label="Password"
+        name="password"
+        on:input={handleInput}
+        bind:value={state.password}
+        placeholder="password"
+        type="password"
+        required
+      />
       <Button isLoading={isLoading}>Login</Button>
+
+      <p on:click="{() => navigate(PATH_URL.FORGOT_PASS, { replace: false })}" class="cursor-pointer text-center mt-6 text-md text-blue-600">Lupa Password ?</p>
   </form>
 </div>

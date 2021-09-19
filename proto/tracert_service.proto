@@ -11,11 +11,13 @@ import "question_group_message.proto";
 import "user_answer_message.proto";
 import "user_message.proto";
 import "certificate_message.proto";
+import "auth_message.proto";
 
 service TracertService {
   rpc Login(LoginInput) returns (User) {}
-  /* rpc ForgotPassword(StringMessage) return (StringMessage) {}
-  rpc ChangePassword(ChangePassword) return (StringMessage) {} */
+  rpc ForgotPassword(ForgotPasswordRequest) returns (StringMessage) {}
+  rpc ResetPassword(ResetPasswordRequest) returns (StringMessage) {}
+  rpc ChangePassword(ChangePasswordRequest) returns (StringMessage) {}
  
   rpc QuestionList(QuestionGroupListInput) returns (QuestionGroupList) {}
 
@@ -47,8 +49,10 @@ service TracertService {
   rpc LegalizeRejected(Legalize) returns (Legalize) {} 
   rpc LegalizeApproved(StringMessage) returns (Legalize) {}
   rpc LegalizeRating(Legalize) returns (StringMessage) {}
+  rpc LegalizeExtended(Legalize) returns (Legalize) {}
 
   rpc UserAnswerCreate(UserAnswer) returns (UserAnswer) {}
   rpc TracerCreate(Tracer) returns (Tracer) {}
   rpc GetTrace(EmptyMessage) returns (TracerList){}
+  rpc GetLastTrace(EmptyMessage) returns (Tracer){}
 }

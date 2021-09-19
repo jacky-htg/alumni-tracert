@@ -93,6 +93,31 @@ func (u *Legalize) Rejected(ctx context.Context, in *proto.Legalize, db *sql.DB)
 	return nil
 }
 
+func (u *Legalize) Extended(ctx context.Context, in *proto.Legalize, db *sql.DB) error {
+	if len(in.Id) <= 0 {
+		return status.Error(codes.InvalidArgument, "Please supply valid ID")
+	}
+
+	if ctx.Value(app.Ctx("user_type")).(uint32) != constant.USERTYPE_ALUMNI {
+		return status.Error(codes.PermissionDenied, "You can not extended this document")
+	}
+
+	u.Model.Pb.Id = in.Id
+	if err := u.Model.Get(ctx, db); err != nil {
+		return err
+	}
+
+	if u.Model.Pb.Status != uint32(constant.LEGALIZE_STATUS_APPROVED) {
+		return status.Error(codes.InvalidArgument, "Legalize must be approved before")
+	}
+
+	if !u.Model.Pb.IsApproved {
+		return status.Error(codes.InvalidArgument, "Legalize must be approved before")
+	}
+
+	return nil
+}
+
 func (u *Legalize) Done(ctx context.Context, in *proto.Legalize, db *sql.DB) error {
 	if len(in.Id) <= 0 {
 		return status.Error(codes.InvalidArgument, "Please supply valid ID")

@@ -1,44 +1,23 @@
 import React, {useState} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Image,
-  View,
-} from 'react-native';
-import {Button, Text, Card, Input} from 'react-native-elements';
+import {Image, View} from 'react-native';
+import {Button, Card, Input} from 'react-native-elements';
+import {login} from '../utils/actions';
+import {useDispatch} from 'react-redux';
 
-import {LoginInput} from '../../proto/single-proto_pb';
-import {TracertServicePromiseClient} from '../../proto/single-proto_grpc_web_pb';
-import Login from '../../services/login';
-
-const Home = () => {
+const Login = () => {
   const [isLoading, setLoading] = useState(false);
-  const [token, setToken] = useState();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const dispatch = useDispatch();
 
   const onPressLogin = async () => {
     setLoading(true);
-    await login();
-    console.log('token', token);
-    setTimeout(() => {
+    try {
+      await dispatch(login(email, password));
       setLoading(false);
-    }, 3000);
-  };
-
-  const login = async () => {
-    var deps = {
-      proto: {
-        TracertClient: TracertServicePromiseClient,
-      },
-    };
-
-    const loginInput = new LoginInput();
-    loginInput.setEmail('rijal.asep.nugroho@gmail.com');
-    loginInput.setPassword('hariINI@2021');
-
-    const mylogin = new Login(deps, loginInput);
-    setToken(await mylogin.login());
+    } catch (e) {
+      setLoading(false);
+    }
   };
 
   return (
@@ -57,9 +36,14 @@ const Home = () => {
           style={{marginBottom: 24}}
         />
         <Card.Title>Selamat datang, silahkan login</Card.Title>
-        <Input placeholder="Username" />
+        <Input placeholder="Username" onChangeText={e => setEmail(e)} />
 
-        <Input placeholder="Password" secureTextEntry={true} />
+        <Input
+          placeholder="Password"
+          secureTextEntry={true}
+          onChangeText={e => setPassword(e)}
+          value={password}
+        />
 
         <Button
           title="Login"
@@ -74,4 +58,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Login;

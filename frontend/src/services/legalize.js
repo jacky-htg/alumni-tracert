@@ -59,4 +59,10 @@ export default class extends Tracert{
         return out
     })
   }
+  extend (){
+    const token = Cookies.get('token')
+    return this.client.legalizeExtended(this.req, {token}).then(out => {
+        return out
+    })
+  }
 }

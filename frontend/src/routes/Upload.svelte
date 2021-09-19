@@ -1,12 +1,15 @@
 <script>
+  import { navigate } from 'svelte-routing'
 	import Sidebar from "../components/Sidebar.svelte";
 	import Upload from "../components/Upload.svelte";
 	import { notifications } from "../helper/toast";
 	import { HOST_URL, APP_ENV } from '../env'
 	import Cookies from 'js-cookie'
+  import moment from 'moment';
   import { Legalize } from '../../proto/legalize_message_pb'
   import { EmptyMessage, StringMessage, UintMessage } from '../../proto/generic_message_pb'
   import LegalizeService from '../services/legalize'
+  import UserService from '../services/user'
   import { TracertServicePromiseClient } from '../../proto/tracert_service_grpc_web_pb'
   import { SIDEBAR_USER } from '../helper/path'
   import { onMount } from 'svelte'
@@ -143,6 +146,47 @@
     return await legalizeService.rating() 
   }
 
+  async function extendLegalize(idx) {
+    var deps = {
+      proto: {
+        TracertClient: TracertServicePromiseClient
+      }
+    }
+
+    let legalizeProto = new Legalize()
+    legalizeProto.setId(ijazahList[idx].proto.getLegalize().getId());
+
+    const legalizeService = new LegalizeService(deps, legalizeProto)
+    return await legalizeService.extend() 
+  }
+
+  async function getLastTrace() {
+    var deps = {
+      proto: {
+        TracertClient: TracertServicePromiseClient
+      }
+    }
+
+    let emptyMessageProto = new EmptyMessage()
+
+    const userService = new UserService(deps, emptyMessageProto)
+    return await userService.getLastTrace();
+  }
+
+  const extend = async (idx) => {
+    try {
+      stringMessage = await extendLegalize(idx)
+      notifications.success('Sukses Perpanjang Ijazah', 3000)
+      await getLegalize();
+    } catch(e) {
+      errorServiceHandling(e)
+      if (Cookies.get('token') == null) {
+        location = PATH_URL.LOGIN  
+      } 
+      notifications.danger(e.message)
+    }
+  }
+
   const getLegalize = async () => {
     myLegalize = await myLegalizeCall()
     console.log(myLegalize)
@@ -169,6 +213,15 @@
           hideRate: el.getLegalize().getRating() ? true : false
         }
       }
+
+      const legalizeCreated = moment(el.getLegalize().getCreated()).add(6, 'M');
+      const now = moment(new Date());
+      const diff = moment.duration(now.diff(legalizeCreated)).asDays()
+
+      if (diff > 0) {
+        ijazahObj.isExpired = true;
+      }
+
       tempIjazahList.push(ijazahObj)
     })
     ijazahList = tempIjazahList;
@@ -210,6 +263,31 @@
     temp[idx].legalize.isOffline = value === 'true' ? true : false;
     ijazahList = temp
   }
+
+  const download = async (link) => {
+    try {
+      const lastTrace = await getLastTrace();
+
+      const lastTraceCreated = moment(lastTrace.getCreated()).add(2, 'M');
+      const now = moment(new Date());
+      const diff = moment.duration(now.diff(lastTraceCreated)).asDays()
+
+      if (diff > 0) {
+        notifications.info('Anda harus mengisi ulang kuisioner terlebih dahulu sebelum melakukan download legalisir.', 5000)
+        navigate(PATH_URL.KUISIONER_FORM, { replace: false })
+      } else {
+        window.open(link)
+      }
+      // window.print()
+    } catch (e) {
+      errorServiceHandling(e)
+      if (Cookies.get('token') == null) {
+        location = PATH_URL.LOGIN  
+      } 
+      notifications.danger(e.message)
+    }
+    
+  }
 </script>
 
 <!-- div class="w-full mx-auto max-w-8xl">
@@ -237,33 +315,33 @@
 
       <div class="ijazah-wrapper">
         {#each ijazahList as ijazah, idx}
-          <div class="izajah-card relative rounded-md bg-white shadow p-6 mb-6">
-            <p class="w-3/4 text-m text-gray-500">
+          <div class="relative p-6 mb-6 bg-white rounded-md shadow izajah-card">
+            <p class="w-3/4 text-gray-500 text-m">
               Jurusan: 
               <span class="font-bold text-black">
                 {ijazah.proto.getMajorStudy()}
               </span>
             </p>
-            <p class="w-3/4 text-m text-gray-500">
+            <p class="w-3/4 text-gray-500 text-m">
               Tahun Kelulusan: 
               <span class="font-bold text-black">
                 {ijazah.proto.getGraduationYear()}
               </span>
             </p>
-            <p class="w-3/4 text-m text-gray-500">
+            <p class="w-3/4 text-gray-500 text-m">
               NIM: 
               <span class="font-bold text-black">
                 {ijazah.proto.getNim()}
               </span>
             </p>
-            <p class="w-3/4 mb-8 text-m text-gray-500">
+            <p class="w-3/4 mb-8 text-gray-500 text-m">
               No. Ijazah: 
               <span class="font-bold text-black">
                 {ijazah.proto.getNoIjazah()}
               </span>
             </p>
             {#if ijazah.proto.getLegalize().getStatus()}
-            <p class="absolute top-6 right-6 text-m text-gray-500">
+            <p class="absolute text-gray-500 top-6 right-6 text-m">
               Jenis Legalisir: 
               <span class="font-bold text-black">
                 {ijazah.proto.getLegalize().getIsOffline() ? 'Legalisir Cap Basah' : 'E-Legalisir'}
@@ -271,28 +349,53 @@
             </p>
             {/if}
             
-            {#if  ijazah.proto.getLegalize().getId()}
+            {#if ijazah.proto.getLegalize().getId() && !ijazah.isExpired }
               <p class="text-xl text-gray-500">Anda telah mengajukan {ijazah.proto.getLegalize().getIsOffline() ? 'Legalisir Cap Basah' : ' E-legalisir '} dengan status saat ini:</p>
+
+              <div class="flex mt-12 mb-4">
+                <div class="w-1/4 mr-8">
+                  <hr class="border-4 {ijazah.proto.getLegalize().getStatus() === 0 ? 'border-red-500' : 'border-gray-200'}">
+                  <div class="my-4">
+                    <p class="my-4 text-lg font-semibold {ijazah.proto.getLegalize().getStatus() === 0 ? 'text-red-500' : 'text-gray-200'}">Ditolak</p>
+                  </div>
+                </div>
+                <div class="w-1/4 mr-8">
+                  <hr class="border-4 {ijazah.proto.getLegalize().getStatus() === 1 ? 'border-indigo-600' : 'border-gray-200'}">
+                  <div class="my-4">
+                    <p class="my-4 text-lg font-semibold {ijazah.proto.getLegalize().getStatus() === 1 ? 'text-indigo-600' : 'text-gray-200'}">Submitted</p>
+                  </div>
+                </div>
+                <div class="w-1/4 mr-8">
+                  <hr class="border-4 {ijazah.proto.getLegalize().getStatus() === 2 ? 'border-indigo-600' : 'border-gray-200'}">
+                  <div class="my-4">
+                    <p class="my-4 text-lg font-semibold {ijazah.proto.getLegalize().getStatus() === 2 ? 'text-indigo-600' : 'text-gray-200'}">Diverifikasi</p>
+                  </div>
+                </div>
+                <div class="w-1/4 mr-8">
+                  <hr class="border-4 {ijazah.proto.getLegalize().getStatus() === 3 ? 'border-green-600' : 'border-gray-200'}">
+                  <div class="my-4">
+                    <p class="my-4 text-lg font-semibold {ijazah.proto.getLegalize().getStatus() === 3 ? 'text-green -600' : 'text-gray-200'}">Disetujui</p>
+                  </div>
+                </div>
+              </div>
+
               {#if ijazah.proto.getLegalize().getStatus() === 0}
-                <div class="my-8">
+                <div class="mb-4">
                   <p class="mb-4 text-4xl font-semibold text-red-500">DITOLAK</p>
                   <p class="w-3/4 text-xl">Silahkan ajukan e-legalisir ulang, atau hubungi admin untuk info lebih lanjut</p>
                 </div>
               {:else if ijazah.proto.getLegalize().getStatus() === 1}
-                <div class="my-8">
-                  <p class="my-4 text-4xl font-semibold text-yellow-700">SUBMITTED</p>
-                  <p class="w-3/4 text-xl">Dokumen sedang dalam proses pengecekan, mohon menunggu proses verifikasi</p>
+                <div class="mb-4">
+                  <p class="w-full text-xl">Dokumen sedang dalam proses pengecekan, mohon menunggu proses verifikasi</p>
                 </div>
               {:else if ijazah.proto.getLegalize().getStatus() === 2}
-                <div class="my-8">
-                  <p class="my-4 text-4xl font-semibold text-blue-500">DIVERIFIKASI</p>
-                  <p class="w-3/4 text-xl">Dokumen sedang dalam tahap verifikasi, mohon menunggu proses tanda tangan dokumen</p>
+                <div class="mb-4">
+                  <p class="w-full text-xl">Dokumen sedang dalam tahap verifikasi, mohon menunggu proses tanda tangan dokumen</p>
                 </div>
                 {:else if ijazah.proto.getLegalize().getStatus() === 3}
-                <div class="my-8">
-                  <p class="my-4 text-4xl font-semibold text-green-700">DISETUJUI</p>
+                <div class="mb-4">
                   {#if ijazah.proto.getLegalize().getIsOffline()}
-                    <p class="w-3/4 text-xl">Dokumen telah diverifikasi dan disetujui, silahkan untuk mengambil dokumen ijazah atau transkrip nilai yang sudah disetujui di kampus</p>
+                    <p class="w-full text-xl">Dokumen telah diverifikasi dan disetujui, silahkan untuk mengambil dokumen ijazah atau transkrip nilai yang sudah disetujui di kampus</p>
                   {:else}
                     <p class="w-3/4 text-xl">Dokumen telah diverifikasi dan disetujui, silahkan untuk mengunduh dokumen ijazah atau transkrip nilai yang sudah disetujui melalui tombol dibawah ini</p>
                   {/if}
@@ -300,12 +403,12 @@
 
                 {#if !ijazah.proto.getLegalize().getIsOffline()}
                 <div class="flex">
-                  <a target="_new" href="{ijazah.proto.getLegalize().getIjazahSigned()}" class="flex items-center justify-center px-6 py-2 mr-4 text-base font-medium text-green-900 border border-transparent rounded-md bg-green-50 w-max-full hover:bg-white hover:border-green-300 md:text-lg">
+                  <a target="_new" on:click="{() => download(ijazah.proto.getLegalize().getIjazahSigned())}" class="flex cursor-pointer items-center justify-center px-6 py-2 mr-4 text-base font-medium text-green-900 border border-transparent rounded-md bg-green-50 w-max-full hover:bg-white hover:border-green-300 md:text-lg">
                     <i class="mr-4 fas fa-download"></i>
                     Download Legalisir Ijazah
                   </a>
 
-                  <a target="_new" href="{ijazah.proto.getLegalize().getTranscriptSigned()}" class="flex items-center justify-center px-6 py-2 text-base font-medium text-green-900 border border-transparent rounded-md bg-green-50 w-max-full hover:bg-white hover:border-green-300 md:text-lg ">
+                  <a target="_new" on:click="{() => download(ijazah.proto.getLegalize().getTranscriptSigned())}" class="flex cursor-pointer items-center justify-center px-6 py-2 text-base font-medium text-green-900 border border-transparent rounded-md bg-green-50 w-max-full hover:bg-white hover:border-green-300 md:text-lg ">
                     <i class="mr-4 fas fa-download"></i>
                     Download Legalisir Transkrip
                   </a> 
@@ -333,10 +436,22 @@
               {/if}
             {/if}
 
+            {#if ijazah.id && ijazah.isExpired}
+              <p class="text-xl text-gray-500">Anda telah mengajukan {ijazah.proto.getLegalize().getIsOffline() ? 'Legalisir Cap Basah' : ' E-legalisir '} dengan status saat ini:</p>
+              <div class="mb-4">
+                <p class="mb-4 text-4xl font-semibold text-red-500">KADALUARSA</p>
+                <p class="w-3/4 mt-4 text-sm">Silahkan perpanjang e-legalisir dengan menekan tombol di bawah</p>
+
+                <button on:click="{() => extend(idx)}" type="button" class="px-6 py-2 mt-1 text-lg text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 hover:bg-indigo-500">
+                  Perpanjang
+                </button>
+              </div>
+            {/if}
+
             {#if !ijazah.proto.getLegalize().getId() || ijazah.proto.getLegalize().getStatus() === 0 }
             
-            <div class="flex justify-around items-center">
-              <div class="mb-12 w-2/5">
+            <div class="flex items-center justify-around">
+              <div class="w-2/5 mb-12">
                 <label for="ijazah" class="block mb-4 text-base font-medium text-gray-700">
                   Upload ijazah
                 </label>
@@ -351,7 +466,7 @@
                 />
               </div>
   
-              <div class="mb-12 w-2/5">
+              <div class="w-2/5 mb-12">
                 <label for="transcript" class="block mb-4 text-base font-medium text-gray-700">
                   Upload transkrip nilai
                 </label>
@@ -367,7 +482,7 @@
               </div>
               
             </div>
-            <div class="px-4 py-3 mt-10 text-left flex justify-between bg-gray-50 sm:px-6">
+            <div class="flex justify-between px-4 py-3 mt-10 text-left bg-gray-50 sm:px-6">
               <div class="flex items-center">
                 <p class='mr-6'>Jenis Legalisir:</p>
                 <div class="flex items-center mr-4">

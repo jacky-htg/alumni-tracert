@@ -119,8 +119,13 @@
         class="block pt-1 pb-4 text-base font-bold text-blue-700 no-underline uppercase cursor-pointer md:min-w-full"
       >
         {#if Cookies.get('token')}
-        <div on:click={logout}>
-          Logout
+        <div>
+          <a class='' href={PATH_URL.CHANGE_PASS}>
+            Ganti Password
+          </a>
+          <div class='mt-4 text-red-600' on:click={logout}>
+            Logout
+          </div>
         </div>
         {:else}
         <a href="/login">Login</a>
