@@ -26,6 +26,14 @@ const reducer = combineReducers({
         return state;
     }
   },
+  alumniList: (state = [], action) => {
+    switch (action.type) {
+      case actions.GET_ALUMNI_LIST_SUCCESS:
+        return [...state, action.data];
+      default:
+        return state;
+    }
+  },
 });
 
 const store = createStore(
