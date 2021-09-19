@@ -1,31 +1,20 @@
 import React, {useState} from 'react';
-import {
-  ScrollView,
-  View,
-  TouchableOpacity,
-  Image,
-  SafeAreaView,
-} from 'react-native';
+import {ScrollView, View, SafeAreaView} from 'react-native';
 import {CheckBox, Button, Input} from 'react-native-elements';
-import {PAGES} from '../routes';
-// import {TracertServiceClient} from '../proto/Tracert_serviceServiceClientPb';
 import KuisionerNotes from '../components/KuisionerNotes';
-// import {User} from '../proto/user_message_pb';
-// import userService from '../services/user';
+import {deps} from '../../services/tracert';
+import {User} from '../../proto/single-proto_pb';
+import userService from '../../services/user';
+import storage from '../utils/storage';
 
-/* async function userRegistrationCall(name, email) {
-  var deps = {
-    proto: {
-      TracertClient: TracertServiceClient,
-    },
-  };
+async function userRegistrationCall(name, email) {
   const userProto = new User();
   userProto.setUserType(2); // 2 = appraiser
   userProto.setName(name);
   userProto.setEmail(email);
-  // const user = new userService(deps, userProto);
-  // return await user.create();
-} */
+  const user = new userService(deps, userProto);
+  return user.create();
+}
 
 const AppraiserRegistration = ({navigation}) => {
   const [name, setName] = useState('');
@@ -33,9 +22,14 @@ const AppraiserRegistration = ({navigation}) => {
 
   const onPressNext = async () => {
     try {
-      // grpc.setDefaultTransport(ReactNativeTransport());
-      // userRegistrationCall(name, email);
-      // console.log('registerUser', registerUser.toObject());
+      const userCreate = await userRegistrationCall(name, email);
+      if (userCreate) {
+        storage.save({
+          key: 'token', // Note: Do not use underscore("_") in key!
+          data: userCreate.toObject(),
+        });
+        console.log('registerUser', userCreate.toObject());
+      }
     } catch (e) {
       console.log('ERROR = ', e);
     }
@@ -61,19 +55,13 @@ const AppraiserRegistration = ({navigation}) => {
             containerStyle={inputStyle}
             inputContainerStyle={inputContStyle}
             label="Nama"
-            onChange={e => {
-              const {value} = e.target;
-              setName(value);
-            }}
+            onChangeText={e => setName(e)}
           />
           <Input
             containerStyle={inputStyle}
             inputContainerStyle={inputContStyle}
             label="Email"
-            onChange={e => {
-              const {value} = e.target;
-              setEmail(value);
-            }}
+            onChangeText={e => setEmail(e)}
           />
         </View>
         <Button

@@ -1,44 +1,37 @@
-import React, {useState} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Image,
-  View,
-} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {Image, View} from 'react-native';
 import {Button, Text, Card, Input} from 'react-native-elements';
 
 import {LoginInput} from '../../proto/single-proto_pb';
-import {TracertServicePromiseClient} from '../../proto/single-proto_grpc_web_pb';
-import Login from '../../services/login';
+import {deps} from '../../services/tracert';
 
-const Home = () => {
+const Login = () => {
   const [isLoading, setLoading] = useState(false);
-  const [token, setToken] = useState();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const login = async () => {
+    // loginInput.setEmail('rijal.asep.nugroho@gmail.com');
+    // loginInput.setPassword('hariINI@2021');
+    let loginInput = new LoginInput();
+    loginInput.setEmail(`${email}`);
+    loginInput.setPassword(`${password}`);
+    const mylogin = new Login(deps, loginInput);
+    return mylogin.login();
+  };
 
   const onPressLogin = async () => {
     setLoading(true);
-    await login();
-    console.log('token', token);
-    setTimeout(() => {
+    try {
+      const token = await login();
+      console.log('token', token.getToken());
+      if (token) {
+        setLoading(false);
+      }
+    } catch (e) {
       setLoading(false);
-    }, 3000);
-  };
-
-  const login = async () => {
-    var deps = {
-      proto: {
-        TracertClient: TracertServicePromiseClient,
-      },
-    };
-
-    const loginInput = new LoginInput();
-    loginInput.setEmail('rijal.asep.nugroho@gmail.com');
-    loginInput.setPassword('hariINI@2021');
-
-    const mylogin = new Login(deps, loginInput);
-    setToken(await mylogin.login());
+      console.log('ERR = ');
+    }
   };
 
   return (
@@ -57,21 +50,13 @@ const Home = () => {
           style={{marginBottom: 24}}
         />
         <Card.Title>Selamat datang, silahkan login</Card.Title>
-        <Input
-          placeholder="Username"
-          onChange={e => {
-            const {value} = e.target;
-            // setUserName(value);
-          }}
-        />
+        <Input placeholder="Username" onChangeText={e => setEmail(e)} />
 
         <Input
           placeholder="Password"
           secureTextEntry={true}
-          onChange={e => {
-            const {value} = e.target;
-            // setPassword(value);
-          }}
+          onChangeText={e => setPassword(e)}
+          value={password}
         />
 
         <Button
@@ -87,4 +72,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Login;
