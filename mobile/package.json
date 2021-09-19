@@ -12,6 +12,9 @@
   "dependencies": {
     "@react-navigation/native": "^6.0.2",
     "@react-navigation/native-stack": "^6.1.0",
+    "google-protobuf": "^3.18.0",
+    "grpc-web": "^1.2.1",
+    "myproto": "file:../../MyProto",
     "react": "17.0.1",
     "react-native": "0.64.2",
     "react-native-elements": "^3.4.2",

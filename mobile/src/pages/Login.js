@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -9,6 +9,10 @@ import {
 } from 'react-native';
 import {Button, Text, Card, Input} from 'react-native-elements';
 
+import {LoginInput} from '../../proto/single-proto_pb';
+import {TracertServicePromiseClient} from '../../proto/single-proto_grpc_web_pb';
+import Login from '../../services/login';
+
 const Home = () => {
   const [isLoading, setLoading] = useState(false);
   const onPressLogin = () => {
@@ -17,6 +21,28 @@ const Home = () => {
       setLoading(false);
     }, 3000);
   };
+
+  const loginInput = new LoginInput();
+  loginInput.setEmail('rijal.asep.nugroho@gmail.com');
+  loginInput.setPassword('hariINI@2021');
+
+  const client = new TracertServicePromiseClient(
+    'https://api.borobudur.rijalasepnugroho.com',
+    null,
+    null,
+  );
+
+  const login = () => {
+    return client.login(loginInput, {}).then(user => {
+      console.log(user);
+      return user;
+    });
+  };
+
+  useEffect(() => {
+    login();
+  });
+
   return (
     <View
       style={{
