@@ -5,6 +5,8 @@ import {
   ListInput,
   AlumniAppraiser,
   Alumni,
+  Legalize,
+  EmptyMessage,
 } from '../../proto/single-proto_pb';
 //
 import userService from '../../services/user';
@@ -12,6 +14,7 @@ import loginService from '../../services/login';
 import alumniService from '../../services/alumni';
 import AlumniListService from '../../services/alumniList';
 import appraiserService from '../../services/appraiser';
+import LegalizeService from '../../services/legalize';
 import storage from './storage';
 
 export const actions = {
@@ -24,6 +27,8 @@ export const actions = {
   GET_ALUMNI_LIST_FAILED: 'GET_ALUMNI_LIST_FAILED',
   REGISTER_APPRAISER_SUCCESS: 'REGISTER_APPRAISER_SUCCESS',
   REGISTER_APPRAISER_FAILED: 'REGISTER_APPRAISER_FAILED',
+  GET_MY_LEGALISIR_LIST_SUCCESS: 'GET_MY_LEGALISIR_LIST_SUCCESS',
+  GET_MY_LEGALISIR_LIST_FAILED: 'GET_MY_LEGALISIR_LIST_FAILED',
 };
 
 export const createUser = (name, email) => async dispatch => {
@@ -172,3 +177,22 @@ export const registerAppraiser =
       return error;
     }
   };
+
+export const getLegalizeList = () => async dispatch => {
+  try {
+    const legalizeService = new LegalizeService(deps, new EmptyMessage());
+    const token = await storage.load({key: 'token'});
+    const result = await legalizeService.getOwn(token.token);
+    dispatch({
+      type: actions.REGISTER_APPRAISER_SUCCESS,
+      data: result.certificateList,
+    });
+    return result;
+  } catch (error) {
+    dispatch({
+      type: actions.GET_ALUMNI_LIST_FAILED,
+      message: error.message,
+    });
+    return error;
+  }
+};

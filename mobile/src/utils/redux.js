@@ -37,6 +37,16 @@ const reducer = combineReducers({
         return state;
     }
   },
+  legalisirList: (state = [], action) => {
+    switch (action.type) {
+      case actions.GET_MY_LEGALISIR_LIST_SUCCESS:
+        return {
+          ...action.data,
+        };
+      default:
+        return state;
+    }
+  },
 });
 
 const store = createStore(

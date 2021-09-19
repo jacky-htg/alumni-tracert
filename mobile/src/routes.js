@@ -8,6 +8,7 @@ import MyLegalisir from './pages/MyLegalisir';
 import Kuisioner from './pages/Kuisioner';
 import AppraiserRegistration from './pages/AppraiserRegistration';
 import AlumniRegistration from './pages/AlumniRegistration';
+import AddIjazah from './pages/AddIjazah';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -109,6 +110,11 @@ export const PAGES = {
   ALUMNI_REGISTRATION: {
     path: 'alumni_registration',
     component: AlumniRegistration,
+    options: {headerShown: false},
+  },
+  ADD_IJAZAH: {
+    path: 'add_ijazah',
+    component: AddIjazah,
     options: {headerShown: false},
   },
 };

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -7,37 +7,25 @@ import {
   Image,
   View,
 } from 'react-native';
+import {getLegalizeList} from '../utils/actions';
+import {useDispatch, useSelector} from 'react-redux';
 import {Button, Text, Card, Chip} from 'react-native-elements';
+import {PAGES} from '../routes';
 
 const MyLegalisir = ({navigation}) => {
-  const [myLegalisir, setLegalisir] = useState([
-    {
-      studi: 'Prodi D3 Kebidanan',
-      status: 1,
-      isOffline: false,
-      number: 123123123,
-    },
-    {
-      studi: 'Prodi D3 Kebidanan',
-      status: 0,
-      isOffline: false,
-      number: 1242142,
-    },
-    {
-      studi: 'Prodi D3 Kebidanan',
-      status: 2,
-      isOffline: false,
-      number: 5376457,
-    },
-    {
-      studi: 'Prodi D3 Kebidanan',
-      status: 3,
-      isOffline: false,
-      number: 769687,
-    },
-  ]);
+  const {isLogin, legalisirList} = useSelector(state => ({
+    isLogin: state.isLogin,
+    legalisirList: state.legalisirList,
+  }));
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(getLegalizeList());
+  }, []);
   const onPressIjazah = detail => {
     console.log('GO TO detail ijazah', detail);
+  };
+  const onPressAddIjazah = () => {
+    navigation.navigate(PAGES.ADD_IJAZAH.path);
   };
   const getChipByStatus = data => {
     switch (data.status) {
@@ -92,10 +80,11 @@ const MyLegalisir = ({navigation}) => {
           type="clear"
           buttonStyle={{color: '#047857'}}
           title="+Tambah Ijazah"
+          onPress={onPressAddIjazah}
         />
       </View>
       <ScrollView style={{marginTop: 8}}>
-        {myLegalisir.map((legal, i) => (
+        {legalisirList.map((legal, i) => (
           <Card key={i}>
             <Card.Title>{`${legal.studi} ${legal.number}`}</Card.Title>
             <Card.Divider />

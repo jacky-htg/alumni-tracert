@@ -4,8 +4,8 @@ import {Button, Text} from 'react-native-elements';
 import KuisionerNotes from '../components/KuisionerNotes';
 import {createUser, getAlumniList, registerAppraiser} from '../utils/actions';
 import InputBorderer from '../components/InputBorderer';
+import SearchDropDown from '../components/SearchDropDown';
 import {useDispatch, useSelector} from 'react-redux';
-import {AutocompleteDropdown} from 'react-native-autocomplete-dropdown';
 
 const AppraiserRegistration = ({navigation}) => {
   const {isLogin, alumniList} = useSelector(state => ({
@@ -61,43 +61,12 @@ const AppraiserRegistration = ({navigation}) => {
               onChangeText={e => setInstansi(e)}
             />
             <InputBorderer label="Posisi" onChangeText={e => setPosition(e)} />
-            <Text
-              style={{
-                marginBottom: 10,
-                fontWeight: 'bold',
-                fontSize: 16,
-                color: '#9CA3AF',
-              }}>
-              Nama Alumni
-            </Text>
-            <AutocompleteDropdown
-              clearOnFocus={false}
-              closeOnBlur={true}
-              closeOnSubmit={true}
+            <SearchDropDown
+              label="Nama Alumni"
               onSelectItem={a => {
                 setAlumniData(a);
               }}
               dataSet={alumniList}
-              textInputProps={{
-                autoCorrect: false,
-                autoCapitalize: 'none',
-                style: {
-                  borderRadius: 8,
-                  backgroundColor: '#fff',
-                  paddingLeft: 4,
-                  borderWidth: 1,
-                  borderColor: '#9CA3AF',
-                  height: 52,
-                  marginBottom: 20,
-                },
-              }}
-              rightButtonsContainerStyle={{
-                right: 8,
-                height: 30,
-                top: 12,
-                alignSelfs: 'center',
-                backgroundColor: '#fff',
-              }}
             />
             <InputBorderer
               label="Posisi Alumni"
