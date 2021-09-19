@@ -1,36 +1,22 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import {Image, View} from 'react-native';
-import {Button, Text, Card, Input} from 'react-native-elements';
-
-import {LoginInput} from '../../proto/single-proto_pb';
-import {deps} from '../../services/tracert';
+import {Button, Card, Input} from 'react-native-elements';
+import {login} from '../utils/actions';
+import {useDispatch} from 'react-redux';
 
 const Login = () => {
   const [isLoading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
-  const login = async () => {
-    // loginInput.setEmail('rijal.asep.nugroho@gmail.com');
-    // loginInput.setPassword('hariINI@2021');
-    let loginInput = new LoginInput();
-    loginInput.setEmail(`${email}`);
-    loginInput.setPassword(`${password}`);
-    const mylogin = new Login(deps, loginInput);
-    return mylogin.login();
-  };
+  const dispatch = useDispatch();
 
   const onPressLogin = async () => {
     setLoading(true);
     try {
-      const token = await login();
-      console.log('token', token.getToken());
-      if (token) {
-        setLoading(false);
-      }
+      await dispatch(login(email, password));
+      setLoading(false);
     } catch (e) {
       setLoading(false);
-      console.log('ERR = ');
     }
   };
 

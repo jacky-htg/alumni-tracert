@@ -1,37 +1,22 @@
 import React, {useState} from 'react';
 import {ScrollView, View, SafeAreaView} from 'react-native';
-import {CheckBox, Button, Input} from 'react-native-elements';
+import {Button, Input} from 'react-native-elements';
 import KuisionerNotes from '../components/KuisionerNotes';
-import {deps} from '../../services/tracert';
-import {User} from '../../proto/single-proto_pb';
-import userService from '../../services/user';
-import storage from '../utils/storage';
-
-async function userRegistrationCall(name, email) {
-  const userProto = new User();
-  userProto.setUserType(2); // 2 = appraiser
-  userProto.setName(name);
-  userProto.setEmail(email);
-  const user = new userService(deps, userProto);
-  return user.create();
-}
+import {createUser} from '../utils/actions';
+import {useDispatch} from 'react-redux';
 
 const AppraiserRegistration = ({navigation}) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-
+  const [isLoading, setLoading] = useState(false);
+  const dispatch = useDispatch();
   const onPressNext = async () => {
+    setLoading(true);
     try {
-      const userCreate = await userRegistrationCall(name, email);
-      if (userCreate) {
-        storage.save({
-          key: 'token', // Note: Do not use underscore("_") in key!
-          data: userCreate.toObject(),
-        });
-        console.log('registerUser', userCreate.toObject());
-      }
+      await dispatch(createUser(name, email));
+      setLoading(false);
     } catch (e) {
-      console.log('ERROR = ', e);
+      setLoading(false);
     }
   };
   const inputStyle = {
@@ -69,6 +54,7 @@ const AppraiserRegistration = ({navigation}) => {
           buttonStyle={{
             backgroundColor: '#047857',
           }}
+          loading={isLoading}
           onPress={onPressNext}
         />
       </ScrollView>
