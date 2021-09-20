@@ -1,71 +1,51 @@
-import React, {useState} from 'react';
-import {
-  ScrollView,
-  View,
-  TouchableOpacity,
-  Image,
-  SafeAreaView,
-} from 'react-native';
-import {CheckBox, Button, Input} from 'react-native-elements';
-import {PAGES} from '../routes';
-import {TracertServiceClient} from '../proto/Tracert_serviceServiceClientPb';
+import React, {useEffect, useState} from 'react';
+import {ScrollView, View, SafeAreaView} from 'react-native';
+import {Button, Text} from 'react-native-elements';
 import KuisionerNotes from '../components/KuisionerNotes';
-import {User} from '../proto/user_message_pb';
-import userService from '../services/user';
-import {grpc} from '@improbable-eng/grpc-web';
-import {ReactNativeTransport} from '@improbable-eng/grpc-web-react-native-transport';
-
-async function userRegistrationCall(name, email) {
-  var deps = {
-    proto: {
-      TracertClient: TracertServiceClient,
-    },
-  };
-  const userProto = new User();
-  userProto.setUserType(2); // 2 = appraiser
-  userProto.setName(name);
-  userProto.setEmail(email);
-  grpc.unary(TracertServiceClient.userCreate, {
-    request: userProto,
-    host: 'https://api.borobudur.rijalasepnugroho.com',
-    transport: ReactNativeTransport(),
-    onEnd: (code, msg, trailers) => {
-      if (code == grpc.Code.OK) {
-        console.log('all ok');
-      } else {
-        console.log('hit an error', code, msg, trailers);
-      }
-    },
-    onError: err => {
-      console.log('ERR = ', err);
-    },
-  });
-  // const user = new userService(deps, userProto);
-  // return await user.create();
-}
+import {createUser, getAlumniList, registerAppraiser} from '../utils/actions';
+import InputBorderer from '../components/InputBorderer';
+import SearchDropDown from '../components/SearchDropDown';
+import {useDispatch, useSelector} from 'react-redux';
 
 const AppraiserRegistration = ({navigation}) => {
+  const {isLogin, alumniList} = useSelector(state => ({
+    isLogin: state.isLogin,
+    alumniList: state.alumniList,
+  }));
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-
+  const [instansi, setInstansi] = useState('');
+  const [position, setPosition] = useState('');
+  const [alumniPosition, setAlumniPosition] = useState('');
+  const [alumniData, setAlumniData] = useState({});
+  const [isLoading, setLoading] = useState(false);
+  const dispatch = useDispatch();
   const onPressNext = async () => {
+    setLoading(true);
     try {
-      // grpc.setDefaultTransport(ReactNativeTransport());
-      userRegistrationCall(name, email);
-      // console.log('registerUser', registerUser.toObject());
+      if (!isLogin) {
+        await dispatch(createUser(name, email));
+      } else {
+        const data = {
+          name,
+          instansi,
+          position,
+          alumniPosition,
+          alumniData,
+        };
+        await dispatch(registerAppraiser(data));
+      }
+      setLoading(false);
     } catch (e) {
-      console.log('ERROR = ', e);
+      setLoading(false);
     }
   };
-  const inputStyle = {
-    paddingHorizontal: 0,
-  };
-  const inputContStyle = {
-    marginTop: 8,
-    borderRadius: 8,
-    borderWidth: 1,
-    paddingHorizontal: 12,
-  };
+
+  useEffect(() => {
+    if (isLogin) {
+      dispatch(getAlumniList('', 10, 1));
+    }
+  }, [isLogin]);
   return (
     <SafeAreaView>
       <ScrollView
@@ -74,31 +54,38 @@ const AppraiserRegistration = ({navigation}) => {
           backgroundColor: '#ffffff',
         }}>
         <KuisionerNotes />
-        <View style={{paddingTop: 12}}>
-          <Input
-            containerStyle={inputStyle}
-            inputContainerStyle={inputContStyle}
-            label="Nama"
-            onChange={e => {
-              const {value} = e.target;
-              setName(value);
-            }}
-          />
-          <Input
-            containerStyle={inputStyle}
-            inputContainerStyle={inputContStyle}
-            label="Email"
-            onChange={e => {
-              const {value} = e.target;
-              setEmail(value);
-            }}
-          />
-        </View>
+        {isLogin ? (
+          <View style={{paddingTop: 12}}>
+            <InputBorderer
+              label="Instansi"
+              onChangeText={e => setInstansi(e)}
+            />
+            <InputBorderer label="Posisi" onChangeText={e => setPosition(e)} />
+            <SearchDropDown
+              label="Nama Alumni"
+              onSelectItem={a => {
+                setAlumniData(a);
+              }}
+              dataSet={alumniList}
+            />
+            <InputBorderer
+              label="Posisi Alumni"
+              onChangeText={e => setAlumniPosition(e)}
+            />
+          </View>
+        ) : (
+          <View style={{paddingTop: 12}}>
+            <InputBorderer label="Nama" onChangeText={e => setName(e)} />
+            <InputBorderer label="Email" onChangeText={e => setEmail(e)} />
+          </View>
+        )}
+
         <Button
           title="Lanjutkan"
           buttonStyle={{
             backgroundColor: '#047857',
           }}
+          loading={isLoading}
           onPress={onPressNext}
         />
       </ScrollView>

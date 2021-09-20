@@ -1,41 +1,27 @@
 import React, {useState} from 'react';
 import {Image, View} from 'react-native';
-import {LoginInput} from '../proto/user_message_pb';
-import {TracertServiceClient} from '../proto/Tracert_serviceServiceClientPb';
-import Login from '../services/login';
+import {Button, Card, Input} from 'react-native-elements';
+import {login} from '../utils/actions';
+import {useDispatch} from 'react-redux';
 import {PAGES} from '../routes';
-import {Button, Text, Card, Input} from 'react-native-elements';
 
-const Home = ({navigation}) => {
+const Login = ({navigation}) => {
   const [isLoading, setLoading] = useState(false);
-  const [username, setUserName] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  async function loginCall() {
-    var deps = {
-      proto: {
-        TracertClient: TracertServiceClient,
-      },
-    };
+  const dispatch = useDispatch();
 
-    const loginInput = new LoginInput();
-    loginInput.setEmail(username);
-    loginInput.setPassword(password);
-
-    let login = new Login(deps, loginInput);
-    return await login.login();
-  }
   const onPressLogin = async () => {
     setLoading(true);
     try {
-      const user = await loginCall();
-      /* setTimeout(() => {
+      await dispatch(login(email, password));
       setLoading(false);
       navigation.navigate(PAGES.TAB_LOGIN.path);
-    }, 1000); */
     } catch (e) {
-      console.log('ERROR = ', e);
+      setLoading(false);
     }
   };
+
   return (
     <View
       style={{
@@ -52,21 +38,13 @@ const Home = ({navigation}) => {
           style={{marginBottom: 24}}
         />
         <Card.Title>Selamat datang, silahkan login</Card.Title>
-        <Input
-          placeholder="Username"
-          onChange={e => {
-            const {value} = e.target;
-            setUserName(value);
-          }}
-        />
+        <Input placeholder="Username" onChangeText={e => setEmail(e)} />
 
         <Input
           placeholder="Password"
           secureTextEntry={true}
-          onChange={e => {
-            const {value} = e.target;
-            setPassword(value);
-          }}
+          onChangeText={e => setPassword(e)}
+          value={password}
         />
 
         <Button
@@ -82,4 +60,4 @@ const Home = ({navigation}) => {
   );
 };
 
-export default Home;
+export default Login;

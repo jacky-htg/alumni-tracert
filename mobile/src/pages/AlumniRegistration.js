@@ -10,6 +10,7 @@ import {
 import {Text, Button, Input} from 'react-native-elements';
 import {Picker} from '@react-native-picker/picker';
 import {PAGES} from '../routes';
+import InputBorderer from '../components/InputBorderer';
 import DatePicker from 'react-native-datepicker';
 import moment from 'moment';
 const windowWidth = Dimensions.get('window').width;
@@ -124,33 +125,25 @@ const AlumniRegistration = ({navigation}) => {
         }}>
         <Text style={{fontSize: 20, fontWeight: 'bold'}}>IDENTITAS ALUMNI</Text>
         <View style={{paddingTop: 12}}>
-          <Input
-            containerStyle={inputStyle}
-            inputContainerStyle={inputContStyle}
+          <InputBorderer
             label="Nama"
             onChangeText={value => {
               setName(value);
             }}
           />
-          <Input
-            containerStyle={inputStyle}
-            inputContainerStyle={inputContStyle}
+          <InputBorderer
             label="NIM"
             onChangeText={value => {
               setNim(value);
             }}
           />
-          <Input
-            containerStyle={inputStyle}
-            inputContainerStyle={inputContStyle}
+          <InputBorderer
             label="NIK"
             onChangeText={value => {
               setNik(value);
             }}
           />
-          <Input
-            containerStyle={inputStyle}
-            inputContainerStyle={inputContStyle}
+          <InputBorderer
             label="TEMPAT LAHIR"
             onChangeText={value => {
               setBirthPlace(value);

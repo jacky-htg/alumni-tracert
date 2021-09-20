@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -7,45 +7,34 @@ import {
   Image,
   View,
 } from 'react-native';
+import {getLegalizeList, setDetailIjazah} from '../utils/actions';
+import {useDispatch, useSelector} from 'react-redux';
 import {Button, Text, Card, Chip} from 'react-native-elements';
+import {PAGES} from '../routes';
 
 const MyLegalisir = ({navigation}) => {
-  const [myLegalisir, setLegalisir] = useState([
-    {
-      studi: 'Prodi D3 Kebidanan',
-      status: 1,
-      isOffline: false,
-      number: 123123123,
-    },
-    {
-      studi: 'Prodi D3 Kebidanan',
-      status: 0,
-      isOffline: false,
-      number: 1242142,
-    },
-    {
-      studi: 'Prodi D3 Kebidanan',
-      status: 2,
-      isOffline: false,
-      number: 5376457,
-    },
-    {
-      studi: 'Prodi D3 Kebidanan',
-      status: 3,
-      isOffline: false,
-      number: 769687,
-    },
-  ]);
+  const {isLogin, legalisirList} = useSelector(state => ({
+    isLogin: state.isLogin,
+    legalisirList: state.legalisirList,
+  }));
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(getLegalizeList());
+  }, []);
   const onPressIjazah = detail => {
-    console.log('GO TO detail ijazah', detail);
+    dispatch(setDetailIjazah(detail));
+    navigation.navigate(PAGES.DETAIL_CERTIFICATE.path);
+  };
+  const onPressAddIjazah = () => {
+    navigation.navigate(PAGES.ADD_IJAZAH.path);
   };
   const getChipByStatus = data => {
-    switch (data.status) {
+    switch (data.legalize.status) {
       case 0:
         return (
           <Chip
-            title="Ditolak"
-            buttonStyle={{backgroundColor: '#EF4444'}}
+            title="Terdaftar"
+            buttonStyle={{backgroundColor: '#E5E7EB'}}
             onPress={() => onPressIjazah(data)}
           />
         );
@@ -73,6 +62,14 @@ const MyLegalisir = ({navigation}) => {
             onPress={() => onPressIjazah(data)}
           />
         );
+      case 4:
+        return (
+          <Chip
+            title="Ditolak"
+            buttonStyle={{backgroundColor: '#EF4444'}}
+            onPress={() => onPressIjazah(data)}
+          />
+        );
     }
   };
   return (
@@ -92,16 +89,18 @@ const MyLegalisir = ({navigation}) => {
           type="clear"
           buttonStyle={{color: '#047857'}}
           title="+Tambah Ijazah"
+          onPress={onPressAddIjazah}
         />
       </View>
       <ScrollView style={{marginTop: 8}}>
-        {myLegalisir.map((legal, i) => (
-          <Card key={i}>
-            <Card.Title>{`${legal.studi} ${legal.number}`}</Card.Title>
-            <Card.Divider />
-            {getChipByStatus(legal)}
-          </Card>
-        ))}
+        {legalisirList.length > 0 &&
+          legalisirList.map((legal, i) => (
+            <Card key={i}>
+              <Card.Title>{`${legal.majorStudy} ${legal.noIjazah}`}</Card.Title>
+              <Card.Divider />
+              {getChipByStatus(legal)}
+            </Card>
+          ))}
       </ScrollView>
     </View>
   );

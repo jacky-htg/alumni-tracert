@@ -162,9 +162,9 @@
   const getWidthExcell = (id) => {
     switch(id) {
       case 0:
-        return 6
-      case 1:
         return 30
+      case 1:
+        return 20
       default:
         return 60
     }
@@ -187,15 +187,15 @@
       let sheet = workbook.addWorksheet("Hasil Kuisioner");
       // title
       const title = result[0].answerList.map((answer) => clean(answer.question))
-      title.unshift('id', 'name');
-      title.push('created_at')
+      title.unshift('Nama', 'NIK');
+      title.push('Tanggal')
       // header
       sheet.columns = title.map((a, idx) => ({
         header: a,
         key: a,
         width: getWidthExcell(idx),
       }));
-      const dataRow = result.map((answer) => [answer.id, answer.name, ...(answer.answerList.map((a) => a.answer)), answer.created])
+      const dataRow = result.map((answer) => [answer.name, answer.nik, ...(answer.answerList.map((a) => a.answer)), answer.created])
       // data
       const mergeDataWithColumn = dataRow.map((row, idx) => {
         const  obj = {};

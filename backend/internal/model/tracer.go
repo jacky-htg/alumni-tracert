@@ -21,7 +21,7 @@ func (u *Tracer) GetLastByUserId(ctx context.Context, db *sql.DB) error {
 	row := db.QueryRowContext(ctx, query, ctx.Value(app.Ctx("user_id")).(uint64))
 	err := row.Scan(&u.Pb.Id, &u.Pb.Created)
 	if err == sql.ErrNoRows {
-		return status.Errorf(codes.NotFound, "not found: %v", err)
+		return status.Errorf(codes.NotFound, "silahkan isi kuisioner terlebih dahulu")
 	}
 
 	if err != nil {
