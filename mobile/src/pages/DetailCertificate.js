@@ -1,27 +1,58 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useMemo} from 'react';
 import {SafeAreaView, ScrollView, View} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
-import {Button, Text, Card, Chip, Overlay} from 'react-native-elements';
+import {
+  Button,
+  Text,
+  Card,
+  Chip,
+  Overlay,
+  CheckBox,
+} from 'react-native-elements';
 import ImagePicker from 'react-native-image-crop-picker';
 import {HOST_URL} from '../../services/tracert';
 import storage from '../utils/storage';
+import CheckBoxClear from '../components/CheckBoxClear';
+import {createLegalize, getLegalizeList} from '../utils/actions';
 
 const DetailCertificate = ({navigation}) => {
   const {isLogin, detailCertificate} = useSelector(state => ({
     isLogin: state.isLogin,
     detailCertificate: state.detailCertificate,
   }));
+  const dispatch = useDispatch();
   const [isLoading, setLoading] = useState(false);
   const [isLoadingIjazah, setLoadingIjazah] = useState(false);
   const [isLoadingTranscript, setLoadingTranscript] = useState(false);
   const [visible, setVisible] = useState(false);
   const [selectedType, setSelectedType] = useState('');
+  const [ijazahFile, setIjazahFile] = useState(null);
+  const [transcriptFile, setTranscriptFile] = useState(null);
+  const [selectedLegalisirType, setSelectedLegalisirType] =
+    useState('e-legalisir');
 
   const toggleOverlay = () => {
     setVisible(!visible);
   };
 
-  const onLegalisir = () => {};
+  const onLegalisir = async () => {
+    try {
+      setLoading(true);
+      const param = {
+        certificateId: detailCertificate.id,
+        ijazahPath: ijazahFile.fileUrl,
+        transcriptPath: transcriptFile.fileUrl,
+        isOffline: selectedLegalisirType !== 'e-legalisir',
+      };
+      console.log('PARAM = ', param);
+      await dispatch(createLegalize(param));
+      setLoading(false);
+      dispatch(getLegalizeList());
+      navigation.goBack();
+    } catch (e) {
+      setLoading(false);
+    }
+  };
   const onUploadIjazah = () => {
     setVisible(true);
     setSelectedType('ijazah');
@@ -51,7 +82,7 @@ const DetailCertificate = ({navigation}) => {
     fd.append('module', selectedType);
     try {
       const token = await storage.load({key: 'token'});
-      const uploadedFile = await fetch(`${HOST_URL}/upload`, {
+      const result = await fetch(`${HOST_URL}/upload`, {
         method: 'POST',
         headers: {
           token: token.token,
@@ -59,13 +90,22 @@ const DetailCertificate = ({navigation}) => {
         },
         body: fd,
       }).then(res => res.json());
-      console.log('RESPONSE = ', uploadedFile);
+      return result;
     } catch (err) {
       console.log('ERR = ', err);
     }
   };
   const loadingFunc =
     selectedType === 'ijazah' ? setLoadingIjazah : setLoadingTranscript;
+  const setImageFunc =
+    selectedType === 'ijazah' ? setIjazahFile : setTranscriptFile;
+  const uploadSelectedImage = async image => {
+    toggleOverlay();
+    loadingFunc(true);
+    const fileUploaded = await uploadSimpleFile(image);
+    setImageFunc({...image, fileUrl: fileUploaded.path});
+    loadingFunc(false);
+  };
   const onSelectCamera = async () => {
     try {
       const image = await ImagePicker.openCamera({
@@ -74,11 +114,7 @@ const DetailCertificate = ({navigation}) => {
         cropping: true,
         includeBase64: true,
       });
-      toggleOverlay();
-      loadingFunc(true);
-      await uploadSimpleFile(image);
-      loadingFunc(false);
-      console.log('IMAGE = ', image);
+      uploadSelectedImage(image);
     } catch (e) {
       console.log('ERROR', e);
       loadingFunc(false);
@@ -92,11 +128,7 @@ const DetailCertificate = ({navigation}) => {
         cropping: true,
         includeBase64: true,
       });
-      toggleOverlay();
-      loadingFunc(true);
-      await uploadSimpleFile(image);
-      loadingFunc(false);
-      console.log('IMAGE = ', image);
+      uploadSelectedImage(image);
     } catch (e) {
       console.log('ERROR', e);
       loadingFunc(false);
@@ -108,6 +140,9 @@ const DetailCertificate = ({navigation}) => {
     fontSize: 16,
     color: '#9CA3AF',
   };
+  const isUploadFirst = useMemo(
+    () => detailCertificate.legalize && detailCertificate.legalize.status === 0,
+  );
   return (
     <SafeAreaView style={{backgroundColor: '#ffffff', flex: 1}}>
       <ScrollView
@@ -132,7 +167,7 @@ const DetailCertificate = ({navigation}) => {
             {detailCertificate.noIjazah}
           </Text>
         </View>
-        {detailCertificate.legalize && detailCertificate.legalize.status === 0 && (
+        {isUploadFirst && (
           <View style={{flex: 1, paddingTop: 24}}>
             <Card
               containerStyle={{
@@ -142,6 +177,12 @@ const DetailCertificate = ({navigation}) => {
               }}>
               <Card.Title>Upload Ijazah</Card.Title>
               <Card.Divider />
+              {ijazahFile && (
+                <Card.Image
+                  style={{marginBottom: 12}}
+                  source={{uri: ijazahFile.path}}
+                />
+              )}
               <Button
                 title="Upload"
                 buttonStyle={{
@@ -160,6 +201,12 @@ const DetailCertificate = ({navigation}) => {
               }}>
               <Card.Title>Upload Transkrip</Card.Title>
               <Card.Divider />
+              {transcriptFile && (
+                <Card.Image
+                  style={{marginBottom: 12}}
+                  source={{uri: transcriptFile.path}}
+                />
+              )}
               <Button
                 title="Upload"
                 buttonStyle={{
@@ -169,19 +216,33 @@ const DetailCertificate = ({navigation}) => {
                 onPress={onUploadTranscript}
               />
             </Card>
+            <View style={{paddingTop: 12}}>
+              <CheckBoxClear
+                title="E-Legalisir"
+                checked={selectedLegalisirType === 'e-legalisir'}
+                onPress={() => setSelectedLegalisirType('e-legalisir')}
+              />
+              <CheckBoxClear
+                title="Legalisir Cap Basah"
+                checked={selectedLegalisirType === 'offline'}
+                onPress={() => setSelectedLegalisirType('offline')}
+              />
+            </View>
           </View>
         )}
       </ScrollView>
-      <View style={{padding: 24}}>
-        <Button
-          title="Legalisir"
-          buttonStyle={{
-            backgroundColor: '#047857',
-          }}
-          loading={isLoading}
-          onPress={onLegalisir}
-        />
-      </View>
+      {isUploadFirst && (
+        <View style={{padding: 24}}>
+          <Button
+            title="Legalisir"
+            buttonStyle={{
+              backgroundColor: '#047857',
+            }}
+            loading={isLoading}
+            onPress={onLegalisir}
+          />
+        </View>
+      )}
       <Overlay
         isVisible={visible}
         onBackdropPress={toggleOverlay}

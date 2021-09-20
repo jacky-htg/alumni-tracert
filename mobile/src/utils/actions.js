@@ -34,6 +34,8 @@ export const actions = {
   CREATE_CERTIFICATE_SUCCESS: 'CREATE_CERTIFICATE_SUCCESS',
   CREATE_CERTIFICATE_FAILED: 'CREATE_CERTIFICATE_FAILED',
   SET_DETAIL_IJAZAH: 'SET_DETAIL_IJAZAH',
+  CREATE_LEGALIZE_SUCCESS: 'CREATE_LEGALIZE_SUCCESS',
+  CREATE_LEGALIZE_FAILED: 'CREATE_LEGALIZE_FAILED',
 };
 
 export const setDetailIjazah = data => ({
@@ -230,6 +232,34 @@ export const createCertificate =
     } catch (error) {
       dispatch({
         type: actions.CREATE_CERTIFICATE_FAILED,
+        message: error.message,
+      });
+      return error;
+    }
+  };
+
+export const createLegalize =
+  ({certificateId, ijazahPath, transcriptPath, isOffline}) =>
+  async dispatch => {
+    try {
+      const legalizeProto = new Legalize();
+      legalizeProto.setCertificateId(certificateId);
+      legalizeProto.setIjazah(ijazahPath);
+      legalizeProto.setTranscript(transcriptPath);
+      legalizeProto.setIsOffline(isOffline);
+
+      const legalizeService = new LegalizeService(deps, legalizeProto);
+      const token = await storage.load({key: 'token'});
+      console.log(legalizeProto.toObject());
+      const result = await legalizeService.create(token.token);
+      dispatch({
+        type: actions.CREATE_LEGALIZE_SUCCESS,
+        data: result.toObject(),
+      });
+      return result;
+    } catch (error) {
+      dispatch({
+        type: actions.CREATE_LEGALIZE_FAILED,
         message: error.message,
       });
       return error;
