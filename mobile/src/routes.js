@@ -11,6 +11,7 @@ import AppraiserRegistration from './pages/AppraiserRegistration';
 import AlumniRegistration from './pages/AlumniRegistration';
 import AddIjazah from './pages/AddIjazah';
 import DetailCertificate from './pages/DetailCertificate';
+import KuisionerForm from './pages/KuisionerForm';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -20,6 +21,8 @@ const getTabIcon = (route, size, color) => {
   switch (route.name) {
     case 'E-Legalisir':
       return <Ionicons name="ribbon" size={size} color={color} />;
+    case 'Kuisioner':
+      return <Ionicons name="bookmarks" size={size} color={color} />;
     case 'CDC':
       return <Ionicons name="stats-chart" size={size} color={color} />;
     case 'Alumni':
@@ -40,6 +43,11 @@ export const TabLogin = () => {
       <Tab.Screen
         name="E-Legalisir"
         component={MyLegalisir}
+        options={{headerShown: false}}
+      />
+      <Tab.Screen
+        name="Kuisioner"
+        component={KuisionerForm}
         options={{headerShown: false}}
       />
       <Tab.Screen name="CDC" component={CDC} options={{headerShown: false}} />

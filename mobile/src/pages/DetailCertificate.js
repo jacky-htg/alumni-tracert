@@ -1,16 +1,10 @@
 import React, {useState, useEffect} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Image,
-  View,
-} from 'react-native';
+import {SafeAreaView, ScrollView, View} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
-import {Button, Text, Card, Chip} from 'react-native-elements';
-import {PricingCard} from 'react-native-elements';
+import {Button, Text, Card, Chip, Overlay} from 'react-native-elements';
 import ImagePicker from 'react-native-image-crop-picker';
+import {HOST_URL} from '../../services/tracert';
+import storage from '../utils/storage';
 
 const DetailCertificate = ({navigation}) => {
   const {isLogin, detailCertificate} = useSelector(state => ({
@@ -20,17 +14,94 @@ const DetailCertificate = ({navigation}) => {
   const [isLoading, setLoading] = useState(false);
   const [isLoadingIjazah, setLoadingIjazah] = useState(false);
   const [isLoadingTranscript, setLoadingTranscript] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const [selectedType, setSelectedType] = useState('');
+
+  const toggleOverlay = () => {
+    setVisible(!visible);
+  };
+
   const onLegalisir = () => {};
   const onUploadIjazah = () => {
-    ImagePicker.openCamera({
-      width: 300,
-      height: 400,
-      cropping: true,
-    }).then(image => {
-      console.log(image);
-    });
+    setVisible(true);
+    setSelectedType('ijazah');
   };
-  const onUploadTranscript = () => {};
+  const onUploadTranscript = () => {
+    setVisible(true);
+    setSelectedType('transcript');
+  };
+
+  const uploadSimpleFile = async e => {
+    const fd = new FormData();
+    const today = new Date();
+    const date =
+      today.getFullYear() +
+      '/' +
+      (today.getMonth() + 1) +
+      '/' +
+      today.getDate();
+    '/' + today.getHours() + ':' + today.getMinutes();
+
+    fd.append('file', {
+      uri: e.path,
+      type: e.mime,
+      name: `${selectedType}_${date}`,
+      data: e.data,
+    });
+    fd.append('module', selectedType);
+    try {
+      const token = await storage.load({key: 'token'});
+      const uploadedFile = await fetch(`${HOST_URL}/upload`, {
+        method: 'POST',
+        headers: {
+          token: token.token,
+          'Content-Type': 'multipart/form-data',
+        },
+        body: fd,
+      }).then(res => res.json());
+      console.log('RESPONSE = ', uploadedFile);
+    } catch (err) {
+      console.log('ERR = ', err);
+    }
+  };
+  const loadingFunc =
+    selectedType === 'ijazah' ? setLoadingIjazah : setLoadingTranscript;
+  const onSelectCamera = async () => {
+    try {
+      const image = await ImagePicker.openCamera({
+        width: 300,
+        height: 400,
+        cropping: true,
+        includeBase64: true,
+      });
+      toggleOverlay();
+      loadingFunc(true);
+      await uploadSimpleFile(image);
+      loadingFunc(false);
+      console.log('IMAGE = ', image);
+    } catch (e) {
+      console.log('ERROR', e);
+      loadingFunc(false);
+    }
+  };
+  const onSelectGallery = async () => {
+    try {
+      const image = await ImagePicker.openPicker({
+        width: 300,
+        height: 400,
+        cropping: true,
+        includeBase64: true,
+      });
+      toggleOverlay();
+      loadingFunc(true);
+      await uploadSimpleFile(image);
+      loadingFunc(false);
+      console.log('IMAGE = ', image);
+    } catch (e) {
+      console.log('ERROR', e);
+      loadingFunc(false);
+    }
+  };
   const labelStyle = {
     marginTop: 12,
     fontWeight: 'bold',
@@ -61,7 +132,7 @@ const DetailCertificate = ({navigation}) => {
             {detailCertificate.noIjazah}
           </Text>
         </View>
-        {detailCertificate.legalize.status === 0 && (
+        {detailCertificate.legalize && detailCertificate.legalize.status === 0 && (
           <View style={{flex: 1, paddingTop: 24}}>
             <Card
               containerStyle={{
@@ -111,6 +182,26 @@ const DetailCertificate = ({navigation}) => {
           onPress={onLegalisir}
         />
       </View>
+      <Overlay
+        isVisible={visible}
+        onBackdropPress={toggleOverlay}
+        overlayStyle={{padding: 24}}>
+        <Text style={{fontWeight: 'bold', fontSize: 18, marginBottom: 24}}>
+          Upload Foto
+        </Text>
+        <Button
+          type="clear"
+          buttonStyle={{color: '#047857'}}
+          title="Ambil Foto"
+          onPress={onSelectCamera}
+        />
+        <Button
+          type="clear"
+          buttonStyle={{color: '#047857'}}
+          title="Ambil Galeri"
+          onPress={onSelectGallery}
+        />
+      </Overlay>
     </SafeAreaView>
   );
 };

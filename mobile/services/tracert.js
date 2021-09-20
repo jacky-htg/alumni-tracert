@@ -1,4 +1,4 @@
-const HOST_URL = 'https://api.borobudur.rijalasepnugroho.com';
+export const HOST_URL = 'https://api.borobudur.rijalasepnugroho.com';
 import {TracertServicePromiseClient} from '../proto/single-proto_grpc_web_pb';
 
 export default class {
