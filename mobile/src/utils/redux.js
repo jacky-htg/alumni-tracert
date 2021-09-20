@@ -21,6 +21,7 @@ const reducer = combineReducers({
   },
   isLogin: (state = false, action) => {
     switch (action.type) {
+      case actions.LOGIN_SUCCESS:
       case actions.CREATE_USER_SUCCESS:
         return true;
       case actions.LOGOUT:

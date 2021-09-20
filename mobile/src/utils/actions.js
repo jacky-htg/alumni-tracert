@@ -10,6 +10,7 @@ import {
   Certificate,
   QuestionGroupListInput,
   QuestionGroupList,
+  ChangePasswordRequest,
 } from '../../proto/single-proto_pb';
 //
 import userService from '../../services/user';
@@ -21,6 +22,7 @@ import LegalizeService from '../../services/legalize';
 import CertificateService from '../../services/certificate';
 import QuestionService from '../../services/question';
 import UserAnswerService from '../../services/user_answer';
+import Login from '../../services/login';
 import storage from './storage';
 
 export const actions = {
@@ -44,6 +46,8 @@ export const actions = {
   GET_QUESTION_GROUP_LIST_FAILED: 'GET_QUESTION_GROUP_LIST_FAILED',
   LOGOUT: 'LOGOUT',
   SET_LOGIN: 'SET_LOGIN',
+  CHANGE_PASSWORD_SUCCESS: 'CHANGE_PASSWORD_SUCCESS',
+  CHANGE_PASSWORD_FAILED: 'CHANGE_PASSWORD_FAILED',
 };
 
 export const setDetailIjazah = data => ({
@@ -82,7 +86,7 @@ export const createUser = (name, email) => async dispatch => {
       type: actions.CREATE_USER_FAILED,
       message: error.message,
     });
-    return error;
+    throw new Error(error);
   }
 };
 
@@ -116,7 +120,7 @@ export const login = (email, password) => async dispatch => {
       type: actions.LOGIN_FAILED,
       message: error.message,
     });
-    return error;
+    throw new Error(error);
   }
 };
 
@@ -148,7 +152,7 @@ export const getAlumniList = (search, limit, page) => async dispatch => {
       type: actions.GET_ALUMNI_LIST_FAILED,
       message: error.message,
     });
-    return error;
+    throw new Error(error);
   }
 };
 
@@ -196,7 +200,7 @@ export const registerAppraiser =
         type: actions.REGISTER_APPRAISER_FAILED,
         message: error.message,
       });
-      return error;
+      throw new Error(error);
     }
   };
 
@@ -215,7 +219,7 @@ export const getLegalizeList = () => async dispatch => {
       type: actions.GET_MY_LEGALISIR_LIST_FAILED,
       message: error.message,
     });
-    return error;
+    throw new Error(error);
   }
 };
 
@@ -243,7 +247,7 @@ export const createCertificate =
         type: actions.CREATE_CERTIFICATE_FAILED,
         message: error.message,
       });
-      return error;
+      throw new Error(error);
     }
   };
 
@@ -271,7 +275,7 @@ export const createLegalize =
         type: actions.CREATE_LEGALIZE_FAILED,
         message: error.message,
       });
-      return error;
+      throw new Error(error);
     }
   };
 
@@ -299,7 +303,7 @@ export const getQuestionList = () => async dispatch => {
       type: actions.GET_QUESTION_GROUP_LIST_FAILED,
       message: error.message,
     });
-    return error;
+    throw new Error(error);
   }
 };
 
@@ -313,3 +317,22 @@ export const logout = () => async dispatch => {
 export const setLogin = status => dispatch => {
   dispatch({type: actions.SET_LOGIN, status});
 };
+
+export const changePassword =
+  ({oldPassword, password, confirmPassword}) =>
+  async dispatch => {
+    try {
+      const changePasswordRequest = new ChangePasswordRequest();
+      changePasswordRequest.setOldPassword(oldPassword);
+      changePasswordRequest.setNewPassword(password);
+      changePasswordRequest.setRePassword(confirmPassword);
+
+      const login = new Login(deps, changePasswordRequest);
+      const token = await storage.load({key: 'token'});
+      await login.changePassword(token.token);
+      dispatch({type: actions.CHANGE_PASSWORD_SUCCESS});
+    } catch (e) {
+      dispatch({type: actions.CHANGE_PASSWORD_FAILED, error: e});
+      throw new Error(e);
+    }
+  };

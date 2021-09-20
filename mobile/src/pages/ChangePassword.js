@@ -1,20 +1,20 @@
 import React, {useState} from 'react';
 import {Image, View} from 'react-native';
 import {Button, Card, Input} from 'react-native-elements';
-import {login, getLegalizeList} from '../utils/actions';
+import {changePassword} from '../utils/actions';
 import {useDispatch} from 'react-redux';
-import {PAGES} from '../routes';
 
 const ChangePassword = ({navigation}) => {
   const [isLoading, setLoading] = useState(false);
   const [oldPassword, setOldPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [newPasswordConfirmation, setNewPasswordConfirmation] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const dispatch = useDispatch();
 
   const onPressChangePassword = async () => {
     setLoading(true);
     try {
+      await dispatch(changePassword({oldPassword, password, confirmPassword}));
       setLoading(false);
       navigation.goBack();
     } catch (e) {
@@ -49,15 +49,15 @@ const ChangePassword = ({navigation}) => {
         <Input
           placeholder="Password baru"
           secureTextEntry={true}
-          onChangeText={e => setNewPassword(e)}
-          value={newPassword}
+          onChangeText={e => setPassword(e)}
+          value={password}
         />
 
         <Input
           placeholder="Ulang Password baru"
           secureTextEntry={true}
-          onChangeText={e => setNewPasswordConfirmation(e)}
-          value={newPasswordConfirmation}
+          onChangeText={e => setConfirmPassword(e)}
+          value={confirmPassword}
         />
 
         <Button
