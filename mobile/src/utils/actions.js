@@ -8,6 +8,8 @@ import {
   Legalize,
   EmptyMessage,
   Certificate,
+  QuestionGroupListInput,
+  QuestionGroupList,
 } from '../../proto/single-proto_pb';
 //
 import userService from '../../services/user';
@@ -17,6 +19,8 @@ import AlumniListService from '../../services/alumniList';
 import appraiserService from '../../services/appraiser';
 import LegalizeService from '../../services/legalize';
 import CertificateService from '../../services/certificate';
+import QuestionService from '../../services/question';
+import UserAnswerService from '../../services/user_answer';
 import storage from './storage';
 
 export const actions = {
@@ -36,6 +40,10 @@ export const actions = {
   SET_DETAIL_IJAZAH: 'SET_DETAIL_IJAZAH',
   CREATE_LEGALIZE_SUCCESS: 'CREATE_LEGALIZE_SUCCESS',
   CREATE_LEGALIZE_FAILED: 'CREATE_LEGALIZE_FAILED',
+  GET_QUESTION_GROUP_LIST_SUCCESS: 'GET_QUESTION_GROUP_LIST_SUCCESS',
+  GET_QUESTION_GROUP_LIST_FAILED: 'GET_QUESTION_GROUP_LIST_FAILED',
+  LOGOUT: 'LOGOUT',
+  SET_LOGIN: 'SET_LOGIN',
 };
 
 export const setDetailIjazah = data => ({
@@ -49,7 +57,6 @@ export const createUser = (name, email) => async dispatch => {
     userProto.setUserType(2); // 2 = appraiser
     userProto.setName(name);
     userProto.setEmail(email);
-    console.log('NAME =', name, email);
     const user = new userService(deps, userProto);
     const result = await user.create();
     if (result) {
@@ -63,6 +70,7 @@ export const createUser = (name, email) => async dispatch => {
         data: {
           token: data.token,
           userId: data.id,
+          userType: data.userType,
         },
       });
     } else {
@@ -96,6 +104,7 @@ export const login = (email, password) => async dispatch => {
         data: {
           token: data.token,
           userId: data.id,
+          userType: data.userType,
         },
       });
     } else {
@@ -265,3 +274,42 @@ export const createLegalize =
       return error;
     }
   };
+
+export const getQuestionList = () => async dispatch => {
+  try {
+    const questionGroupListInputProto = new QuestionGroupListInput();
+    let questionList = new QuestionGroupList();
+
+    const question = new QuestionService(deps, questionGroupListInputProto);
+    /* const legalizeService = new LegalizeService(deps, new EmptyMessage()); */
+    const token = await storage.load({key: 'token'});
+    let groups = [1];
+    if (token.usertype === 2) {
+      groups = [6];
+    }
+    questionGroupListInputProto.setQuestionGroupIdList(groups);
+    const result = await question.list(token.token);
+    dispatch({
+      type: actions.GET_QUESTION_GROUP_LIST_SUCCESS,
+      data: result.toObject(),
+    });
+    return result;
+  } catch (error) {
+    dispatch({
+      type: actions.GET_QUESTION_GROUP_LIST_FAILED,
+      message: error.message,
+    });
+    return error;
+  }
+};
+
+export const logout = () => async dispatch => {
+  await storage.remove({
+    key: 'token',
+  });
+  dispatch({type: actions.LOGOUT});
+};
+
+export const setLogin = status => dispatch => {
+  dispatch({type: actions.SET_LOGIN, status});
+};

@@ -5,22 +5,18 @@ import {login, getLegalizeList} from '../utils/actions';
 import {useDispatch} from 'react-redux';
 import {PAGES} from '../routes';
 
-const Login = ({navigation}) => {
+const ChangePassword = ({navigation}) => {
   const [isLoading, setLoading] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [oldPassword, setOldPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [newPasswordConfirmation, setNewPasswordConfirmation] = useState('');
   const dispatch = useDispatch();
 
-  const onPressLogin = async () => {
+  const onPressChangePassword = async () => {
     setLoading(true);
     try {
-      await dispatch(login(email, password));
-      await dispatch(getLegalizeList());
-      navigation.reset({
-        index: 0,
-        routes: [{name: PAGES.TAB_LOGIN.path}],
-      });
       setLoading(false);
+      navigation.goBack();
     } catch (e) {
       setLoading(false);
     }
@@ -41,27 +37,40 @@ const Login = ({navigation}) => {
           source={require('../assets/img/logo-poltekkes.png')}
           style={{marginBottom: 24}}
         />
-        <Card.Title>Selamat datang, silahkan login</Card.Title>
-        <Input placeholder="Username" onChangeText={e => setEmail(e)} />
+        <Card.Title>masukkan password baru</Card.Title>
 
         <Input
-          placeholder="Password"
+          placeholder="Password Lama"
           secureTextEntry={true}
-          onChangeText={e => setPassword(e)}
-          value={password}
+          onChangeText={e => setOldPassword(e)}
+          value={oldPassword}
+        />
+
+        <Input
+          placeholder="Password baru"
+          secureTextEntry={true}
+          onChangeText={e => setNewPassword(e)}
+          value={newPassword}
+        />
+
+        <Input
+          placeholder="Ulang Password baru"
+          secureTextEntry={true}
+          onChangeText={e => setNewPasswordConfirmation(e)}
+          value={newPasswordConfirmation}
         />
 
         <Button
-          title="Login"
+          title="Ubah Password"
           buttonStyle={{
             backgroundColor: '#047857',
           }}
           loading={isLoading}
-          onPress={onPressLogin}
+          onPress={onPressChangePassword}
         />
       </Card>
     </View>
   );
 };
 
-export default Login;
+export default ChangePassword;

@@ -15,7 +15,7 @@ const CDC = () => {
       style={{
         flex: 1,
         // justifyContent: 'center',
-        // alignItems: 'center',
+        backgroundColor: '#ffffff',
         paddingHorizontal: 24,
         paddingTop: 24,
       }}>

@@ -3,7 +3,7 @@ import {View} from 'react-native';
 import {useDispatch} from 'react-redux';
 import storage from '../utils/storage';
 import {PAGES} from '../routes';
-import {getLegalizeList} from '../utils/actions';
+import {getLegalizeList, setLogin} from '../utils/actions';
 
 const SplashScreen = ({navigation}) => {
   const [isLoading, setLoading] = useState(false);
@@ -13,6 +13,7 @@ const SplashScreen = ({navigation}) => {
     try {
       const token = await storage.load({key: 'token'});
       if (token) {
+        dispatch(setLogin(true));
         await dispatch(getLegalizeList());
         navigation.navigate(PAGES.TAB_LOGIN.path);
       } else {

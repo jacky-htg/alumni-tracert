@@ -1,16 +1,11 @@
 import React, {useState, useEffect} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Image,
-  View,
-} from 'react-native';
+import {ScrollView, View, Dimensions} from 'react-native';
 import {getLegalizeList, setDetailIjazah} from '../utils/actions';
 import {useDispatch, useSelector} from 'react-redux';
-import {Button, Text, Card, Chip} from 'react-native-elements';
+import {Button, Text, Card, Chip, Divider} from 'react-native-elements';
 import {PAGES} from '../routes';
+import storage from '../utils/storage';
+const windowWidth = Dimensions.get('window').width;
 
 const MyLegalisir = ({navigation}) => {
   const {isLogin, legalisirList} = useSelector(state => ({
@@ -27,6 +22,13 @@ const MyLegalisir = ({navigation}) => {
   };
   const onPressAddIjazah = () => {
     navigation.navigate(PAGES.ADD_IJAZAH.path);
+  };
+  const onPressKuisioner = () => {
+    navigation.navigate(PAGES.KUISIONER_FORM.path);
+  };
+  const onPressLogout = async () => {
+    await storage.clearMap();
+    navigation.navigate(PAGES.HOME.path);
   };
   const getChipByStatus = data => {
     switch (data.legalize.status) {
@@ -77,21 +79,21 @@ const MyLegalisir = ({navigation}) => {
       style={{
         flex: 1,
         paddingTop: 24,
+        backgroundColor: '#ffffff',
       }}>
       <View
         style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
           paddingHorizontal: 24,
         }}>
         <Text style={{fontSize: 28, fontWeight: 'bold'}}>E-Legalisir</Text>
-        <Button
-          type="clear"
-          buttonStyle={{color: '#047857'}}
-          title="+Tambah Ijazah"
-          onPress={onPressAddIjazah}
-        />
       </View>
+      <Text
+        style={{
+          fontWeight: 'bold',
+          marginHorizontal: 24,
+          marginVertical: 24,
+        }}>{`Anda memiliki ${legalisirList.length} ijazah yang telah didaftarkan`}</Text>
+      <Divider orientation="horizontal" style={{marginHorizontal: 24}} />
       <ScrollView style={{marginTop: 8}}>
         {legalisirList.length > 0 &&
           legalisirList.map((legal, i) => (
@@ -102,6 +104,32 @@ const MyLegalisir = ({navigation}) => {
             </Card>
           ))}
       </ScrollView>
+      <Divider orientation="horizontal" style={{marginHorizontal: 24}} />
+      <View
+        style={{
+          padding: 24,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}>
+        <Button
+          title="Tambah Ijazah"
+          type="outline"
+          buttonStyle={{
+            paddingHorizontal: 24,
+            minWidth: windowWidth / 2 - 36,
+          }}
+          onPress={onPressAddIjazah}
+        />
+        <Button
+          title="Isi Kuisioner"
+          type="outline"
+          buttonStyle={{
+            paddingHorizontal: 24,
+            minWidth: windowWidth / 2 - 36,
+          }}
+          onPress={onPressKuisioner}
+        />
+      </View>
     </View>
   );
 };
