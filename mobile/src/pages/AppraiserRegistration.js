@@ -64,6 +64,7 @@ const AppraiserRegistration = ({navigation}) => {
     marginTop: 8,
     borderRadius: 8,
     borderWidth: 1,
+    paddingHorizontal: 12,
   };
   return (
     <SafeAreaView>
