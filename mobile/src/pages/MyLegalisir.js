@@ -52,7 +52,7 @@ const MyLegalisir = ({navigation}) => {
         return (
           <Chip
             title="Diverifikasi"
-            buttonStyle={{backgroundColor: '#059669'}}
+            buttonStyle={{backgroundColor: '#4F46E5'}}
             onPress={() => onPressIjazah(data)}
           />
         );
@@ -60,7 +60,7 @@ const MyLegalisir = ({navigation}) => {
         return (
           <Chip
             title="Disetujui"
-            buttonStyle={{backgroundColor: '#E5E7EB'}}
+            buttonStyle={{backgroundColor: '#059669'}}
             onPress={() => onPressIjazah(data)}
           />
         );

@@ -48,6 +48,8 @@ export const actions = {
   SET_LOGIN: 'SET_LOGIN',
   CHANGE_PASSWORD_SUCCESS: 'CHANGE_PASSWORD_SUCCESS',
   CHANGE_PASSWORD_FAILED: 'CHANGE_PASSWORD_FAILED',
+  GIVE_RATING_SUCCESS: 'GIVE_RATING_SUCCESS',
+  GIVE_RATING_FAILED: 'GIVE_RATING_FAILED',
 };
 
 export const setDetailIjazah = data => ({
@@ -327,12 +329,28 @@ export const changePassword =
       changePasswordRequest.setNewPassword(password);
       changePasswordRequest.setRePassword(confirmPassword);
 
-      const login = new Login(deps, changePasswordRequest);
+      const loginServ = new Login(deps, changePasswordRequest);
       const token = await storage.load({key: 'token'});
-      await login.changePassword(token.token);
+      await loginServ.changePassword(token.token);
       dispatch({type: actions.CHANGE_PASSWORD_SUCCESS});
     } catch (e) {
       dispatch({type: actions.CHANGE_PASSWORD_FAILED, error: e});
       throw new Error(e);
     }
   };
+
+export const giveRating = (legalizeId, idx) => async dispatch => {
+  try {
+    let legalizeProto = new Legalize();
+    legalizeProto.setRating(idx);
+    legalizeProto.setId(legalizeId);
+    const legalizeService = new LegalizeService(deps, legalizeProto);
+    const token = await storage.load({key: 'token'});
+    await legalizeService.rating(token.token);
+    // await loginServ.changePassword(token.token);
+    dispatch({type: actions.GIVE_RATING_SUCCESS});
+  } catch (e) {
+    dispatch({type: actions.GIVE_RATING_FAILED, error: e});
+    throw new Error(e);
+  }
+};
