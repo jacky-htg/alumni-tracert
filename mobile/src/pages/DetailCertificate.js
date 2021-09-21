@@ -7,13 +7,14 @@ import {
   Card,
   Chip,
   Overlay,
-  CheckBox,
+  Divider,
 } from 'react-native-elements';
 import ImagePicker from 'react-native-image-crop-picker';
 import {HOST_URL} from '../../services/tracert';
 import storage from '../utils/storage';
 import CheckBoxClear from '../components/CheckBoxClear';
 import {createLegalize, getLegalizeList} from '../utils/actions';
+import {downloadFile} from '../utils/storage';
 
 const DetailCertificate = ({navigation}) => {
   const {isLogin, detailCertificate} = useSelector(state => ({
@@ -140,8 +141,8 @@ const DetailCertificate = ({navigation}) => {
     fontSize: 16,
     color: '#9CA3AF',
   };
-  const isUploadFirst = useMemo(
-    () => detailCertificate.legalize && detailCertificate.legalize.status === 0,
+  const status = useMemo(() =>
+    detailCertificate.legalize ? detailCertificate.legalize.status : null,
   );
   return (
     <SafeAreaView style={{backgroundColor: '#ffffff', flex: 1}}>
@@ -153,6 +154,7 @@ const DetailCertificate = ({navigation}) => {
         <Text style={{fontSize: 28, fontWeight: 'bold'}}>
           {detailCertificate.majorStudy}
         </Text>
+
         <View style={{marginTop: 24}}>
           <Text style={labelStyle}>NIM</Text>
           <Text style={{fontSize: 20, fontWeight: 'bold'}}>
@@ -167,7 +169,7 @@ const DetailCertificate = ({navigation}) => {
             {detailCertificate.noIjazah}
           </Text>
         </View>
-        {isUploadFirst && (
+        {status === 0 && (
           <View style={{flex: 1, paddingTop: 24}}>
             <Card
               containerStyle={{
@@ -230,8 +232,87 @@ const DetailCertificate = ({navigation}) => {
             </View>
           </View>
         )}
+        {status === 3 && (
+          <View style={{flex: 1, paddingTop: 24}}>
+            {detailCertificate.legalize.isOffline ? (
+              <View
+                style={{
+                  backgroundColor: '#ECFDF5',
+                  paddingVertical: 12,
+                  paddingHorizontal: 8,
+                  borderTopColor: '#10B981',
+                  borderTopWidth: 1,
+                  borderBottomColor: '#10B981',
+                  borderBottomWidth: 1,
+                }}>
+                <Text
+                  style={{
+                    marginVertical: 12,
+                    fontSize: 16,
+                    fontWeight: 'bold',
+                    color: '#10B981',
+                    textAlign: 'center',
+                  }}>
+                  Dokumen telah diverifikasi dan disetujui, silahkan untuk
+                  mengambil dokumen ijazah atau transkrip nilai yang sudah
+                  disetujui di kampus
+                </Text>
+              </View>
+            ) : (
+              <>
+                <Card
+                  containerStyle={{
+                    margin: 0,
+                  }}>
+                  <Card.Title>Ijazah</Card.Title>
+                  <Card.Divider />
+                  <Card.Image
+                    style={{marginBottom: 12}}
+                    source={{
+                      uri: `https://bpodt-staging.oss-ap-southeast-5.aliyuncs.com/${detailCertificate.legalize.ijazah}`,
+                    }}
+                  />
+                  <Button
+                    title="Download"
+                    buttonStyle={{
+                      backgroundColor: '#047857',
+                    }}
+                    loading={isLoadingIjazah}
+                    onPress={() =>
+                      downloadFile(detailCertificate.legalize.ijazahSigned)
+                    }
+                  />
+                </Card>
+                <Card
+                  containerStyle={{
+                    margin: 0,
+                    marginTop: 24,
+                  }}>
+                  <Card.Title>Transkrip</Card.Title>
+                  <Card.Divider />
+                  <Card.Image
+                    style={{marginBottom: 12}}
+                    source={{
+                      uri: `https://bpodt-staging.oss-ap-southeast-5.aliyuncs.com/${detailCertificate.legalize.transcript}`,
+                    }}
+                  />
+                  <Button
+                    title="Download"
+                    buttonStyle={{
+                      backgroundColor: '#047857',
+                    }}
+                    loading={isLoadingTranscript}
+                    onPress={() =>
+                      downloadFile(detailCertificate.legalize.transcriptSigned)
+                    }
+                  />
+                </Card>
+              </>
+            )}
+          </View>
+        )}
       </ScrollView>
-      {isUploadFirst && (
+      {status === 0 && (
         <View style={{padding: 24}}>
           <Button
             title="Legalisir"
