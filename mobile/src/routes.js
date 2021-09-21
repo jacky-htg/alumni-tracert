@@ -46,11 +46,6 @@ export const TabLogin = () => {
         component={MyLegalisir}
         options={{headerShown: false}}
       />
-      {/* <Tab.Screen
-        name="Kuisioner"
-        component={KuisionerForm}
-        options={{headerShown: false}}
-      /> */}
       <Tab.Screen name="CDC" component={CDC} options={{headerShown: false}} />
       <Tab.Screen
         name="Alumni"

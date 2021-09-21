@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useMemo} from 'react';
-import {SafeAreaView, ScrollView, View} from 'react-native';
+import {SafeAreaView, ScrollView, View, Dimensions} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {Button, Text, Card, Overlay, AirbnbRating} from 'react-native-elements';
 import ImagePicker from 'react-native-image-crop-picker';
@@ -8,6 +8,8 @@ import storage from '../utils/storage';
 import CheckBoxClear from '../components/CheckBoxClear';
 import {createLegalize, getLegalizeList, giveRating} from '../utils/actions';
 import {downloadFile} from '../utils/storage';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+const windowWidth = Dimensions.get('window').width;
 
 const DetailCertificate = ({navigation}) => {
   const {detailCertificate} = useSelector(state => ({
@@ -360,18 +362,42 @@ const DetailCertificate = ({navigation}) => {
         isVisible={visible}
         onBackdropPress={toggleOverlay}
         overlayStyle={{padding: 24}}>
-        <Text style={{fontWeight: 'bold', fontSize: 18, marginBottom: 24}}>
+        <Text
+          style={{
+            fontWeight: 'bold',
+            fontSize: 18,
+            marginBottom: 24,
+            textAlign: 'center',
+          }}>
           Upload Foto
         </Text>
         <Button
           type="clear"
-          buttonStyle={{color: '#047857'}}
+          buttonStyle={{
+            width: windowWidth - 100,
+            marginBottom: 12,
+          }}
+          icon={
+            <Ionicons
+              name="camera-outline"
+              size={22}
+              color={'#3B82F6'}
+              style={{marginRight: 8}}
+            />
+          }
           title="Ambil Foto"
           onPress={onSelectCamera}
         />
         <Button
           type="clear"
-          buttonStyle={{color: '#047857'}}
+          icon={
+            <Ionicons
+              name="images-outline"
+              size={22}
+              color={'#3B82F6'}
+              style={{marginRight: 8}}
+            />
+          }
           title="Ambil Galeri"
           onPress={onSelectGallery}
         />
