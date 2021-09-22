@@ -1,27 +1,23 @@
 import React, {useState, useEffect, useMemo} from 'react';
-import {SafeAreaView, ScrollView, View} from 'react-native';
+import {SafeAreaView, ScrollView, View, Dimensions} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
-import {
-  Button,
-  Text,
-  Card,
-  Chip,
-  Overlay,
-  CheckBox,
-} from 'react-native-elements';
+import {Button, Text, Card, Overlay, AirbnbRating} from 'react-native-elements';
 import ImagePicker from 'react-native-image-crop-picker';
 import {HOST_URL} from '../../services/tracert';
 import storage from '../utils/storage';
 import CheckBoxClear from '../components/CheckBoxClear';
-import {createLegalize, getLegalizeList} from '../utils/actions';
+import {createLegalize, getLegalizeList, giveRating} from '../utils/actions';
+import {downloadFile} from '../utils/storage';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+const windowWidth = Dimensions.get('window').width;
 
 const DetailCertificate = ({navigation}) => {
-  const {isLogin, detailCertificate} = useSelector(state => ({
-    isLogin: state.isLogin,
+  const {detailCertificate} = useSelector(state => ({
     detailCertificate: state.detailCertificate,
   }));
   const dispatch = useDispatch();
   const [isLoading, setLoading] = useState(false);
+  const [isLoadingRate, setLoadingRate] = useState(false);
   const [isLoadingIjazah, setLoadingIjazah] = useState(false);
   const [isLoadingTranscript, setLoadingTranscript] = useState(false);
   const [visible, setVisible] = useState(false);
@@ -30,6 +26,7 @@ const DetailCertificate = ({navigation}) => {
   const [transcriptFile, setTranscriptFile] = useState(null);
   const [selectedLegalisirType, setSelectedLegalisirType] =
     useState('e-legalisir');
+  const [rate, setRate] = useState(5);
 
   const toggleOverlay = () => {
     setVisible(!visible);
@@ -134,14 +131,26 @@ const DetailCertificate = ({navigation}) => {
       loadingFunc(false);
     }
   };
+  const onGiveRate = async () => {
+    setLoadingRate(true);
+    try {
+      await dispatch(giveRating(detailCertificate.legalize.id, rate));
+      await dispatch(getLegalizeList());
+      setLoadingRate(false);
+      navigation.goBack();
+    } catch (e) {
+      console.log('ERROR', e);
+      setLoadingRate(false);
+    }
+  };
   const labelStyle = {
     marginTop: 12,
     fontWeight: 'bold',
     fontSize: 16,
     color: '#9CA3AF',
   };
-  const isUploadFirst = useMemo(
-    () => detailCertificate.legalize && detailCertificate.legalize.status === 0,
+  const status = useMemo(() =>
+    detailCertificate.legalize ? detailCertificate.legalize.status : null,
   );
   return (
     <SafeAreaView style={{backgroundColor: '#ffffff', flex: 1}}>
@@ -153,6 +162,7 @@ const DetailCertificate = ({navigation}) => {
         <Text style={{fontSize: 28, fontWeight: 'bold'}}>
           {detailCertificate.majorStudy}
         </Text>
+
         <View style={{marginTop: 24}}>
           <Text style={labelStyle}>NIM</Text>
           <Text style={{fontSize: 20, fontWeight: 'bold'}}>
@@ -167,7 +177,7 @@ const DetailCertificate = ({navigation}) => {
             {detailCertificate.noIjazah}
           </Text>
         </View>
-        {isUploadFirst && (
+        {status === 0 && (
           <View style={{flex: 1, paddingTop: 24}}>
             <Card
               containerStyle={{
@@ -230,8 +240,113 @@ const DetailCertificate = ({navigation}) => {
             </View>
           </View>
         )}
+        {status === 3 && (
+          <View style={{flex: 1, paddingTop: 24}}>
+            {detailCertificate.legalize.isOffline ? (
+              <View
+                style={{
+                  backgroundColor: '#ECFDF5',
+                  paddingVertical: 12,
+                  paddingHorizontal: 8,
+                  borderTopColor: '#10B981',
+                  borderTopWidth: 1,
+                  borderBottomColor: '#10B981',
+                  borderBottomWidth: 1,
+                }}>
+                <Text
+                  style={{
+                    marginVertical: 12,
+                    fontSize: 16,
+                    fontWeight: 'bold',
+                    color: '#10B981',
+                    textAlign: 'center',
+                  }}>
+                  Dokumen telah diverifikasi dan disetujui, silahkan untuk
+                  mengambil dokumen ijazah atau transkrip nilai yang sudah
+                  disetujui di kampus
+                </Text>
+              </View>
+            ) : (
+              <>
+                <Card
+                  containerStyle={{
+                    margin: 0,
+                  }}>
+                  <Card.Title>Ijazah</Card.Title>
+                  <Card.Divider />
+                  <Card.Image
+                    style={{marginBottom: 12}}
+                    source={{
+                      uri: `https://bpodt-staging.oss-ap-southeast-5.aliyuncs.com/${detailCertificate.legalize.ijazah}`,
+                    }}
+                  />
+                  <Button
+                    title="Download"
+                    buttonStyle={{
+                      backgroundColor: '#047857',
+                    }}
+                    loading={isLoadingIjazah}
+                    onPress={() =>
+                      downloadFile(detailCertificate.legalize.ijazahSigned)
+                    }
+                  />
+                </Card>
+                <Card
+                  containerStyle={{
+                    margin: 0,
+                    marginTop: 24,
+                  }}>
+                  <Card.Title>Transkrip</Card.Title>
+                  <Card.Divider />
+                  <Card.Image
+                    style={{marginBottom: 12}}
+                    source={{
+                      uri: `https://bpodt-staging.oss-ap-southeast-5.aliyuncs.com/${detailCertificate.legalize.transcript}`,
+                    }}
+                  />
+                  <Button
+                    title="Download"
+                    buttonStyle={{
+                      backgroundColor: '#047857',
+                    }}
+                    loading={isLoadingTranscript}
+                    onPress={() =>
+                      downloadFile(detailCertificate.legalize.transcriptSigned)
+                    }
+                  />
+                </Card>
+              </>
+            )}
+            {detailCertificate.legalize.rating === 0 && (
+              <View style={{marginTop: 24}}>
+                <AirbnbRating
+                  count={5}
+                  reviews={[
+                    'Sangat tidak puas',
+                    'Tidak puas',
+                    'Cukup puas',
+                    'Puas',
+                    'Sangat puas',
+                  ]}
+                  defaultRating={5}
+                  size={40}
+                  onFinishRating={setRate}
+                />
+                <Button
+                  title="Beri Penilaian"
+                  buttonStyle={{
+                    marginTop: 24,
+                    backgroundColor: '#047857',
+                  }}
+                  loading={isLoadingRate}
+                  onPress={onGiveRate}
+                />
+              </View>
+            )}
+          </View>
+        )}
       </ScrollView>
-      {isUploadFirst && (
+      {status === 0 && (
         <View style={{padding: 24}}>
           <Button
             title="Legalisir"
@@ -247,18 +362,42 @@ const DetailCertificate = ({navigation}) => {
         isVisible={visible}
         onBackdropPress={toggleOverlay}
         overlayStyle={{padding: 24}}>
-        <Text style={{fontWeight: 'bold', fontSize: 18, marginBottom: 24}}>
+        <Text
+          style={{
+            fontWeight: 'bold',
+            fontSize: 18,
+            marginBottom: 24,
+            textAlign: 'center',
+          }}>
           Upload Foto
         </Text>
         <Button
           type="clear"
-          buttonStyle={{color: '#047857'}}
+          buttonStyle={{
+            width: windowWidth - 100,
+            marginBottom: 12,
+          }}
+          icon={
+            <Ionicons
+              name="camera-outline"
+              size={22}
+              color={'#3B82F6'}
+              style={{marginRight: 8}}
+            />
+          }
           title="Ambil Foto"
           onPress={onSelectCamera}
         />
         <Button
           type="clear"
-          buttonStyle={{color: '#047857'}}
+          icon={
+            <Ionicons
+              name="images-outline"
+              size={22}
+              color={'#3B82F6'}
+              style={{marginRight: 8}}
+            />
+          }
           title="Ambil Galeri"
           onPress={onSelectGallery}
         />

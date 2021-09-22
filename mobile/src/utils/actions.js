@@ -8,6 +8,9 @@ import {
   Legalize,
   EmptyMessage,
   Certificate,
+  QuestionGroupListInput,
+  QuestionGroupList,
+  ChangePasswordRequest,
 } from '../../proto/single-proto_pb';
 //
 import userService from '../../services/user';
@@ -17,6 +20,9 @@ import AlumniListService from '../../services/alumniList';
 import appraiserService from '../../services/appraiser';
 import LegalizeService from '../../services/legalize';
 import CertificateService from '../../services/certificate';
+import QuestionService from '../../services/question';
+import UserAnswerService from '../../services/user_answer';
+import Login from '../../services/login';
 import storage from './storage';
 
 export const actions = {
@@ -36,6 +42,14 @@ export const actions = {
   SET_DETAIL_IJAZAH: 'SET_DETAIL_IJAZAH',
   CREATE_LEGALIZE_SUCCESS: 'CREATE_LEGALIZE_SUCCESS',
   CREATE_LEGALIZE_FAILED: 'CREATE_LEGALIZE_FAILED',
+  GET_QUESTION_GROUP_LIST_SUCCESS: 'GET_QUESTION_GROUP_LIST_SUCCESS',
+  GET_QUESTION_GROUP_LIST_FAILED: 'GET_QUESTION_GROUP_LIST_FAILED',
+  LOGOUT: 'LOGOUT',
+  SET_LOGIN: 'SET_LOGIN',
+  CHANGE_PASSWORD_SUCCESS: 'CHANGE_PASSWORD_SUCCESS',
+  CHANGE_PASSWORD_FAILED: 'CHANGE_PASSWORD_FAILED',
+  GIVE_RATING_SUCCESS: 'GIVE_RATING_SUCCESS',
+  GIVE_RATING_FAILED: 'GIVE_RATING_FAILED',
 };
 
 export const setDetailIjazah = data => ({
@@ -49,7 +63,6 @@ export const createUser = (name, email) => async dispatch => {
     userProto.setUserType(2); // 2 = appraiser
     userProto.setName(name);
     userProto.setEmail(email);
-    console.log('NAME =', name, email);
     const user = new userService(deps, userProto);
     const result = await user.create();
     if (result) {
@@ -63,6 +76,7 @@ export const createUser = (name, email) => async dispatch => {
         data: {
           token: data.token,
           userId: data.id,
+          userType: data.userType,
         },
       });
     } else {
@@ -74,7 +88,7 @@ export const createUser = (name, email) => async dispatch => {
       type: actions.CREATE_USER_FAILED,
       message: error.message,
     });
-    return error;
+    throw new Error(error);
   }
 };
 
@@ -96,6 +110,7 @@ export const login = (email, password) => async dispatch => {
         data: {
           token: data.token,
           userId: data.id,
+          userType: data.userType,
         },
       });
     } else {
@@ -107,7 +122,7 @@ export const login = (email, password) => async dispatch => {
       type: actions.LOGIN_FAILED,
       message: error.message,
     });
-    return error;
+    throw new Error(error);
   }
 };
 
@@ -139,7 +154,7 @@ export const getAlumniList = (search, limit, page) => async dispatch => {
       type: actions.GET_ALUMNI_LIST_FAILED,
       message: error.message,
     });
-    return error;
+    throw new Error(error);
   }
 };
 
@@ -187,7 +202,7 @@ export const registerAppraiser =
         type: actions.REGISTER_APPRAISER_FAILED,
         message: error.message,
       });
-      return error;
+      throw new Error(error);
     }
   };
 
@@ -206,7 +221,7 @@ export const getLegalizeList = () => async dispatch => {
       type: actions.GET_MY_LEGALISIR_LIST_FAILED,
       message: error.message,
     });
-    return error;
+    throw new Error(error);
   }
 };
 
@@ -234,7 +249,7 @@ export const createCertificate =
         type: actions.CREATE_CERTIFICATE_FAILED,
         message: error.message,
       });
-      return error;
+      throw new Error(error);
     }
   };
 
@@ -262,6 +277,80 @@ export const createLegalize =
         type: actions.CREATE_LEGALIZE_FAILED,
         message: error.message,
       });
-      return error;
+      throw new Error(error);
     }
   };
+
+export const getQuestionList = () => async dispatch => {
+  try {
+    const questionGroupListInputProto = new QuestionGroupListInput();
+    let questionList = new QuestionGroupList();
+
+    const question = new QuestionService(deps, questionGroupListInputProto);
+    /* const legalizeService = new LegalizeService(deps, new EmptyMessage()); */
+    const token = await storage.load({key: 'token'});
+    let groups = [1];
+    if (token.usertype === 2) {
+      groups = [6];
+    }
+    questionGroupListInputProto.setQuestionGroupIdList(groups);
+    const result = await question.list(token.token);
+    dispatch({
+      type: actions.GET_QUESTION_GROUP_LIST_SUCCESS,
+      data: result.toObject(),
+    });
+    return result;
+  } catch (error) {
+    dispatch({
+      type: actions.GET_QUESTION_GROUP_LIST_FAILED,
+      message: error.message,
+    });
+    throw new Error(error);
+  }
+};
+
+export const logout = () => async dispatch => {
+  await storage.remove({
+    key: 'token',
+  });
+  dispatch({type: actions.LOGOUT});
+};
+
+export const setLogin = status => dispatch => {
+  dispatch({type: actions.SET_LOGIN, status});
+};
+
+export const changePassword =
+  ({oldPassword, password, confirmPassword}) =>
+  async dispatch => {
+    try {
+      const changePasswordRequest = new ChangePasswordRequest();
+      changePasswordRequest.setOldPassword(oldPassword);
+      changePasswordRequest.setNewPassword(password);
+      changePasswordRequest.setRePassword(confirmPassword);
+
+      const loginServ = new Login(deps, changePasswordRequest);
+      const token = await storage.load({key: 'token'});
+      await loginServ.changePassword(token.token);
+      dispatch({type: actions.CHANGE_PASSWORD_SUCCESS});
+    } catch (e) {
+      dispatch({type: actions.CHANGE_PASSWORD_FAILED, error: e});
+      throw new Error(e);
+    }
+  };
+
+export const giveRating = (legalizeId, idx) => async dispatch => {
+  try {
+    let legalizeProto = new Legalize();
+    legalizeProto.setRating(idx);
+    legalizeProto.setId(legalizeId);
+    const legalizeService = new LegalizeService(deps, legalizeProto);
+    const token = await storage.load({key: 'token'});
+    await legalizeService.rating(token.token);
+    // await loginServ.changePassword(token.token);
+    dispatch({type: actions.GIVE_RATING_SUCCESS});
+  } catch (e) {
+    dispatch({type: actions.GIVE_RATING_FAILED, error: e});
+    throw new Error(e);
+  }
+};
