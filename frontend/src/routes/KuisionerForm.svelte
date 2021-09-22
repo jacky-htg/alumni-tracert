@@ -79,7 +79,7 @@
       } else {
         userAnswerProto.setAnswer(JSON.stringify(answer.text));
       }
-
+      console.log('userAnswerProto.toObject()', userAnswerProto.toObject());
       const userAnswerService = new UserAnswerService(deps, userAnswerProto)
       promises.push(userAnswerService.answer())
     })
@@ -111,6 +111,8 @@
       id: event.target.value,
       text: answerTitle,
     };
+
+    console.log(`answer`, answer)
 
     if (isMultiple) {
       if (!userAnswer[questionId]) {

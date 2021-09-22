@@ -13,15 +13,13 @@ import {PAGES} from '../routes';
 import InputBorderer from '../components/InputBorderer';
 import DatePicker from 'react-native-datepicker';
 import moment from 'moment';
+import {useDispatch, useSelector} from 'react-redux';
+import {registerAlumni} from '../utils/actions';
+
 const windowWidth = Dimensions.get('window').width;
 
-import {Alumni} from '../proto/alumni_message_pb';
-import {User, AlumniRegistrationInput} from '../proto/user_message_pb';
-import {Certificate} from '../proto/certificate_message_pb';
-import {TracertServiceClient} from '../proto/Tracert_serviceServiceClientPb';
-import alumniService from '../services/alumni';
-
 const AlumniRegistration = ({navigation}) => {
+  const dispatch = useDispatch();
   const [name, setName] = useState(null);
   const [nim, setNim] = useState(null);
   const [nik, setNik] = useState(null);
@@ -56,11 +54,12 @@ const AlumniRegistration = ({navigation}) => {
   const [ijazah, setIjazah] = useState(null);
   const [phone, setPhone] = useState(null);
   const [email, setEmail] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const userProto = new User();
-  const alumniProto = new Alumni();
-  const alumniRegistrationProto = new AlumniRegistrationInput();
-  const certificateProto = new Certificate();
+  // const userProto = new User();
+  // const alumniProto = new Alumni();
+  // const alumniRegistrationProto = new AlumniRegistrationInput();
+  // const certificateProto = new Certificate();
 
   useEffect(() => {
     let year = parseInt(moment().format('YYYY'));
@@ -83,22 +82,34 @@ const AlumniRegistration = ({navigation}) => {
     }
   }, [startYear]);
 
-  const onPressNext = () => {
-    console.log({
+  const onPressNext = async () => {
+    setLoading(true);
+    let date = birthDate.split('-');
+    date = [date[2], date[1], date[0]].join('-');
+    let data = {
       name,
       nim,
       nik,
       birthPlace,
-      birthDate,
+      birthDate: date,
       prodi,
       startYear,
       endYear,
       ijazah,
       phone,
       email,
-    });
+    };
+    try {
+      await dispatch(registerAlumni(data));
+      navigation.reset({
+        index: 0,
+        routes: [{name: PAGES.KUISIONER_FORM.path}],
+      });
+    } catch (e) {
+      console.log('e', e);
+      setLoading(false);
+    }
   };
-
   const inputStyle = {
     paddingHorizontal: 0,
   };
@@ -108,6 +119,7 @@ const AlumniRegistration = ({navigation}) => {
     borderWidth: 1,
     paddingHorizontal: 12,
   };
+
   return (
     <SafeAreaView
       style={{
@@ -364,6 +376,7 @@ const AlumniRegistration = ({navigation}) => {
           buttonStyle={{
             backgroundColor: '#047857',
           }}
+          loading={loading}
           onPress={onPressNext}
         />
       </ScrollView>

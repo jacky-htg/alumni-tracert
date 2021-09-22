@@ -5,12 +5,15 @@ import {
   ListInput,
   AlumniAppraiser,
   Alumni,
+  AlumniRegistrationInput,
   Legalize,
   EmptyMessage,
   Certificate,
   QuestionGroupListInput,
   QuestionGroupList,
   ChangePasswordRequest,
+  Tracer,
+  UserAnswer,
 } from '../../proto/single-proto_pb';
 //
 import userService from '../../services/user';
@@ -24,6 +27,7 @@ import QuestionService from '../../services/question';
 import UserAnswerService from '../../services/user_answer';
 import Login from '../../services/login';
 import storage from './storage';
+import user from '../../services/user';
 
 export const actions = {
   CREATE_USER_SUCCESS: 'CREATE_USER_SUCCESS',
@@ -33,6 +37,8 @@ export const actions = {
   LOGIN_FAILED: 'LOGIN_FAILED',
   GET_ALUMNI_LIST_SUCCESS: 'GET_ALUMNI_LIST_SUCCESS',
   GET_ALUMNI_LIST_FAILED: 'GET_ALUMNI_LIST_FAILED',
+  REGISTER_ALUMNI_SUCCESS: 'REGISTER_ALUMNI_SUCCESS',
+  REGISTER_ALUMNI_FAILED: 'REGISTER_ALUMNI_FAILED',
   REGISTER_APPRAISER_SUCCESS: 'REGISTER_APPRAISER_SUCCESS',
   REGISTER_APPRAISER_FAILED: 'REGISTER_APPRAISER_FAILED',
   GET_MY_LEGALISIR_LIST_SUCCESS: 'GET_MY_LEGALISIR_LIST_SUCCESS',
@@ -50,6 +56,8 @@ export const actions = {
   CHANGE_PASSWORD_FAILED: 'CHANGE_PASSWORD_FAILED',
   GIVE_RATING_SUCCESS: 'GIVE_RATING_SUCCESS',
   GIVE_RATING_FAILED: 'GIVE_RATING_FAILED',
+  USER_ANSWER_SUCCESS: 'USER_ANSWER_SUCCESS',
+  USER_ANSWER_FAILED: 'USER_ANSWER_FAILED',
 };
 
 export const setDetailIjazah = data => ({
@@ -157,6 +165,84 @@ export const getAlumniList = (search, limit, page) => async dispatch => {
     throw new Error(error);
   }
 };
+
+export const registerAlumni =
+  ({
+    name,
+    nim,
+    nik,
+    birthPlace,
+    birthDate,
+    prodi,
+    startYear,
+    endYear,
+    ijazah,
+    phone,
+    email,
+  }) =>
+  async dispatch => {
+    try {
+      const alumniRegistrationProto = new AlumniRegistrationInput();
+      const userProto = new User();
+      const alumniProto = new Alumni();
+      const certificateProto = new Certificate();
+
+      alumniProto.setName(name);
+      userProto.setName(name);
+      certificateProto.setNim(nim);
+      alumniProto.setNik(nik);
+      alumniProto.setPlaceOfBirth(birthPlace);
+      alumniProto.setDateOfBirth(birthDate);
+      certificateProto.setMajorStudy(prodi);
+      certificateProto.setEntryYear(startYear);
+      certificateProto.setGraduationYear(endYear);
+      certificateProto.setNoIjazah(ijazah);
+      alumniProto.setPhone(phone);
+      userProto.setEmail(email);
+      userProto.setUserType(1);
+
+      console.log('userProto.toObject()', userProto.toObject());
+      console.log('alumniProto.toObject()', alumniProto.toObject());
+      console.log('certificateProto.toObject()', certificateProto.toObject());
+
+      alumniRegistrationProto.setUser(userProto);
+      alumniRegistrationProto.setAlumni(alumniProto);
+      alumniRegistrationProto.setCertificate(certificateProto);
+      console.log(
+        'alumniRegistrationProto.toObject()',
+        alumniRegistrationProto.toObject(),
+      );
+
+      const alumni = new alumniService(deps, alumniRegistrationProto);
+      const result = await alumni.registration();
+      if (result) {
+        const data = result.toObject();
+        dispatch({
+          type: actions.REGISTER_ALUMNI_SUCCESS,
+          data,
+        });
+        console.log('data', data);
+        storage.save({
+          key: 'token', // Note: Do not use underscore("_") in key!
+          data: {
+            token: data.user.token,
+            userId: data.user.id,
+            userType: data.user.userType,
+          },
+        });
+      } else {
+        console.log('error register alumni');
+        throw new Error('Failed register alumni');
+      }
+    } catch (error) {
+      console.log('error', error);
+      dispatch({
+        type: actions.REGISTER_ALUMNI_FAILED,
+        message: error.message,
+      });
+      throw new Error(error);
+    }
+  };
 
 export const registerAppraiser =
   ({name, instansi, position, alumniPosition, alumniData}) =>
@@ -281,7 +367,7 @@ export const createLegalize =
     }
   };
 
-export const getQuestionList = () => async dispatch => {
+export const getQuestionList = group => async dispatch => {
   try {
     const questionGroupListInputProto = new QuestionGroupListInput();
     let questionList = new QuestionGroupList();
@@ -289,7 +375,7 @@ export const getQuestionList = () => async dispatch => {
     const question = new QuestionService(deps, questionGroupListInputProto);
     /* const legalizeService = new LegalizeService(deps, new EmptyMessage()); */
     const token = await storage.load({key: 'token'});
-    let groups = [1];
+    let groups = group;
     if (token.usertype === 2) {
       groups = [6];
     }
@@ -354,3 +440,59 @@ export const giveRating = (legalizeId, idx) => async dispatch => {
     throw new Error(e);
   }
 };
+
+export const tracerCreateCall = () => async dispatch => {
+  console.log('masuk tracerCall');
+  try {
+    const {userId} = await storage.load({key: 'token'});
+    const tracerProto = new Tracer();
+    tracerProto.setUserId(userId);
+    console.log('tracerProto.toObject()', tracerProto.toObject());
+    const tracerService = new UserAnswerService(deps, tracerProto);
+    const response = await tracerService.tracer();
+    console.log('response', response);
+    return response;
+  } catch (e) {
+    console.log('error hit tracerCreate');
+    // dispatch({type: actions.USER_ANSWER_FAILED, error: e});
+    throw new Error(e);
+  }
+};
+
+export const userAnswerCall =
+  (userAnswer, tracerId, callBack) => async dispatch => {
+    console.log('tracerId', tracerId);
+    try {
+      if (!tracerId) {
+        console.log('masuk sini');
+        const tracerResponse = await tracerCreateCall();
+        tracerId = tracerResponse.id;
+        console.log('tracerId', tracerId);
+        if (callBack) {
+          callBack(tracerId);
+        }
+      }
+
+      let promises = [];
+      userAnswer.forEach((answer, questionId) => {
+        console.log('answer', answer);
+        const userAnswerProto = new UserAnswer();
+        userAnswerProto.setTracerId(tracerId);
+        userAnswerProto.setQuestionId(questionId);
+        if (Array.isArray(answer)) {
+          userAnswerProto.setAnswer(JSON.stringify(answer));
+        } else {
+          userAnswerProto.setAnswer(answer.text);
+        }
+        console.log('userAnswerProto.toObject()', userAnswerProto.toObject());
+        const userAnswerService = new UserAnswerService(deps, userAnswerProto);
+        promises.push(userAnswerService.answer());
+      });
+      return Promise.all(promises);
+      // dispatch({type: actions.USER_ANSWER_SUCCESS});
+    } catch (e) {
+      console.log('error hit answer');
+      // dispatch({type: actions.USER_ANSWER_FAILED, error: e});
+      throw new Error(e);
+    }
+  };
