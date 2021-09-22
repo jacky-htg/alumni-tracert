@@ -6,7 +6,7 @@ import {getQuestionList} from '../utils/actions';
 import InputBorderer from '../components/InputBorderer';
 import CheckBoxClear from '../components/CheckBoxClear';
 import storage from '../utils/storage';
-import {userAnswerCall} from '../utils/actions';
+import {userAnswerCall, tracerCreateCall} from '../utils/actions';
 
 const KuisionerForm = ({navigation}) => {
   const [groups, setGroups] = useState([1]);
@@ -135,24 +135,29 @@ const KuisionerForm = ({navigation}) => {
         throw {message: 'silahkan jawab kuisioner terlebih dahulu'};
       }
 
-      const answer = await dispatch(
-        userAnswerCall(userAnswer, tracerId, setTracerId),
-      );
-      console.log('groups', groups);
-      if (groups.length === 1 && groups[0] === 1) {
-        console.log('userAnswer', userAnswer);
-        if (userAnswer[1].id !== 5) {
-          setGroups([parseInt(userAnswer[1].id) + 1]);
-        }
-        dispatch(getQuestionList(groups));
-      } else {
-        const token = await storage.load({key: 'token'});
-        if (token.usertype == 2) {
-          // navigate(PATH_URL.DASHBOARD, {replace: true});
-        } else {
-          // navigate(PATH_URL.UPLOAD_IJAZAH, {replace: true});
-        }
+      if (!tracerId) {
+        dispatch(tracerCreateCall());
+        // setTracerId(tracerResponse.id);
+        // console.log('tracerResponse', tracerResponse);
       }
+
+      // const answer = dispatch(userAnswerCall(userAnswer, tracerId));
+      // console.log('answer', answer);
+      // console.log('groups', groups);
+      // if (groups.length === 1 && groups[0] === 1) {
+      //   console.log('userAnswer', userAnswer);
+      //   if (userAnswer[1].id !== 5) {
+      //     setGroups([parseInt(userAnswer[1].id) + 1]);
+      //   }
+      //   dispatch(getQuestionList(groups));
+      // } else {
+      //   const token = await storage.load({key: 'token'});
+      //   if (token.usertype == 2) {
+      //     // navigate(PATH_URL.DASHBOARD, {replace: true});
+      //   } else {
+      //     // navigate(PATH_URL.UPLOAD_IJAZAH, {replace: true});
+      //   }
+      // }
       setIsLoading(false);
     } catch (e) {
       setIsLoading(false);

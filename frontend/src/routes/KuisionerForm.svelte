@@ -50,6 +50,7 @@
     const tracerProto = new Tracer();
 
     tracerProto.setUserId(userId);
+    console.log(`tracerProto.toObject()`, tracerProto.toObject())
     const tracerService = new UserAnswerService(deps, tracerProto)
 
     return await tracerService.tracer()
@@ -105,14 +106,14 @@
 	})
 
   const changeAnswer = (event, questionId, answerTitle, isMultiple) => {
-    console.log(userAnswer)
-    console.log(`questionList.getQuestionGroupList()`, questionList.getQuestionGroupList())
+    // console.log(userAnswer)
+    // console.log(`questionList.getQuestionGroupList()`, questionList.getQuestionGroupList())
     const answer = {
       id: event.target.value,
       text: answerTitle,
     };
 
-    console.log(`answer`, answer)
+    // console.log(`answer`, answer)
 
     if (isMultiple) {
       if (!userAnswer[questionId]) {
@@ -134,13 +135,13 @@
       // console.log(questionId, event.target.value)
       userAnswer[questionId] = answer
     }
-    console.log(`userAnswer`, userAnswer)
+    // console.log(`userAnswer`, userAnswer)
   }
 
   const validateAnswer = () => {
     let result = true;
     questionList.getQuestionGroupList().forEach(group => {
-      console.log(`group`, group)
+      // console.log(`group`, group)
       group.getQuestionList().forEach(question => {
         console.log(question.getId(), userAnswer[question.getId()])
         if(!userAnswer[question.getId()]) {
@@ -154,7 +155,7 @@
   const lanjutkan = async () => {
     try {
       if (!validateAnswer()) {
-        console.log(`userAnswer`, userAnswer)
+        // console.log(`userAnswer`, userAnswer)
         throw { message: "silahkan jawab kuisioner terlebih dahulu"}
       } 
 
@@ -186,8 +187,8 @@
   let rangeQuestion = true;
 
   const isCheckedRadio = (question, questionOption) => {
-    console.log(`userAnswer[question.getId()]`, userAnswer[question.getId()])
-    console.log(`questionOption.getId()`, questionOption.getId())
+    // console.log(`userAnswer[question.getId()]`, userAnswer[question.getId()])
+    // console.log(`questionOption.getId()`, questionOption.getId())
     let flag = false
 
     if (userAnswer[question.getId()] && userAnswer[question.getId()].id) {

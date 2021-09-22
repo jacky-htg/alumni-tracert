@@ -454,45 +454,35 @@ export const tracerCreateCall = () => async dispatch => {
     return response;
   } catch (e) {
     console.log('error hit tracerCreate');
+    console.log('e', e);
     // dispatch({type: actions.USER_ANSWER_FAILED, error: e});
     throw new Error(e);
   }
 };
 
-export const userAnswerCall =
-  (userAnswer, tracerId, callBack) => async dispatch => {
-    console.log('tracerId', tracerId);
-    try {
-      if (!tracerId) {
-        console.log('masuk sini');
-        const tracerResponse = await tracerCreateCall();
-        tracerId = tracerResponse.id;
-        console.log('tracerId', tracerId);
-        if (callBack) {
-          callBack(tracerId);
-        }
+export const userAnswerCall = (userAnswer, tracerId) => async dispatch => {
+  console.log('tracerId', tracerId);
+  try {
+    let promises = [];
+    userAnswer.forEach((answer, questionId) => {
+      console.log('answer', answer);
+      const userAnswerProto = new UserAnswer();
+      userAnswerProto.setTracerId(tracerId);
+      userAnswerProto.setQuestionId(questionId);
+      if (Array.isArray(answer)) {
+        userAnswerProto.setAnswer(JSON.stringify(answer));
+      } else {
+        userAnswerProto.setAnswer(answer.text);
       }
-
-      let promises = [];
-      userAnswer.forEach((answer, questionId) => {
-        console.log('answer', answer);
-        const userAnswerProto = new UserAnswer();
-        userAnswerProto.setTracerId(tracerId);
-        userAnswerProto.setQuestionId(questionId);
-        if (Array.isArray(answer)) {
-          userAnswerProto.setAnswer(JSON.stringify(answer));
-        } else {
-          userAnswerProto.setAnswer(answer.text);
-        }
-        console.log('userAnswerProto.toObject()', userAnswerProto.toObject());
-        const userAnswerService = new UserAnswerService(deps, userAnswerProto);
-        promises.push(userAnswerService.answer());
-      });
-      return Promise.all(promises);
-      // dispatch({type: actions.USER_ANSWER_SUCCESS});
-    } catch (e) {
-      console.log('error hit answer');
-      // dispatch({type: actions.USER_ANSWER_FAILED, error: e});
-      throw new Error(e);
-    }
-  };
+      console.log('userAnswerProto.toObject()', userAnswerProto.toObject());
+      const userAnswerService = new UserAnswerService(deps, userAnswerProto);
+      promises.push(userAnswerService.answer());
+    });
+    return Promise.all(promises);
+    // dispatch({type: actions.USER_ANSWER_SUCCESS});
+  } catch (e) {
+    console.log('error hit answer');
+    // dispatch({type: actions.USER_ANSWER_FAILED, error: e});
+    throw new Error(e);
+  }
+};
