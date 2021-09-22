@@ -10,8 +10,6 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@improbable-eng/grpc-web": "^0.14.1",
-    "@improbable-eng/grpc-web-react-native-transport": "^0.14.1",
     "@react-native-picker/picker": "^2.1.0",
     "@react-native-community/async-storage": "^1.12.1",
     "@react-navigation/bottom-tabs": "^6.0.5",

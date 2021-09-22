@@ -27,6 +27,7 @@ import QuestionService from '../../services/question';
 import UserAnswerService from '../../services/user_answer';
 import Login from '../../services/login';
 import storage from './storage';
+import {TracertServicePromiseClient} from '../../proto/single-proto_grpc_web_pb';
 import user from '../../services/user';
 
 export const actions = {
@@ -444,12 +445,12 @@ export const giveRating = (legalizeId, idx) => async dispatch => {
 export const tracerCreateCall = () => async dispatch => {
   console.log('masuk tracerCall');
   try {
-    const {userId} = await storage.load({key: 'token'});
+    const {token, userId} = await storage.load({key: 'token'});
     const tracerProto = new Tracer();
     tracerProto.setUserId(userId);
     console.log('tracerProto.toObject()', tracerProto.toObject());
     const tracerService = new UserAnswerService(deps, tracerProto);
-    const response = await tracerService.tracer();
+    const response = await tracerService.tracer(token);
     console.log('response', response);
     return response;
   } catch (e) {
