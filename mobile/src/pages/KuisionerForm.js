@@ -6,7 +6,13 @@ import {getQuestionList} from '../utils/actions';
 import InputBorderer from '../components/InputBorderer';
 import CheckBoxClear from '../components/CheckBoxClear';
 import storage from '../utils/storage';
-import {userAnswerCall, tracerCreateCall} from '../utils/actions';
+import {PAGES} from '../routes';
+import {
+  userAnswerCall,
+  tracerCreateCall,
+  resetQuestion,
+} from '../utils/actions';
+import user from '../../services/user';
 
 const KuisionerForm = ({navigation}) => {
   const [groups, setGroups] = useState([1]);
@@ -19,14 +25,21 @@ const KuisionerForm = ({navigation}) => {
   const [userAnswer, setUserAnswer] = useState([]);
   const [reRender, setReRender] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [questions, setQuestions] = useState([]);
 
   useEffect(() => {
     dispatch(getQuestionList(groups));
+
+    return () => {
+      dispatch(resetQuestion());
+    };
   }, []);
 
   useEffect(() => {
     if (questionList && questionList.length > 0) {
       console.log('questionList', questionList);
+      setQuestions(questionList);
+      setReRender(!reRender);
     }
   }, [questionList]);
 
@@ -46,6 +59,8 @@ const KuisionerForm = ({navigation}) => {
         ans[questionId] = temp;
         setUserAnswer(ans);
       } else {
+        console.log('userAnswer', userAnswer);
+        console.log('userAnswer[questionId]', userAnswer[questionId]);
         let temp = userAnswer[questionId];
         let value = answerTitle;
         // let isChecked = event.target.checked;
@@ -79,11 +94,28 @@ const KuisionerForm = ({navigation}) => {
     return flag;
   };
 
+  const isCheckedMultiple = (question, answerTitle) => {
+    let flag = false;
+
+    if (userAnswer[question.id] && userAnswer[question.id].length > 0) {
+      userAnswer[question.id].forEach(el => {
+        if (el.indexOf(answerTitle) !== -1) {
+          flag = true;
+        }
+      });
+    }
+
+    return flag;
+  };
+
   const renderAnswerByType = question => {
     switch (question.questionType) {
       case 1:
         return (
-          <InputBorderer label="Instansi" onChangeText={e => console.log(e)} />
+          <InputBorderer
+            minBorder={true}
+            onChangeText={e => changeAnswer(question.id, question.id, e)}
+          />
         );
       case 2:
         return (
@@ -106,16 +138,32 @@ const KuisionerForm = ({navigation}) => {
         );
       case 3:
         return (
-          <View>
-            <Text>TIPE 3</Text>
-          </View>
+          <>
+            {question.questionOptionList.length > 0 &&
+              question.questionOptionList.map((opt, idx) => {
+                return (
+                  <CheckBoxClear
+                    key={opt.id || idx}
+                    title={opt.title}
+                    // checked={true}
+                    isMultiple={true}
+                    checked={isCheckedMultiple(question, opt.title)}
+                    onPress={() =>
+                      changeAnswer(opt.id, question.id, opt.title, true)
+                    }
+                    // checked={statusALumni === 'alumni'}
+                    // onPress={() => setStatusAlumni('alumni')}
+                  />
+                );
+              })}
+          </>
         );
     }
   };
 
   const validateAnswer = () => {
     let result = true;
-    questionList.forEach(group => {
+    questions.forEach(group => {
       console.log('group', group);
       group.questionList.forEach(question => {
         console.log(question.id, userAnswer[question.id]);
@@ -129,44 +177,51 @@ const KuisionerForm = ({navigation}) => {
 
   const lanjutkan = async () => {
     setIsLoading(true);
+    let id = tracerId;
     try {
       if (!validateAnswer()) {
         console.log('userAnswer', userAnswer);
         throw {message: 'silahkan jawab kuisioner terlebih dahulu'};
       }
 
-      if (!tracerId) {
-        dispatch(tracerCreateCall());
+      if (!id) {
+        id = await dispatch(tracerCreateCall());
         // setTracerId(tracerResponse.id);
+        setTracerId(id);
         // console.log('tracerResponse', tracerResponse);
       }
 
-      // const answer = dispatch(userAnswerCall(userAnswer, tracerId));
-      // console.log('answer', answer);
-      // console.log('groups', groups);
-      // if (groups.length === 1 && groups[0] === 1) {
-      //   console.log('userAnswer', userAnswer);
-      //   if (userAnswer[1].id !== 5) {
-      //     setGroups([parseInt(userAnswer[1].id) + 1]);
-      //   }
-      //   dispatch(getQuestionList(groups));
-      // } else {
-      //   const token = await storage.load({key: 'token'});
-      //   if (token.usertype == 2) {
-      //     // navigate(PATH_URL.DASHBOARD, {replace: true});
-      //   } else {
-      //     // navigate(PATH_URL.UPLOAD_IJAZAH, {replace: true});
-      //   }
-      // }
+      const answer = dispatch(userAnswerCall(userAnswer, id));
+      console.log('answer', answer);
+      console.log('groups', groups);
+      if (groups.length === 1 && groups[0] === 1) {
+        console.log('userAnswer', userAnswer);
+        let group = groups;
+        if (userAnswer[1].id !== 5) {
+          group = [parseInt(userAnswer[1].id) + 1];
+          setGroups(group);
+        }
+        dispatch(getQuestionList(group));
+      } else {
+        const token = await storage.load({key: 'token'});
+        if (token.usertype == 2) {
+          navigation.reset({
+            index: 0,
+            routes: [{name: PAGES.TAB_LOGIN.path}],
+          });
+          // navigate(PATH_URL.DASHBOARD, {replace: true});
+        } else {
+          navigation.reset({
+            index: 0,
+            routes: [{name: PAGES.ADD_IJAZAH.path}],
+          });
+          // navigate(PATH_URL.UPLOAD_IJAZAH, {replace: true});
+        }
+      }
       setIsLoading(false);
     } catch (e) {
       setIsLoading(false);
       console.log('e', e);
-      // errorServiceHandling(e);
-      // if (Cookies.get('token') == null) {
-      //   location = PATH_URL.LOGIN;
-      // }
-      // notifications.danger(e.message);
     }
   };
 
@@ -181,8 +236,8 @@ const KuisionerForm = ({navigation}) => {
           KUISIONER TRACER STUDY/PENGGUNA ALUMNI
         </Text>
         <View style={{paddingTop: 24}}>
-          {questionList.length > 0 &&
-            questionList.map((group, idx) => {
+          {questions.length > 0 &&
+            questions.map((group, idx) => {
               return (
                 <View key={group.id || idx}>
                   <Text
@@ -197,7 +252,7 @@ const KuisionerForm = ({navigation}) => {
                   {group.questionList.length > 0 &&
                     group.questionList.map((quest, id) => {
                       return (
-                        <View key={quest.id || id}>
+                        <View style={{marginBottom: 28}} key={quest.id || id}>
                           <Text style={{fontWeight: 'bold', fontSize: 16}}>
                             {quest.title}
                           </Text>

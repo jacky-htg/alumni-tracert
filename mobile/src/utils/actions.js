@@ -59,6 +59,7 @@ export const actions = {
   GIVE_RATING_FAILED: 'GIVE_RATING_FAILED',
   USER_ANSWER_SUCCESS: 'USER_ANSWER_SUCCESS',
   USER_ANSWER_FAILED: 'USER_ANSWER_FAILED',
+  RESET_QUESTIONS: 'RESET_QUESTIONS',
 };
 
 export const setDetailIjazah = data => ({
@@ -257,14 +258,11 @@ export const registerAppraiser =
       alumniAppraiserProto.setAlumniPosition(alumniPosition);
       console.log(alumniProto.toObject());
       alumniProto.setId(alumniData.id);
+      alumniProto.setEmail(alumniData.email);
       alumniProto.setCreated(alumniData.created);
       alumniProto.setDateOfBirth(alumniData.dateOfBirth);
-      alumniProto.setGraduationYear(alumniData.graduationYear);
-      alumniProto.setMajorStudy(alumniData.majorStudy);
       alumniProto.setName(alumniData.name);
       alumniProto.setNik(alumniData.nik);
-      alumniProto.setNim(alumniData.nim);
-      alumniProto.setNoIjazah(alumniData.noIjazah);
       alumniProto.setPhone(alumniData.phone);
       alumniProto.setPlaceOfBirth(alumniData.placeOfBirth);
       alumniProto.setUpdated(alumniData.updated);
@@ -377,7 +375,7 @@ export const getQuestionList = group => async dispatch => {
     /* const legalizeService = new LegalizeService(deps, new EmptyMessage()); */
     const token = await storage.load({key: 'token'});
     let groups = group;
-    if (token.usertype === 2) {
+    if (token.userType === 2) {
       groups = [6];
     }
     questionGroupListInputProto.setQuestionGroupIdList(groups);
@@ -442,6 +440,10 @@ export const giveRating = (legalizeId, idx) => async dispatch => {
   }
 };
 
+export const resetQuestion = () => dispatch => {
+  dispatch({type: actions.RESET_QUESTIONS});
+};
+
 export const tracerCreateCall = () => async dispatch => {
   console.log('masuk tracerCall');
   try {
@@ -451,8 +453,8 @@ export const tracerCreateCall = () => async dispatch => {
     console.log('tracerProto.toObject()', tracerProto.toObject());
     const tracerService = new UserAnswerService(deps, tracerProto);
     const response = await tracerService.tracer(token);
-    console.log('response', response);
-    return response;
+    console.log('response', response.toObject());
+    return response.toObject().id;
   } catch (e) {
     console.log('error hit tracerCreate');
     console.log('e', e);
