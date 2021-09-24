@@ -445,47 +445,39 @@ export const resetQuestion = () => dispatch => {
 };
 
 export const tracerCreateCall = () => async dispatch => {
-  console.log('masuk tracerCall');
   try {
     const {token, userId} = await storage.load({key: 'token'});
     const tracerProto = new Tracer();
     tracerProto.setUserId(userId);
-    console.log('tracerProto.toObject()', tracerProto.toObject());
     const tracerService = new UserAnswerService(deps, tracerProto);
     const response = await tracerService.tracer(token);
-    console.log('response', response.toObject());
     return response.toObject().id;
   } catch (e) {
-    console.log('error hit tracerCreate');
-    console.log('e', e);
-    // dispatch({type: actions.USER_ANSWER_FAILED, error: e});
+    dispatch({type: actions.USER_ANSWER_FAILED, error: e});
     throw new Error(e);
   }
 };
 
 export const userAnswerCall = (userAnswer, tracerId) => async dispatch => {
-  console.log('tracerId', tracerId);
+  const {token} = await storage.load({key: 'token'});
   try {
     let promises = [];
     userAnswer.forEach((answer, questionId) => {
-      console.log('answer', answer);
       const userAnswerProto = new UserAnswer();
       userAnswerProto.setTracerId(tracerId);
       userAnswerProto.setQuestionId(questionId);
       if (Array.isArray(answer)) {
         userAnswerProto.setAnswer(JSON.stringify(answer));
       } else {
-        userAnswerProto.setAnswer(answer.text);
+        userAnswerProto.setAnswer(`"${answer.text}"`);
       }
-      console.log('userAnswerProto.toObject()', userAnswerProto.toObject());
       const userAnswerService = new UserAnswerService(deps, userAnswerProto);
-      promises.push(userAnswerService.answer());
+      promises.push(userAnswerService.answer(token));
     });
-    return Promise.all(promises);
-    // dispatch({type: actions.USER_ANSWER_SUCCESS});
+    Promise.all(promises);
+    dispatch({type: actions.USER_ANSWER_SUCCESS});
   } catch (e) {
-    console.log('error hit answer');
-    // dispatch({type: actions.USER_ANSWER_FAILED, error: e});
+    dispatch({type: actions.USER_ANSWER_FAILED, error: e});
     throw new Error(e);
   }
 };

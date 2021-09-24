@@ -12,7 +12,6 @@ import {
   tracerCreateCall,
   resetQuestion,
 } from '../utils/actions';
-import user from '../../services/user';
 
 const KuisionerForm = ({navigation}) => {
   const [groups, setGroups] = useState([1]);
@@ -37,15 +36,12 @@ const KuisionerForm = ({navigation}) => {
 
   useEffect(() => {
     if (questionList && questionList.length > 0) {
-      console.log('questionList', questionList);
       setQuestions(questionList);
       setReRender(!reRender);
     }
   }, [questionList]);
 
   const changeAnswer = (value, questionId, answerTitle, isMultiple) => {
-    console.log(userAnswer);
-    console.log('questionList', questionList);
     const answer = {
       id: value,
       text: answerTitle,
@@ -59,10 +55,7 @@ const KuisionerForm = ({navigation}) => {
         ans[questionId] = temp;
         setUserAnswer(ans);
       } else {
-        console.log('userAnswer', userAnswer);
-        console.log('userAnswer[questionId]', userAnswer[questionId]);
         let temp = userAnswer[questionId];
-        let value = answerTitle;
         // let isChecked = event.target.checked;
         if (temp.indexOf(answerTitle) === -1) {
           temp.push(answerTitle);
@@ -81,7 +74,6 @@ const KuisionerForm = ({navigation}) => {
       setUserAnswer(ans);
     }
     setReRender(!reRender);
-    console.log('userAnswer', userAnswer);
   };
 
   const isCheckedRadio = (question, questionOption) => {
@@ -180,31 +172,26 @@ const KuisionerForm = ({navigation}) => {
     let id = tracerId;
     try {
       if (!validateAnswer()) {
-        console.log('userAnswer', userAnswer);
         throw {message: 'silahkan jawab kuisioner terlebih dahulu'};
       }
 
       if (!id) {
         id = await dispatch(tracerCreateCall());
-        // setTracerId(tracerResponse.id);
         setTracerId(id);
-        // console.log('tracerResponse', tracerResponse);
       }
 
-      const answer = dispatch(userAnswerCall(userAnswer, id));
-      console.log('answer', answer);
-      console.log('groups', groups);
+      await dispatch(userAnswerCall(userAnswer, id));
       if (groups.length === 1 && groups[0] === 1) {
         console.log('userAnswer', userAnswer);
         let group = groups;
         if (userAnswer[1].id !== 5) {
-          group = [parseInt(userAnswer[1].id) + 1];
+          group = [parseInt(userAnswer[1].id, 10) + 1];
           setGroups(group);
         }
         dispatch(getQuestionList(group));
       } else {
         const token = await storage.load({key: 'token'});
-        if (token.usertype == 2) {
+        if (token.usertype === 2) {
           navigation.reset({
             index: 0,
             routes: [{name: PAGES.TAB_LOGIN.path}],
@@ -213,7 +200,7 @@ const KuisionerForm = ({navigation}) => {
         } else {
           navigation.reset({
             index: 0,
-            routes: [{name: PAGES.ADD_IJAZAH.path}],
+            routes: [{name: PAGES.TAB_LOGIN.path}],
           });
           // navigate(PATH_URL.UPLOAD_IJAZAH, {replace: true});
         }
