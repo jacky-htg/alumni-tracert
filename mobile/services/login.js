@@ -1,0 +1,28 @@
+import Tracert from './tracert';
+
+export default class extends Tracert {
+  constructor(proto, loginInput) {
+    super(proto);
+    this.req = loginInput;
+  }
+  login() {
+    return this.client.login(this.req, {}).then(user => {
+      return user;
+    });
+  }
+  forgotPassword() {
+    return this.client.forgotPassword(this.req, {}).then(user => {
+      return user;
+    });
+  }
+  resetPassword() {
+    return this.client.resetPassword(this.req, {}).then(user => {
+      return user;
+    });
+  }
+  changePassword(token) {
+    return this.client.changePassword(this.req, {token}).then(user => {
+      return user;
+    });
+  }
+}

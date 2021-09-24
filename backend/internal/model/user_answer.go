@@ -67,6 +67,7 @@ func (u *UserAnswer) List(ctx context.Context, db *sql.DB) (*proto.TracerList, e
 	join tracers on answer.id = tracers.id
 	join users on tracers.user_id = users.id
 	join alumni on users.id = alumni.user_id 
+	ORDER BY alumni.name, questions.id
 	`
 	rows, err := db.QueryContext(ctx, query)
 	if err != nil {
@@ -88,21 +89,36 @@ func (u *UserAnswer) List(ctx context.Context, db *sql.DB) (*proto.TracerList, e
 
 		if alumni.Nik != nik {
 			if len(alumni.Nik) > 0 {
-				out.Answer = append(out.Answer, &alumni)
+				out.Answer = append(out.Answer, &proto.AlumniKuisioner{
+					Id:      alumni.Id,
+					Name:    alumni.Name,
+					Nik:     alumni.Nik,
+					Answer:  alumni.Answer,
+					Created: alumni.Created,
+				})
 			}
 			alumni = proto.AlumniKuisioner{}
 			alumni.Name = name
 			alumni.Nik = nik
 			alumni.Created = created
 		}
-		alumni.Answer = append(alumni.Answer, &pbAnswer)
+		alumni.Answer = append(alumni.Answer, &proto.Answer{
+			Question: pbAnswer.Question,
+			Answer:   pbAnswer.Answer,
+		})
 
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "scan data: %v", err)
 		}
 	}
 
-	out.Answer = append(out.Answer, &alumni)
+	out.Answer = append(out.Answer, &proto.AlumniKuisioner{
+		Id:      alumni.Id,
+		Name:    alumni.Name,
+		Nik:     alumni.Nik,
+		Answer:  alumni.Answer,
+		Created: alumni.Created,
+	})
 
 	if rows.Err() != nil {
 		return nil, status.Error(codes.Internal, rows.Err().Error())

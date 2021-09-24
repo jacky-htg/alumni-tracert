@@ -1,4 +1,5 @@
 import React from 'react';
+import SplashScreen from './pages/SplashScreen';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import CDC from './pages/CDC';
@@ -8,6 +9,10 @@ import MyLegalisir from './pages/MyLegalisir';
 import Kuisioner from './pages/Kuisioner';
 import AppraiserRegistration from './pages/AppraiserRegistration';
 import AlumniRegistration from './pages/AlumniRegistration';
+import AddIjazah from './pages/AddIjazah';
+import DetailCertificate from './pages/DetailCertificate';
+import KuisionerForm from './pages/KuisionerForm';
+import ChangePassword from './pages/ChangePassword';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -17,6 +22,8 @@ const getTabIcon = (route, size, color) => {
   switch (route.name) {
     case 'E-Legalisir':
       return <Ionicons name="ribbon" size={size} color={color} />;
+    /* case 'Kuisioner':
+      return <Ionicons name="bookmarks" size={size} color={color} />; */
     case 'CDC':
       return <Ionicons name="stats-chart" size={size} color={color} />;
     case 'Alumni':
@@ -76,6 +83,11 @@ export const TabNotLogin = () => {
 };
 
 export const PAGES = {
+  SPLASH: {
+    path: 'splash',
+    component: SplashScreen,
+    options: {headerShown: false},
+  },
   HOME: {
     path: 'home',
     component: Home,
@@ -109,6 +121,26 @@ export const PAGES = {
   ALUMNI_REGISTRATION: {
     path: 'alumni_registration',
     component: AlumniRegistration,
+    options: {headerShown: false},
+  },
+  ADD_IJAZAH: {
+    path: 'add_ijazah',
+    component: AddIjazah,
+    options: {headerShown: false},
+  },
+  DETAIL_CERTIFICATE: {
+    path: 'detail_certificate',
+    component: DetailCertificate,
+    options: {headerShown: false},
+  },
+  KUISIONER_FORM: {
+    path: 'kuisioner_form',
+    component: KuisionerForm,
+    options: {headerShown: false},
+  },
+  CHANGE_PASSWORD: {
+    path: 'change-password',
+    component: ChangePassword,
     options: {headerShown: false},
   },
 };

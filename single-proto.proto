@@ -1,0 +1,280 @@
+syntax = "proto3";
+
+package proto;
+option go_package = ".;proto";
+
+message AlumniAppraiser {
+  uint64 id = 1;
+  uint64 user_id = 2;
+  Alumni alumni = 3;
+  string name = 4;
+  string instansi = 5;
+  string position = 6;
+  string alumni_position = 7;
+  string created = 8;
+  string updated = 9;
+}
+
+message AlumniAppraiserListResponse {
+  AlumniAppraiser alumni_appraiser = 1;
+  ListInput list_input = 2;
+}
+
+message Alumni {
+  uint64 id = 1;
+  uint64 user_id = 2;
+  string name = 3;
+  string nik = 4;
+  string place_of_birth = 5;
+  string date_of_birth = 6;
+  string phone = 7;
+  repeated Certificate certificates = 8;
+  string created = 9;
+  string updated = 10;
+  string email = 11;
+}
+
+message AlumniListResponse {
+  Alumni alumni = 1;
+  ListInput list_input = 2;
+}
+
+message ForgotPasswordRequest {
+  string email = 1;
+}
+
+message ResetPasswordRequest {
+  string token = 1;
+  string new_password = 2;
+  string re_password = 3;
+}
+
+message ChangePasswordRequest {
+  string old_password = 1;
+  string new_password = 2;
+  string re_password = 3;
+}
+
+message Certificate {
+  uint64 id = 1;
+  uint64 alumni_id = 2;
+  string nim = 3;
+  string major_study = 4;
+  uint32 entry_year = 5;
+  uint32 graduation_year = 6;
+  string no_ijazah = 7;
+  string created = 8;
+  string updated = 9;
+  Legalize legalize = 10;
+}
+
+message Certificates {
+  repeated Certificate certificate = 1;
+}
+
+message EmptyMessage {}
+message StringMessage {
+  string data = 1;
+}
+
+message UintMessage {
+  uint64 data = 1;
+}
+
+message ListInput {
+  string search = 1;
+  uint32 limit = 2;
+  uint32 page = 3;
+  string order_by = 4;
+  string sort = 5;
+  uint32 count = 6;
+}
+
+message Legalize {
+  string id = 1;
+  uint64 alumni_id = 2;
+  uint64 certificate_id = 3;
+  string ijazah = 4;
+  string transcript = 5;
+  bool is_offline = 6;
+  bool is_verified = 7;
+  bool is_approved = 8;
+  uint64 verified_by = 9;
+  uint64 approved_by = 10;
+  string verified_at = 11;
+  string approved_at = 12;
+  string ijazah_signed = 13;
+  string transcript_signed = 14; 
+  uint32 status = 15;
+  uint32 rating = 16;
+  string rejected_reason = 17;
+  string created = 18;
+  string updated = 19;
+  string alumni_name = 20;
+  string alumni_email = 21;
+  string no_ijazah = 22;
+}
+
+message LegalizeListResponse {
+  Legalize Legalize = 1;
+  ListInput list_input = 2;
+}
+
+message Legalizes {
+  repeated Legalize legalize = 1;
+}
+
+message QuestionGroup {
+  uint64 id = 1;
+  string title = 2;
+  uint32 addressed_to = 3;
+  repeated Question question = 4;
+  string created = 5;
+  string updated = 6;
+}
+
+message QuestionGroupList {
+  repeated QuestionGroup question_group = 1;
+}
+
+message QuestionGroupListInput {
+  repeated uint64 question_group_id = 1;
+}
+
+message Question {
+  uint64 id = 1;
+  uint64 question_group_id = 2;
+  string title = 3;
+  uint32 question_type = 4;
+  string minimum_value = 5;
+  string maximum_value = 6;
+  bool is_required = 7;
+  repeated QuestionOption question_option = 8;
+  string created = 9;
+  string updated = 10;
+}
+
+message QuestionOption {
+  uint64 id = 1;
+  uint64 question_id = 2;
+  string title = 3;
+  bool is_need_essay = 4;
+  string created = 5;
+  string updated = 6;
+}
+
+message RequestPassword {
+  string id = 1;
+  uint64 user_id = 2;
+  bool is_used = 3;
+  string expired_at = 4;
+}
+
+message Tracer {
+  uint64 id = 1;
+  uint64 user_id = 2;
+  string created = 3;
+}
+message UserAnswer {
+  uint64 id = 1;
+  uint64 tracer_id = 2;
+  uint64 question_id = 3;
+  string answer = 4;
+  string created = 5;
+}
+
+message AlumniKuisioner {
+  uint64 id = 1;
+  string name = 2;
+  string nik = 3;
+  repeated Answer answer = 4;
+  string created = 5;
+}
+
+message Answer {
+  string question = 1;
+  string answer = 2;
+}
+
+message TracerList {
+  repeated AlumniKuisioner answer = 1;
+}
+
+message User {
+  uint64 id = 1;
+  string email = 2;
+  string name = 3;
+  bool is_actived = 4;
+  uint32 user_type = 5;
+  Alumni alumni = 6;
+  AlumniAppraiser alumni_appraiser = 7;
+  repeated UserAnswer user_answer = 8;
+  string created = 9;
+  string updated = 10;
+  string token = 11;
+}
+
+message UserListResponse {
+  User user = 1;
+  ListInput list_input = 2;
+}
+
+message ChangePassword {
+  string new_password = 1;
+  string re_new_password = 2;
+}
+
+message LoginInput {
+  string email = 1;
+  string password = 2;
+}
+
+message AlumniRegistrationInput {
+  Alumni alumni = 1;
+  User user = 2;
+  Certificate certificate = 3;
+}
+
+service TracertService {
+  rpc Login(LoginInput) returns (User) {}
+  rpc ForgotPassword(ForgotPasswordRequest) returns (StringMessage) {}
+  rpc ResetPassword(ResetPasswordRequest) returns (StringMessage) {}
+  rpc ChangePassword(ChangePasswordRequest) returns (StringMessage) {}
+ 
+  rpc QuestionList(QuestionGroupListInput) returns (QuestionGroupList) {}
+
+  rpc AlumniRegistration(AlumniRegistrationInput) returns (AlumniRegistrationInput) {}
+  rpc CertificateCreate(Certificate) returns (Certificate) {}
+  rpc AlumniCreate(Alumni) returns (Alumni) {}
+  rpc AlumniList(ListInput) returns (stream AlumniListResponse) {} 
+  rpc AlumniGet(Alumni) returns (Alumni) {}
+  /* rpc AlumniUpdate(Alumni) returns (Alumni) {} */
+
+  rpc AlumniAppraiserCreate(AlumniAppraiser) returns (AlumniAppraiser) {}
+  rpc AlumniAppraiserList(ListInput) returns (stream AlumniAppraiserListResponse) {}
+  rpc AlumniAppraiserGet(AlumniAppraiser) returns (AlumniAppraiser) {}
+  /* rpc AlumniAppraiserUpdate(AlumniAppraiser) returns (AlumniAppraiser) {}
+
+  */
+  rpc UserCreate(User) returns (User) {}
+  rpc UserList(ListInput) returns (stream UserListResponse) {}
+  rpc UserGet(User) returns (User) {}
+  /* rpc UserUpdate(User) returns (User) {} */
+
+  rpc LegalizeCheck(StringMessage) returns (Legalize) {}
+  rpc LegalizeUpload(Legalize) returns (Legalize) {}
+  rpc LegalizeList(ListInput) returns (stream LegalizeListResponse) {}
+  rpc LegalizeGet(Legalize) returns (Legalize) {}
+  rpc LegalizeGetOwn(EmptyMessage) returns (Certificates) {}
+  rpc LegalizeDone(Legalize) returns (Legalize) {}
+  rpc LegalizeVerified(StringMessage) returns (Legalize) {}
+  rpc LegalizeRejected(Legalize) returns (Legalize) {} 
+  rpc LegalizeApproved(StringMessage) returns (Legalize) {}
+  rpc LegalizeRating(Legalize) returns (StringMessage) {}
+  rpc LegalizeExtended(Legalize) returns (Legalize) {}
+
+  rpc UserAnswerCreate(UserAnswer) returns (UserAnswer) {}
+  rpc TracerCreate(Tracer) returns (Tracer) {}
+  rpc GetTrace(EmptyMessage) returns (TracerList){}
+  rpc GetLastTrace(EmptyMessage) returns (Tracer){}
+}

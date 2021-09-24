@@ -1,8 +1,9 @@
 import React, {useState} from 'react';
 import {ScrollView, View, SafeAreaView} from 'react-native';
-import {CheckBox, Button, Text} from 'react-native-elements';
+import {Button, Text} from 'react-native-elements';
 import {PAGES} from '../routes';
 import KuisionerNotes from '../components/KuisionerNotes';
+import CheckBoxClear from '../components/CheckBoxClear';
 
 const Kuisioner = ({navigation}) => {
   const [statusALumni, setStatusAlumni] = useState('');
@@ -12,12 +13,6 @@ const Kuisioner = ({navigation}) => {
     } else if (statusALumni === 'alumni') {
       navigation.navigate(PAGES.ALUMNI_REGISTRATION.path);
     }
-  };
-  const containerCheckBox = {
-    backgroundColor: '#ffffff',
-    borderWidth: 0,
-    paddingHorizontal: 0,
-    paddingVertical: 8,
   };
   return (
     <SafeAreaView>
@@ -52,19 +47,13 @@ const Kuisioner = ({navigation}) => {
           </Text>
         </View>
         <View style={{marginVertical: 4}} />
-        <CheckBox
-          containerStyle={containerCheckBox}
+        <CheckBoxClear
           title="Pengguna Alumni"
-          checkedIcon="dot-circle-o"
-          uncheckedIcon="circle-o"
           checked={statusALumni === 'appraiser'}
           onPress={() => setStatusAlumni('appraiser')}
         />
-        <CheckBox
-          containerStyle={containerCheckBox}
+        <CheckBoxClear
           title="Alumni"
-          checkedIcon="dot-circle-o"
-          uncheckedIcon="circle-o"
           checked={statusALumni === 'alumni'}
           onPress={() => setStatusAlumni('alumni')}
         />
