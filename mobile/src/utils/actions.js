@@ -5,12 +5,15 @@ import {
   ListInput,
   AlumniAppraiser,
   Alumni,
+  AlumniRegistrationInput,
   Legalize,
   EmptyMessage,
   Certificate,
   QuestionGroupListInput,
   QuestionGroupList,
   ChangePasswordRequest,
+  Tracer,
+  UserAnswer,
 } from '../../proto/single-proto_pb';
 //
 import userService from '../../services/user';
@@ -24,6 +27,8 @@ import QuestionService from '../../services/question';
 import UserAnswerService from '../../services/user_answer';
 import Login from '../../services/login';
 import storage from './storage';
+import {TracertServicePromiseClient} from '../../proto/single-proto_grpc_web_pb';
+import user from '../../services/user';
 
 export const actions = {
   CREATE_USER_SUCCESS: 'CREATE_USER_SUCCESS',
@@ -33,6 +38,8 @@ export const actions = {
   LOGIN_FAILED: 'LOGIN_FAILED',
   GET_ALUMNI_LIST_SUCCESS: 'GET_ALUMNI_LIST_SUCCESS',
   GET_ALUMNI_LIST_FAILED: 'GET_ALUMNI_LIST_FAILED',
+  REGISTER_ALUMNI_SUCCESS: 'REGISTER_ALUMNI_SUCCESS',
+  REGISTER_ALUMNI_FAILED: 'REGISTER_ALUMNI_FAILED',
   REGISTER_APPRAISER_SUCCESS: 'REGISTER_APPRAISER_SUCCESS',
   REGISTER_APPRAISER_FAILED: 'REGISTER_APPRAISER_FAILED',
   GET_MY_LEGALISIR_LIST_SUCCESS: 'GET_MY_LEGALISIR_LIST_SUCCESS',
@@ -50,6 +57,9 @@ export const actions = {
   CHANGE_PASSWORD_FAILED: 'CHANGE_PASSWORD_FAILED',
   GIVE_RATING_SUCCESS: 'GIVE_RATING_SUCCESS',
   GIVE_RATING_FAILED: 'GIVE_RATING_FAILED',
+  USER_ANSWER_SUCCESS: 'USER_ANSWER_SUCCESS',
+  USER_ANSWER_FAILED: 'USER_ANSWER_FAILED',
+  RESET_QUESTIONS: 'RESET_QUESTIONS',
 };
 
 export const setDetailIjazah = data => ({
@@ -158,6 +168,84 @@ export const getAlumniList = (search, limit, page) => async dispatch => {
   }
 };
 
+export const registerAlumni =
+  ({
+    name,
+    nim,
+    nik,
+    birthPlace,
+    birthDate,
+    prodi,
+    startYear,
+    endYear,
+    ijazah,
+    phone,
+    email,
+  }) =>
+  async dispatch => {
+    try {
+      const alumniRegistrationProto = new AlumniRegistrationInput();
+      const userProto = new User();
+      const alumniProto = new Alumni();
+      const certificateProto = new Certificate();
+
+      alumniProto.setName(name);
+      userProto.setName(name);
+      certificateProto.setNim(nim);
+      alumniProto.setNik(nik);
+      alumniProto.setPlaceOfBirth(birthPlace);
+      alumniProto.setDateOfBirth(birthDate);
+      certificateProto.setMajorStudy(prodi);
+      certificateProto.setEntryYear(startYear);
+      certificateProto.setGraduationYear(endYear);
+      certificateProto.setNoIjazah(ijazah);
+      alumniProto.setPhone(phone);
+      userProto.setEmail(email);
+      userProto.setUserType(1);
+
+      console.log('userProto.toObject()', userProto.toObject());
+      console.log('alumniProto.toObject()', alumniProto.toObject());
+      console.log('certificateProto.toObject()', certificateProto.toObject());
+
+      alumniRegistrationProto.setUser(userProto);
+      alumniRegistrationProto.setAlumni(alumniProto);
+      alumniRegistrationProto.setCertificate(certificateProto);
+      console.log(
+        'alumniRegistrationProto.toObject()',
+        alumniRegistrationProto.toObject(),
+      );
+
+      const alumni = new alumniService(deps, alumniRegistrationProto);
+      const result = await alumni.registration();
+      if (result) {
+        const data = result.toObject();
+        dispatch({
+          type: actions.REGISTER_ALUMNI_SUCCESS,
+          data,
+        });
+        console.log('data', data);
+        storage.save({
+          key: 'token', // Note: Do not use underscore("_") in key!
+          data: {
+            token: data.user.token,
+            userId: data.user.id,
+            userType: data.user.userType,
+          },
+        });
+      } else {
+        console.log('error register alumni');
+        throw new Error('Failed register alumni');
+      }
+    } catch (error) {
+      console.log('error', error);
+      dispatch({
+        type: actions.REGISTER_ALUMNI_FAILED,
+        message: error.message,
+      });
+      throw new Error(error);
+    }
+  };
+
 export const registerAppraiser =
   ({name, instansi, position, alumniPosition, alumniData}) =>
   async dispatch => {
@@ -170,14 +258,11 @@ export const registerAppraiser =
       alumniAppraiserProto.setAlumniPosition(alumniPosition);
       console.log(alumniProto.toObject());
       alumniProto.setId(alumniData.id);
+      alumniProto.setEmail(alumniData.email);
       alumniProto.setCreated(alumniData.created);
       alumniProto.setDateOfBirth(alumniData.dateOfBirth);
-      alumniProto.setGraduationYear(alumniData.graduationYear);
-      alumniProto.setMajorStudy(alumniData.majorStudy);
       alumniProto.setName(alumniData.name);
       alumniProto.setNik(alumniData.nik);
-      alumniProto.setNim(alumniData.nim);
-      alumniProto.setNoIjazah(alumniData.noIjazah);
       alumniProto.setPhone(alumniData.phone);
       alumniProto.setPlaceOfBirth(alumniData.placeOfBirth);
       alumniProto.setUpdated(alumniData.updated);
@@ -281,7 +366,7 @@ export const createLegalize =
     }
   };
 
-export const getQuestionList = () => async dispatch => {
+export const getQuestionList = group => async dispatch => {
   try {
     const questionGroupListInputProto = new QuestionGroupListInput();
     let questionList = new QuestionGroupList();
@@ -289,8 +374,8 @@ export const getQuestionList = () => async dispatch => {
     const question = new QuestionService(deps, questionGroupListInputProto);
     /* const legalizeService = new LegalizeService(deps, new EmptyMessage()); */
     const token = await storage.load({key: 'token'});
-    let groups = [1];
-    if (token.usertype === 2) {
+    let groups = group;
+    if (token.userType === 2) {
       groups = [6];
     }
     questionGroupListInputProto.setQuestionGroupIdList(groups);
@@ -351,6 +436,48 @@ export const giveRating = (legalizeId, idx) => async dispatch => {
     dispatch({type: actions.GIVE_RATING_SUCCESS});
   } catch (e) {
     dispatch({type: actions.GIVE_RATING_FAILED, error: e});
+    throw new Error(e);
+  }
+};
+
+export const resetQuestion = () => dispatch => {
+  dispatch({type: actions.RESET_QUESTIONS});
+};
+
+export const tracerCreateCall = () => async dispatch => {
+  try {
+    const {token, userId} = await storage.load({key: 'token'});
+    const tracerProto = new Tracer();
+    tracerProto.setUserId(userId);
+    const tracerService = new UserAnswerService(deps, tracerProto);
+    const response = await tracerService.tracer(token);
+    return response.toObject().id;
+  } catch (e) {
+    dispatch({type: actions.USER_ANSWER_FAILED, error: e});
+    throw new Error(e);
+  }
+};
+
+export const userAnswerCall = (userAnswer, tracerId) => async dispatch => {
+  const {token} = await storage.load({key: 'token'});
+  try {
+    let promises = [];
+    userAnswer.forEach((answer, questionId) => {
+      const userAnswerProto = new UserAnswer();
+      userAnswerProto.setTracerId(tracerId);
+      userAnswerProto.setQuestionId(questionId);
+      if (Array.isArray(answer)) {
+        userAnswerProto.setAnswer(JSON.stringify(answer));
+      } else {
+        userAnswerProto.setAnswer(`"${answer.text}"`);
+      }
+      const userAnswerService = new UserAnswerService(deps, userAnswerProto);
+      promises.push(userAnswerService.answer(token));
+    });
+    Promise.all(promises);
+    dispatch({type: actions.USER_ANSWER_SUCCESS});
+  } catch (e) {
+    dispatch({type: actions.USER_ANSWER_FAILED, error: e});
     throw new Error(e);
   }
 };

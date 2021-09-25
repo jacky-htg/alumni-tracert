@@ -68,6 +68,8 @@ const reducer = combineReducers({
     switch (action.type) {
       case actions.GET_QUESTION_GROUP_LIST_SUCCESS:
         return [...action.data.questionGroupList];
+      case actions.RESET_QUESTIONS:
+        return [];
       default:
         return state;
     }

@@ -12,6 +12,9 @@ const InputBorderer = ({...props}) => {
     borderColor: '#9CA3AF',
     height: 52,
   };
+  if (props.minBorder) {
+    inputContStyle.marginBottom = -20;
+  }
   return (
     <Input
       labelStyle={{color: '#9CA3AF'}}
