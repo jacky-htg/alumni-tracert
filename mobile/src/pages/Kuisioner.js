@@ -61,6 +61,7 @@ const Kuisioner = ({navigation}) => {
           title="Lanjutkan"
           buttonStyle={{
             backgroundColor: '#047857',
+            marginTop: 20,
           }}
           onPress={onPressNext}
         />
