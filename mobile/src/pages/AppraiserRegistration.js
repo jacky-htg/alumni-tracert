@@ -58,9 +58,6 @@ const AppraiserRegistration = ({navigation}) => {
     }
   }, [isLogin]);
 
-  useEffect(() => {
-    console.log('alumniList', alumniList);
-  }, [alumniList]);
   return (
     <SafeAreaView>
       <ScrollView

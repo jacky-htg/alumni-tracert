@@ -72,8 +72,6 @@
     alumniRegistrationProto.setUser(userProto)
     alumniRegistrationProto.setAlumni(alumniProto)
     alumniRegistrationProto.setCertificate(certificateProto)
-
-    console.log(`alumniRegistrationProto.toObject()`, alumniRegistrationProto.toObject())
     
 		const alumni = new alumniService(deps, alumniRegistrationProto)
     return await alumni.registration()
